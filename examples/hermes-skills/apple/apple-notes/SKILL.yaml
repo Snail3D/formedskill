@@ -1,0 +1,75 @@
+skill:
+  name: apple-notes
+  version: "1.0.0"
+  description: "Manage Apple Notes via the memo CLI — list, search, create, edit, move, delete, and export."
+  tags: [notes, apple, macos, note-taking, icloud]
+  platforms: [macos]
+
+action:
+  type: shell
+  command: "memo notes {{_flags}}"
+
+fields:
+  - id: operation
+    ask: "What do you want to do with Apple Notes?"
+    type: options
+    options:
+      list: "List all notes (optionally filtered by folder)"
+      search: "Search notes by keyword"
+      create: "Create a new note"
+      edit: "Edit an existing note (interactive)"
+      move: "Move a note to a different folder"
+      delete: "Delete a note (interactive)"
+      export: "Export notes to HTML or Markdown"
+    required: true
+    infer_from: >-
+      User says list/show/view all notes -> list.
+      User says find/search/look for -> search.
+      User says create/add/write/new note -> create.
+      User says edit/update/change a note -> edit.
+      User says move note -> move.
+      User says delete/remove note -> delete.
+      User says export/save as markdown/html -> export.
+
+  - id: folder
+    ask: "Which folder? (leave blank for all folders)"
+    type: text
+    required: false
+    show_when: "operation == list"
+    infer_from: "Did the user mention a folder name? Extract it. Otherwise leave blank."
+
+  - id: query
+    ask: "What should we search for?"
+    type: text
+    required: true
+    show_when: "operation == search"
+    infer_from: "Extract the search terms or keywords from the user's message."
+
+  - id: title
+    ask: "What should the note title be?"
+    type: text
+    required: true
+    show_when: "operation == create"
+    infer_from: "Extract the note title from the user's message. If not specified, summarize the content in a few words."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} Apple Note:
+    {% if operation == list %}
+    - Folder filter: {{folder | default("all folders")}}
+    {% endif %}
+    {% if operation == search %}
+    - Query: "{{query}}"
+    {% endif %}
+    {% if operation == create %}
+    - Title: "{{title}}"
+    {% endif %}
+    {% if operation in [edit, move, delete] %}
+    - Action will open interactive selection in terminal
+    {% endif %}
+    {% if operation == export %}
+    - Will export to HTML/Markdown interactively
+    {% endif %}
+
+    Proceed? (yes/no)

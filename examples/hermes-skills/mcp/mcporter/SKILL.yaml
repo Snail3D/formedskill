@@ -1,0 +1,174 @@
+skill:
+  name: mcporter
+  version: "1.0.0"
+  description: "Discover, call, and manage MCP servers and tools directly from the terminal via the mcporter CLI."
+  tags: [MCP, tools, API, integrations, interop]
+  platforms: [macos, linux]
+  prerequisites:
+    commands: [npx]
+
+action:
+  type: shell
+  command: >-
+    {% if operation == "list" %}
+    mcporter list{% if server_name %} {{server_name}}{% endif %}{% if schema %} --schema{% endif %}{% if http_url %} --http-url {{http_url}}{% endif %}{% if stdio_cmd %} --stdio "{{stdio_cmd}}"{% endif %}{% if ad_hoc_name %} --name {{ad_hoc_name}}{% endif %}
+    {% elif operation == "call" %}
+    mcporter call {% if http_url %}{{http_url}}{% elif stdio_cmd %}--stdio "{{stdio_cmd}}" {% endif %}{{tool_path}}{% if call_args %} {{call_args}}{% endif %}{% if call_json_args %} --args '{{call_json_args}}'{% endif %} --output json
+    {% elif operation == "auth" %}
+    mcporter auth {{server_name}}{% if auth_reset %} --reset{% endif %}
+    {% elif operation == "config_list" %}
+    mcporter config list
+    {% elif operation == "config_add" %}
+    mcporter config add {{server_name}}
+    {% elif operation == "config_remove" %}
+    mcporter config remove {{server_name}}
+    {% elif operation == "daemon_start" %}
+    mcporter daemon start
+    {% elif operation == "daemon_status" %}
+    mcporter daemon status
+    {% elif operation == "daemon_stop" %}
+    mcporter daemon stop
+    {% elif operation == "generate_cli" %}
+    mcporter generate-cli{% if server_name %} --server {{server_name}}{% endif %}{% if http_url %} --command {{http_url}}{% endif %}
+    {% elif operation == "emit_ts" %}
+    mcporter emit-ts {{server_name}} --mode {{ts_mode}}
+    {% endif %}
+
+fields:
+  - id: operation
+    ask: "What do you want to do with mcporter?"
+    type: options
+    options:
+      list: "List MCP servers or tools for a server"
+      call: "Call a tool on an MCP server"
+      auth: "OAuth login for an MCP server"
+      config_list: "List configured MCP servers"
+      config_add: "Add a server to config"
+      config_remove: "Remove a server from config"
+      daemon_start: "Start the mcporter daemon for persistent connections"
+      daemon_status: "Check daemon status"
+      daemon_stop: "Stop the daemon"
+      generate_cli: "Generate a CLI wrapper for an MCP server"
+      emit_ts: "Generate TypeScript types or client for an MCP server"
+    required: true
+    infer_from: >-
+      "list servers", "what servers", "discover", "show tools" -> list.
+      "call", "invoke", "run tool", "execute tool" -> call.
+      "login", "auth", "authenticate server" -> auth.
+      "list config", "show config", "configured servers" -> config_list.
+      "add to config", "configure server" -> config_add.
+      "remove from config" -> config_remove.
+      "start daemon", "persistent connection" -> daemon_start.
+      "daemon status", "is daemon running" -> daemon_status.
+      "stop daemon" -> daemon_stop.
+      "generate CLI", "create CLI wrapper" -> generate_cli.
+      "TypeScript types", "generate types", "emit ts" -> emit_ts.
+
+  - id: server_name
+    ask: "Which MCP server? (e.g. 'linear', 'filesystem')"
+    type: text
+    required: false
+    show_when: "operation in [list, auth, config_add, config_remove, generate_cli, emit_ts]"
+    infer_from: >-
+      Extract the MCP server name from the user's message.
+      Examples: "linear", "filesystem", "github", "brave-search".
+      Leave blank if using an ad-hoc HTTP URL or stdio command instead.
+
+  - id: schema
+    ask: "Include full schema details for each tool?"
+    type: boolean
+    default: false
+    show_when: "operation == list"
+    infer_from: "User says 'with schema', 'schema details', 'show parameters' -> true. Otherwise false."
+
+  - id: http_url
+    ask: "Ad-hoc MCP server URL? (e.g. 'https://some-mcp-server.com' — no config needed)"
+    type: text
+    required: false
+    show_when: "operation in [list, call]"
+    infer_from: >-
+      Did the user mention an HTTP/HTTPS URL for an MCP server?
+      Extract it. Leave blank if using a configured server name or stdio command.
+
+  - id: stdio_cmd
+    ask: "Ad-hoc stdio server command? (e.g. 'npx -y @modelcontextprotocol/server-filesystem')"
+    type: text
+    required: false
+    show_when: "operation in [list, call]"
+    infer_from: >-
+      Did the user mention a stdio command to run an MCP server on the fly?
+      Extract the full command string. Leave blank if using a configured server name or HTTP URL.
+
+  - id: ad_hoc_name
+    ask: "Alias name for this ad-hoc server (used in output)?"
+    type: text
+    required: false
+    show_when: "operation == list"
+    infer_from: >-
+      Did the user give a short name/alias for the ad-hoc server?
+      Example: 'my_server', 'fs'. Leave blank if not specified.
+
+  - id: tool_path
+    ask: "Which tool to call? (format: 'server.tool_name', e.g. 'linear.list_issues')"
+    type: text
+    required: true
+    show_when: "operation == call"
+    infer_from: >-
+      Extract the tool path in 'server.tool_name' format.
+      Examples: "linear.list_issues", "linear.create_issue", "filesystem.read_file".
+      If calling an HTTP URL directly, this is just the tool name.
+
+  - id: call_args
+    ask: "Tool arguments as key=value pairs (e.g. 'team=ENG limit:5')"
+    type: text
+    required: false
+    show_when: "operation == call"
+    infer_from: >-
+      Extract key=value argument pairs for the tool call.
+      Examples: "team=ENG limit:5", "url=https://example.com".
+      Leave blank if using JSON args instead.
+
+  - id: call_json_args
+    ask: "Tool arguments as JSON? (e.g. '{\"limit\": 5}')"
+    type: text
+    required: false
+    show_when: "operation == call"
+    infer_from: >-
+      Did the user provide arguments as JSON? Extract the JSON object string.
+      Use this instead of call_args when the input is already JSON.
+      Leave blank if using key=value args.
+
+  - id: auth_reset
+    ask: "Reset existing auth (force re-authentication)?"
+    type: boolean
+    default: false
+    show_when: "operation == auth"
+    infer_from: "User says 'reset', 're-auth', 'force login', 'clear auth' -> true. Otherwise false."
+
+  - id: ts_mode
+    ask: "What TypeScript output mode?"
+    type: options
+    options:
+      client: "Generate a typed client for the MCP server"
+      types: "Generate TypeScript type definitions only"
+    default: types
+    show_when: "operation == emit_ts"
+    infer_from: >-
+      User says "client", "typed client", "SDK" -> client.
+      User says "types", "type definitions", "interfaces" -> types.
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to run mcporter:
+    - Operation: {{operation}}
+    {% if server_name %}- Server: {{server_name}}{% endif %}
+    {% if http_url %}- URL: {{http_url}}{% endif %}
+    {% if stdio_cmd %}- Stdio: {{stdio_cmd}}{% endif %}
+    {% if tool_path %}- Tool: {{tool_path}}{% endif %}
+    {% if call_args %}- Args: {{call_args}}{% endif %}
+    {% if call_json_args %}- JSON args: {{call_json_args}}{% endif %}
+    {% if schema %}- Schema: yes{% endif %}
+    {% if ts_mode %}- TS mode: {{ts_mode}}{% endif %}
+
+    Proceed? (yes/no)

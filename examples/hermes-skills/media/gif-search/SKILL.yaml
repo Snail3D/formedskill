@@ -1,0 +1,116 @@
+skill:
+  name: gif-search
+  version: "1.1.0"
+  description: "Search and download GIFs from Tenor API using curl — find reaction GIFs, get URLs, or save files locally."
+  tags: [gif, media, search, tenor, api]
+  platforms: [macos, linux]
+
+action:
+  type: shell
+  command: >-
+    curl -s "https://tenor.googleapis.com/v2/search?q={{query_encoded}}&limit={{limit}}&key=${TENOR_API_KEY}{% if content_filter != 'off' %}&contentfilter={{content_filter}}{% endif %}{% if locale != 'en_US' %}&locale={{locale}}{% endif %}"
+
+fields:
+  - id: operation
+    ask: "What do you want to do with GIFs?"
+    type: options
+    options:
+      search_urls: "Search and return GIF URLs"
+      download: "Search and download the top result to a file"
+      metadata: "Search and return full metadata (URL, preview, dimensions)"
+    required: true
+    infer_from: >-
+      User wants to find/get URLs/show GIFs -> search_urls.
+      User wants to download/save a GIF -> download.
+      User wants full info/metadata/dimensions -> metadata.
+      Default for general GIF requests -> search_urls.
+
+  - id: query
+    ask: "What GIF should we search for?"
+    type: text
+    required: true
+    infer_from: >-
+      Extract the GIF search query from the user's message. Convert to URL-friendly
+      format with spaces as +. Examples: 'thumbs+up', 'celebration', 'cat+surprised',
+      'nice+work', 'mind+blown'.
+
+  - id: limit
+    ask: "How many results to return? (1-50, default: 5)"
+    type: number
+    default: 5
+    required: false
+    show_when: "operation in [search_urls, metadata]"
+    infer_from: "Did the user specify a number of results? Extract it. Otherwise use 5."
+    validation:
+      min: 1
+      max: 50
+
+  - id: format
+    ask: "Which GIF format?"
+    type: options
+    options:
+      gif: "Full quality GIF (largest file)"
+      tinygif: "Small preview GIF (recommended for chat/markdown)"
+      mp4: "Video version (smaller file size)"
+      tinymp4: "Small preview video"
+      webm: "WebM video"
+      nanogif: "Tiny thumbnail"
+    default: tinygif
+    required: false
+    show_when: "operation in [search_urls, metadata]"
+    infer_from: >-
+      User wants high quality/full size -> gif.
+      User wants small/preview/chat/markdown -> tinygif.
+      User wants video format -> mp4.
+      User wants tiny video -> tinymp4.
+      User wants webm -> webm.
+      Not specified -> tinygif.
+
+  - id: save_path
+    ask: "Where should the GIF be saved? (e.g. ~/Downloads/result.gif)"
+    type: text
+    required: false
+    show_when: "operation == download"
+    infer_from: >-
+      Did the user mention a file path or filename? Extract it.
+      If they only gave a filename, prefix with ~/Downloads/.
+      If not specified, default to ~/Downloads/result.gif based on the query.
+
+  - id: content_filter
+    ask: "Content safety filter level?"
+    type: options
+    options:
+      high: "Strict filtering (safest)"
+      medium: "Moderate filtering (default)"
+      low: "Minimal filtering"
+      off: "No filtering"
+    default: medium
+    required: false
+    infer_from: >-
+      User mentions safe/family/kids/SFW -> high.
+      User says no filter/NSFW/anything -> off.
+      Not specified -> medium.
+
+  - id: locale
+    ask: "Language/locale for results? (e.g. en_US, es, fr)"
+    type: text
+    default: "en_US"
+    required: false
+    infer_from: "Did the user mention a language or locale? Extract it (e.g. en_US, es, fr, de, ja). Otherwise use en_US."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} GIF:
+    - Query: "{{query}}"
+    {% if operation in [search_urls, metadata] %}
+    - Results: {{limit}}
+    - Format: {{format}}
+    {% endif %}
+    {% if operation == download %}
+    - Save to: {{save_path | default("~/Downloads/result.gif")}}
+    {% endif %}
+    - Content filter: {{content_filter}}
+    {% if locale != 'en_US' %}- Locale: {{locale}}{% endif %}
+
+    Proceed? (yes/no)

@@ -1,0 +1,151 @@
+skill:
+  name: webhook-subscriptions
+  version: "1.0.0"
+  description: "Create and manage Hermes webhook subscriptions so external services can trigger agent runs automatically."
+  tags: [webhook, events, automation, integrations, devops]
+  platforms: [macos, linux]
+
+action:
+  type: shell
+  command: >-
+    {% if operation == "subscribe" %}
+    hermes webhook subscribe {{name}}
+      --prompt "{{prompt}}"
+      {% if events %}--events "{{events}}"{% endif %}
+      {% if description %}--description "{{description}}"{% endif %}
+      {% if skills %}--skills "{{skills}}"{% endif %}
+      {% if deliver %}--deliver {{deliver}}{% endif %}
+      {% if deliver_chat_id %}--deliver-chat-id "{{deliver_chat_id}}"{% endif %}
+      {% if secret %}--secret "{{secret}}"{% endif %}
+    {% elif operation == "list" %}
+    hermes webhook list
+    {% elif operation == "remove" %}
+    hermes webhook remove {{name}}
+    {% elif operation == "test" %}
+    hermes webhook test {{name}}{% if test_payload %} --payload '{{test_payload}}'{% endif %}
+    {% endif %}
+
+fields:
+  - id: operation
+    ask: "What do you want to do with webhook subscriptions?"
+    type: options
+    options:
+      subscribe: "Create a new webhook subscription"
+      list: "List all existing subscriptions"
+      remove: "Remove an existing subscription"
+      test: "Test an existing subscription with a sample payload"
+    required: true
+    infer_from: >-
+      User says "create", "add", "subscribe", "new webhook" -> subscribe.
+      User says "list", "show", "what webhooks", "see all" -> list.
+      User says "delete", "remove", "unsubscribe" -> remove.
+      User says "test", "trigger", "fire", "simulate" -> test.
+
+  - id: name
+    ask: "What name should this subscription have? (used as the URL path, e.g. 'github-issues')"
+    type: text
+    required: true
+    show_when: "operation in [subscribe, remove, test]"
+    infer_from: >-
+      Extract the subscription name from the user's message. Should be lowercase, hyphenated.
+      Examples: "github-issues", "stripe-payments", "ci-builds", "alerts".
+
+  - id: prompt
+    ask: "What prompt template should be used when this webhook fires? Use {dot.notation} for payload fields."
+    type: text
+    required: true
+    show_when: "operation == subscribe"
+    infer_from: >-
+      Extract or construct a prompt template. Support {field.path} placeholders for payload fields.
+      Examples: "New issue #{issue.number}: {issue.title}", "Payment {data.object.status}: {data.object.amount} cents".
+      If no template is specified, the full JSON payload will be used.
+
+  - id: events
+    ask: "Which event types should trigger this webhook? (comma-separated, e.g. 'issues,pull_request')"
+    type: text
+    required: false
+    show_when: "operation == subscribe"
+    infer_from: >-
+      Extract event type filter from the user's message. Examples: "issues", "pull_request",
+      "payment_intent.succeeded,payment_intent.payment_failed", "pipeline".
+      Leave blank to accept all events.
+
+  - id: description
+    ask: "Brief description of what this webhook subscription does."
+    type: text
+    required: false
+    show_when: "operation == subscribe"
+    infer_from: "Extract a short description of the subscription's purpose from the user's message."
+
+  - id: skills
+    ask: "Which Hermes skills should this webhook activate? (comma-separated skill names)"
+    type: text
+    required: false
+    show_when: "operation == subscribe"
+    infer_from: >-
+      Did the user mention specific skills to invoke? Extract comma-separated skill names.
+      Example: "github-code-review". Leave blank if not specified.
+
+  - id: deliver
+    ask: "Where should the agent's response be delivered?"
+    type: options
+    options:
+      telegram: "Send to a Telegram chat"
+      discord: "Send to a Discord channel"
+      github_comment: "Post as a GitHub PR or issue comment"
+      origin: "Reply to the webhook origin"
+    required: false
+    show_when: "operation == subscribe"
+    infer_from: >-
+      User says "Telegram" -> telegram. "Discord" -> discord.
+      "GitHub comment" or "PR comment" -> github_comment.
+      "back to the service" or "origin" -> origin.
+
+  - id: deliver_chat_id
+    ask: "What is the Telegram chat ID or Discord channel ID to deliver to?"
+    type: text
+    required: false
+    show_when: "deliver in [telegram, discord]"
+    infer_from: "Extract the numeric chat ID or channel ID from the user's message."
+
+  - id: secret
+    ask: "Custom HMAC secret for this subscription? (leave blank to auto-generate)"
+    type: text
+    required: false
+    show_when: "operation == subscribe"
+    infer_from: >-
+      Did the user provide a custom HMAC secret string? Extract it.
+      If not mentioned, leave blank — one will be auto-generated.
+
+  - id: test_payload
+    ask: "Optional JSON payload to send in the test (leave blank for empty test)."
+    type: text
+    required: false
+    show_when: "operation == test"
+    infer_from: >-
+      Did the user provide a sample JSON payload? Extract it as a JSON string.
+      Example: '{"action": "opened", "issue": {"number": 1, "title": "Bug"}}'.
+
+confirmation:
+  enabled: true
+  template: |
+    {% if operation == "subscribe" %}
+    Ready to create webhook subscription:
+    - Name: {{name}}
+    - Prompt template: {{prompt}}
+    {% if events %}- Events: {{events}}{% endif %}
+    {% if description %}- Description: {{description}}{% endif %}
+    {% if skills %}- Skills: {{skills}}{% endif %}
+    {% if deliver %}- Deliver to: {{deliver}}{% if deliver_chat_id %} (chat: {{deliver_chat_id}}){% endif %}{% endif %}
+    {% if secret %}- Custom secret: provided{% else %}- Secret: auto-generated{% endif %}
+    {% elif operation == "remove" %}
+    Ready to REMOVE webhook subscription: {{name}}
+    This will permanently delete it.
+    {% elif operation == "test" %}
+    Ready to test webhook subscription: {{name}}
+    {% if test_payload %}- Payload: {{test_payload}}{% endif %}
+    {% elif operation == "list" %}
+    Ready to list all webhook subscriptions.
+    {% endif %}
+
+    Proceed? (yes/no)

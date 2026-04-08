@@ -1,0 +1,192 @@
+skill:
+  name: huggingface-hub
+  version: "1.0.0"
+  description: "Hugging Face Hub CLI — search, download, upload models/datasets, manage repos, deploy endpoints, and manage Spaces."
+  tags: [huggingface, hf, models, datasets, hub, mlops]
+  platforms: [macos, linux]
+
+action:
+  type: shell
+  command: >-
+    {% if operation == "download" %}
+    hf download {{repo_id}}{% if hf_filename %} {{hf_filename}}{% endif %}{% if hf_token %} --token {{hf_token}}{% endif %}{% if output_json %} --format json{% endif %}
+    {% elif operation == "upload" %}
+    hf upload {{repo_id}} {{local_path}}{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "upload_large" %}
+    hf upload-large-folder {{repo_id}} {{local_path}}{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "models_list" %}
+    hf models list{% if search_query %} --search "{{search_query}}"{% endif %}{% if output_json %} --format json{% endif %}{% if hf_quiet %} -q{% endif %}
+    {% elif operation == "models_info" %}
+    hf models info {{repo_id}}{% if output_json %} --format json{% endif %}
+    {% elif operation == "datasets_list" %}
+    hf datasets list{% if search_query %} --search "{{search_query}}"{% endif %}{% if output_json %} --format json{% endif %}{% if hf_quiet %} -q{% endif %}
+    {% elif operation == "datasets_info" %}
+    hf datasets info {{repo_id}}{% if output_json %} --format json{% endif %}
+    {% elif operation == "datasets_sql" %}
+    hf datasets sql "{{sql_query}}"
+    {% elif operation == "repos_create" %}
+    hf repos create {{repo_id}} --type {{repo_type}}{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "repos_delete" %}
+    hf repos delete {{repo_id}}{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "repos_duplicate" %}
+    hf repos duplicate {{repo_id}} {{dest_repo_id}}{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "auth_login" %}
+    hf auth login{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "auth_whoami" %}
+    hf auth whoami
+    {% elif operation == "cache_list" %}
+    hf cache list{% if output_json %} --format json{% endif %}
+    {% elif operation == "cache_prune" %}
+    hf cache prune
+    {% elif operation == "endpoint_deploy" %}
+    hf endpoint deploy {{repo_id}}{% if hf_token %} --token {{hf_token}}{% endif %}
+    {% elif operation == "papers_list" %}
+    hf papers list{% if output_json %} --format json{% endif %}
+    {% elif operation == "whoami" %}
+    hf auth whoami
+    {% endif %}
+
+fields:
+  - id: operation
+    ask: "What do you want to do with the Hugging Face Hub?"
+    type: options
+    options:
+      download: "Download files from a repo (model or dataset)"
+      upload: "Upload files/folder to a repo (single commit)"
+      upload_large: "Upload a large folder with resumable upload"
+      models_list: "Search and list models on the Hub"
+      models_info: "Get info about a specific model"
+      datasets_list: "Search and list datasets on the Hub"
+      datasets_info: "Get info about a specific dataset"
+      datasets_sql: "Query a dataset with SQL (via DuckDB)"
+      repos_create: "Create a new Hub repository"
+      repos_delete: "Delete a Hub repository"
+      repos_duplicate: "Duplicate/clone a repository to a new ID"
+      auth_login: "Log in with a Hugging Face token"
+      auth_whoami: "Show the currently logged-in account"
+      cache_list: "List locally cached models and datasets"
+      cache_prune: "Remove detached revisions from local cache"
+      endpoint_deploy: "Deploy a model as an Inference Endpoint"
+      papers_list: "View daily AI papers on the Hub"
+    required: true
+    infer_from: >-
+      "download", "pull", "get model" -> download.
+      "upload", "push", "publish" -> upload.
+      "upload large", "large folder", "resumable" -> upload_large.
+      "search models", "list models", "find models" -> models_list.
+      "model info", "about model" -> models_info.
+      "search datasets", "list datasets", "find datasets" -> datasets_list.
+      "dataset info", "about dataset" -> datasets_info.
+      "sql", "query dataset", "DuckDB" -> datasets_sql.
+      "create repo", "new repo" -> repos_create.
+      "delete repo", "remove repo" -> repos_delete.
+      "duplicate", "clone repo" -> repos_duplicate.
+      "login", "auth", "authenticate" -> auth_login.
+      "whoami", "who am I", "current user" -> auth_whoami.
+      "cache list", "show cache" -> cache_list.
+      "prune cache", "clean cache" -> cache_prune.
+      "deploy endpoint", "inference endpoint" -> endpoint_deploy.
+      "papers", "daily papers" -> papers_list.
+
+  - id: repo_id
+    ask: "What is the repository ID? (e.g. 'mistralai/Mistral-7B-v0.1')"
+    type: text
+    required: true
+    show_when: "operation in [download, upload, upload_large, models_info, datasets_info, repos_create, repos_delete, repos_duplicate, endpoint_deploy]"
+    infer_from: "Extract the HuggingFace repo ID (org/model format) from the user's message."
+
+  - id: dest_repo_id
+    ask: "What should the destination repository ID be? (e.g. 'yourusername/new-repo-name')"
+    type: text
+    required: true
+    show_when: "operation == repos_duplicate"
+    infer_from: "Extract the destination repo ID for the duplicate from the user's message."
+
+  - id: repo_type
+    ask: "What type of repository?"
+    type: options
+    options:
+      model: "Model repository"
+      dataset: "Dataset repository"
+      space: "Space (interactive app)"
+    default: model
+    show_when: "operation == repos_create"
+    infer_from: >-
+      User says "model repo" -> model.
+      User says "dataset repo" -> dataset.
+      User says "space" -> space.
+      If not specified -> model.
+
+  - id: local_path
+    ask: "What is the local file or folder path to upload?"
+    type: text
+    required: true
+    show_when: "operation in [upload, upload_large]"
+    infer_from: "Extract the local file or directory path from the user's message."
+
+  - id: hf_filename
+    ask: "Specific file to download from the repo? (leave blank to download all)"
+    type: text
+    required: false
+    show_when: "operation == download"
+    infer_from: >-
+      Did the user specify a particular filename within the repo?
+      Examples: "config.json", "pytorch_model.bin", "README.md".
+      Leave blank to download the full repo.
+
+  - id: search_query
+    ask: "What should I search for?"
+    type: text
+    required: false
+    show_when: "operation in [models_list, datasets_list]"
+    infer_from: "Extract the search query or keywords from the user's message."
+
+  - id: sql_query
+    ask: "What SQL query should I run against the dataset?"
+    type: text
+    required: true
+    show_when: "operation == datasets_sql"
+    infer_from: >-
+      Extract the SQL query from the user's message. These queries run via DuckDB
+      against dataset parquet URLs. Example: "SELECT * FROM train LIMIT 10".
+
+  - id: hf_token
+    ask: "Hugging Face API token (leave blank to use HF_TOKEN env var or cached login)"
+    type: text
+    required: false
+    show_when: "operation in [download, upload, upload_large, repos_create, repos_delete, repos_duplicate, endpoint_deploy, auth_login]"
+    infer_from: >-
+      Did the user provide an HF token starting with 'hf_'? Extract it.
+      If not mentioned, leave blank to use environment variable or cached credentials.
+
+  - id: output_json
+    ask: "Return machine-readable JSON output?"
+    type: boolean
+    default: false
+    show_when: "operation in [models_list, models_info, datasets_list, datasets_info, cache_list, papers_list]"
+    infer_from: >-
+      User says "as JSON", "machine readable", "structured output" -> true.
+      Otherwise -> false.
+
+  - id: hf_quiet
+    ask: "Quiet mode — output IDs only?"
+    type: boolean
+    default: false
+    show_when: "operation in [models_list, datasets_list]"
+    infer_from: "User says 'just IDs', 'quiet', 'minimal output' -> true. Otherwise false."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to run Hugging Face Hub operation:
+    - Operation: {{operation}}
+    {% if repo_id %}- Repo: {{repo_id}}{% endif %}
+    {% if dest_repo_id %}- Destination: {{dest_repo_id}}{% endif %}
+    {% if local_path %}- Local path: {{local_path}}{% endif %}
+    {% if hf_filename %}- File: {{hf_filename}}{% endif %}
+    {% if search_query %}- Search: {{search_query}}{% endif %}
+    {% if sql_query %}- SQL: {{sql_query}}{% endif %}
+    {% if repo_type %}- Repo type: {{repo_type}}{% endif %}
+    {% if output_json %}- Format: JSON{% endif %}
+
+    Proceed? (yes/no)

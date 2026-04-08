@@ -1,0 +1,222 @@
+skill:
+  name: github-pr-workflow
+  version: "1.0.0"
+  description: "Full PR lifecycle — create branches, open PRs, monitor CI, merge, and manage pull requests using gh CLI."
+  tags: [github, pull-requests, ci-cd, git, merge, automation]
+
+action:
+  type: shell
+  command: |
+    {% if operation == "create_branch" %}
+    git fetch origin && git checkout {{base_branch}} && git pull origin {{base_branch}} && git checkout -b {{branch_name}}
+    {% elif operation == "create_pr" %}
+    git push -u origin HEAD && \
+    gh pr create \
+      --title "{{title}}" \
+      --body "{{body}}" \
+      {% if draft %}--draft{% endif %} \
+      {% if reviewers %}--reviewer "{{reviewers}}"{% endif %} \
+      {% if pr_labels %}--label "{{pr_labels}}"{% endif %} \
+      {% if base_branch %}--base "{{base_branch}}"{% endif %}
+    {% elif operation == "list" %}
+    gh pr list {% if pr_state %}--state "{{pr_state}}"{% endif %} {% if author %}--author "{{author}}"{% endif %}
+    {% elif operation == "view" %}
+    gh pr view {{pr_number}}
+    {% elif operation == "checks" %}
+    gh pr checks {{pr_number}} {% if watch %}--watch{% endif %}
+    {% elif operation == "merge" %}
+    gh pr merge {{pr_number}} \
+      --{{merge_method}} \
+      {% if delete_branch %}--delete-branch{% endif %} \
+      {% if auto_merge %}--auto{% endif %}
+    {% elif operation == "comment" %}
+    gh pr comment {{pr_number}} --body "{{comment_body}}"
+    {% elif operation == "close" %}
+    gh pr close {{pr_number}}
+    {% elif operation == "checkout" %}
+    gh pr checkout {{pr_number}}
+    {% elif operation == "ci_logs" %}
+    gh run list --branch $(git branch --show-current) --limit 5
+    {% endif %}
+
+fields:
+  - id: operation
+    ask: "What PR operation do you want to perform?"
+    type: options
+    options:
+      create_branch: "Create a new feature/fix branch from main"
+      create_pr: "Push current branch and open a new pull request"
+      list: "List open pull requests"
+      view: "View a specific pull request"
+      checks: "Check CI status for a PR"
+      merge: "Merge a pull request"
+      comment: "Add a comment to a PR"
+      close: "Close a PR without merging"
+      checkout: "Check out a PR locally"
+      ci_logs: "List recent CI workflow runs on current branch"
+    required: true
+    infer_from: >-
+      User says "create branch", "new branch", "start feature" -> create_branch.
+      User says "open PR", "create PR", "submit PR", "pull request" -> create_pr.
+      User says "list PRs", "show PRs", "what PRs" -> list.
+      User says "view PR", "see PR #N" -> view.
+      User says "check CI", "CI status", "checks" -> checks.
+      User says "merge", "merge PR" -> merge.
+      User says "comment on PR" -> comment.
+      User says "close PR" -> close.
+      User says "checkout PR", "check out PR" -> checkout.
+      User says "CI logs", "workflow runs", "failed CI" -> ci_logs.
+
+  # --- branch creation fields ---
+  - id: branch_name
+    ask: "New branch name? (e.g. feat/add-auth, fix/login-bug)"
+    type: text
+    required: true
+    show_when: "operation == create_branch"
+    infer_from: >-
+      Extract a branch name from the user's description.
+      Use prefix conventions: feat/ for features, fix/ for bugs, refactor/, docs/, ci/.
+      Convert spaces to hyphens, lowercase.
+
+  - id: base_branch
+    ask: "Base branch to branch from (and target for PR)?"
+    type: text
+    default: main
+    required: false
+    show_when: "operation in [create_branch, create_pr]"
+    infer_from: "Did the user mention a base or target branch? Common values: main, master, develop. Default main."
+
+  # --- create PR fields ---
+  - id: title
+    ask: "PR title? (Conventional commit style recommended, e.g. feat: add user auth)"
+    type: text
+    required: true
+    show_when: "operation == create_pr"
+    infer_from: "Extract a concise PR title from the user's description. Prefix with feat:, fix:, docs:, etc."
+
+  - id: body
+    ask: "PR description? (Include summary, test plan, and any issue references like 'Closes #N')"
+    type: text
+    required: false
+    show_when: "operation == create_pr"
+    infer_from: >-
+      Compose a PR body with: ## Summary (bullet points of changes),
+      ## Test Plan (checklist), and any 'Closes #N' references from the user's message.
+
+  - id: draft
+    ask: "Open as draft PR?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == create_pr"
+    infer_from: "User says 'draft', 'WIP', 'work in progress' -> true. Otherwise false."
+
+  - id: reviewers
+    ask: "Reviewer GitHub usernames (comma-separated)?"
+    type: text
+    required: false
+    show_when: "operation == create_pr"
+    infer_from: "Did the user mention specific reviewers? Extract their GitHub usernames."
+
+  - id: pr_labels
+    ask: "Labels to add to the PR (comma-separated)?"
+    type: text
+    required: false
+    show_when: "operation == create_pr"
+    infer_from: "Did the user mention labels like enhancement, bug, documentation? Extract them."
+
+  # --- PR number (shared across multiple operations) ---
+  - id: pr_number
+    ask: "PR number?"
+    type: number
+    required: true
+    show_when: "operation in [view, checks, merge, comment, close, checkout]"
+    infer_from: "Extract the PR number from the user's message. Look for # followed by digits or standalone integers."
+
+  # --- checks field ---
+  - id: watch
+    ask: "Watch CI until all checks complete?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == checks"
+    infer_from: "User says 'watch', 'wait', 'until done', 'keep checking' -> true. Otherwise false."
+
+  # --- merge fields ---
+  - id: merge_method
+    ask: "Merge method?"
+    type: options
+    options:
+      squash: "Squash all commits into one (recommended for feature branches)"
+      merge: "Create a merge commit"
+      rebase: "Rebase commits onto base branch"
+    default: squash
+    required: true
+    show_when: "operation == merge"
+    infer_from: "User says 'squash' -> squash. 'merge commit' -> merge. 'rebase' -> rebase. Default squash."
+
+  - id: delete_branch
+    ask: "Delete the branch after merging?"
+    type: boolean
+    default: true
+    required: false
+    show_when: "operation == merge"
+    infer_from: "User says 'keep branch' -> false. Otherwise default true."
+
+  - id: auto_merge
+    ask: "Enable auto-merge (merge automatically when all checks pass)?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == merge"
+    infer_from: "User says 'auto-merge', 'when CI passes', 'automatically' -> true. Otherwise false."
+
+  # --- list fields ---
+  - id: pr_state
+    ask: "PR state to list?"
+    type: options
+    options:
+      open: "Open PRs"
+      closed: "Closed PRs"
+      merged: "Merged PRs"
+    default: open
+    required: false
+    show_when: "operation == list"
+    infer_from: "User mentions closed, merged -> match. Otherwise default open."
+
+  - id: author
+    ask: "Filter by author? (GitHub username or @me)"
+    type: text
+    required: false
+    show_when: "operation == list"
+    infer_from: "Did the user mention a specific author or @me to filter by?"
+
+  # --- comment field ---
+  - id: comment_body
+    ask: "Comment text?"
+    type: text
+    required: true
+    show_when: "operation == comment"
+    infer_from: "Extract the comment text the user wants to post on the PR."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}}:
+    {% if operation == "create_branch" %}- Branch: {{branch_name}} (from {{base_branch}}){% endif %}
+    {% if operation == "create_pr" %}- Title: {{title}}
+    - Base: {{base_branch}}
+    {% if draft %}- Mode: DRAFT{% endif %}
+    {% if reviewers %}- Reviewers: {{reviewers}}{% endif %}
+    {% if pr_labels %}- Labels: {{pr_labels}}{% endif %}
+    - Body: {{body}}{% endif %}
+    {% if operation == "list" %}- State: {{pr_state}}{% if author %}, Author: {{author}}{% endif %}{% endif %}
+    {% if operation == "view" %}- PR: #{{pr_number}}{% endif %}
+    {% if operation == "checks" %}- PR: #{{pr_number}}{% if watch %} (watching until complete){% endif %}{% endif %}
+    {% if operation == "merge" %}- PR: #{{pr_number}}, method: {{merge_method}}{% if delete_branch %}, delete branch after merge{% endif %}{% if auto_merge %}, auto-merge enabled{% endif %}{% endif %}
+    {% if operation == "comment" %}- PR: #{{pr_number}}
+    - Comment: {{comment_body}}{% endif %}
+    {% if operation == "close" %}- PR: #{{pr_number}}{% endif %}
+    {% if operation == "checkout" %}- PR: #{{pr_number}}{% endif %}
+
+    Proceed? (yes/no)

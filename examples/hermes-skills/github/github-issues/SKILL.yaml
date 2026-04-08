@@ -1,0 +1,201 @@
+skill:
+  name: github-issues
+  version: "1.0.0"
+  description: "Create, view, triage, label, assign, comment on, and close GitHub issues using the gh CLI."
+  tags: [github, issues, project-management, bug-tracking, triage]
+
+action:
+  type: shell
+  command: |
+    {% if operation == "list" %}
+    gh issue list \
+      {% if state %}--state "{{state}}"{% endif %} \
+      {% if label %}--label "{{label}}"{% endif %} \
+      {% if assignee %}--assignee "{{assignee}}"{% endif %} \
+      {% if search %}--search "{{search}}"{% endif %} \
+      {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "view" %}
+    gh issue view {{issue_number}} {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "create" %}
+    gh issue create \
+      --title "{{title}}" \
+      --body "{{body}}" \
+      {% if labels %}--label "{{labels}}"{% endif %} \
+      {% if assignee %}--assignee "{{assignee}}"{% endif %} \
+      {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "label" %}
+    gh issue edit {{issue_number}} \
+      {% if add_labels %}--add-label "{{add_labels}}"{% endif %} \
+      {% if remove_labels %}--remove-label "{{remove_labels}}"{% endif %} \
+      {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "assign" %}
+    gh issue edit {{issue_number}} --add-assignee "{{assignee}}" {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "comment" %}
+    gh issue comment {{issue_number}} --body "{{comment_body}}" {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "close" %}
+    gh issue close {{issue_number}} \
+      {% if close_reason %}--reason "{{close_reason}}"{% endif %} \
+      {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "reopen" %}
+    gh issue reopen {{issue_number}} {% if repo %}--repo "{{repo}}"{% endif %}
+    {% elif operation == "develop" %}
+    gh issue develop {{issue_number}} --checkout {% if repo %}--repo "{{repo}}"{% endif %}
+    {% endif %}
+
+fields:
+  - id: operation
+    ask: "What do you want to do with GitHub issues?"
+    type: options
+    options:
+      list: "List/search issues"
+      view: "View a specific issue"
+      create: "Create a new issue"
+      label: "Add or remove labels on an issue"
+      assign: "Assign someone to an issue"
+      comment: "Add a comment to an issue"
+      close: "Close an issue"
+      reopen: "Reopen a closed issue"
+      develop: "Create a branch from an issue and check it out"
+    required: true
+    infer_from: >-
+      User says "list", "show", "find", "search" issues -> list.
+      User says "view", "see", "show me" a specific issue number -> view.
+      User says "create", "open", "file", "report" an issue -> create.
+      User says "label", "tag", "add label", "remove label" -> label.
+      User says "assign" someone to an issue -> assign.
+      User says "comment", "add note", "reply" to an issue -> comment.
+      User says "close", "resolve", "done", "fix" an issue -> close.
+      User says "reopen" an issue -> reopen.
+      User says "develop", "branch from issue", "start work on issue" -> develop.
+
+  - id: repo
+    ask: "Which repo? (owner/repo format, or leave blank to use current directory)"
+    type: text
+    required: false
+    infer_from: "Did the user mention a specific repo like 'owner/repo-name'? Otherwise leave blank."
+
+  # --- list fields ---
+  - id: state
+    ask: "Which issue state to show?"
+    type: options
+    options:
+      open: "Open issues only"
+      closed: "Closed issues only"
+      all: "All issues regardless of state"
+    default: open
+    required: false
+    show_when: "operation == list"
+    infer_from: "User mentions closed or all -> match. Otherwise default open."
+
+  - id: label
+    ask: "Filter by label (e.g. bug, enhancement)?"
+    type: text
+    required: false
+    show_when: "operation == list"
+    infer_from: "Did the user mention a label to filter by? Extract the label name."
+
+  - id: assignee
+    ask: "Filter by assignee? (GitHub username or @me)"
+    type: text
+    required: false
+    show_when: "operation in [list, assign]"
+    infer_from: "Did the user mention a person or @me to filter/assign by?"
+
+  - id: search
+    ask: "Search query text?"
+    type: text
+    required: false
+    show_when: "operation == list"
+    infer_from: "Extract any keyword search terms the user wants to find in issue titles or bodies."
+
+  # --- view / edit / close / reopen / develop fields ---
+  - id: issue_number
+    ask: "Which issue number?"
+    type: number
+    required: true
+    show_when: "operation in [view, label, assign, comment, close, reopen, develop]"
+    infer_from: "Extract the issue number from the user's message. Look for # followed by digits or standalone integers."
+
+  # --- create fields ---
+  - id: title
+    ask: "Issue title?"
+    type: text
+    required: true
+    show_when: "operation == create"
+    infer_from: "Extract a concise title for the issue from the user's description."
+
+  - id: body
+    ask: "Issue body/description? (Markdown supported)"
+    type: text
+    required: false
+    show_when: "operation == create"
+    infer_from: >-
+      Extract or compose an issue body from the user's message.
+      For bugs: include Description, Steps to Reproduce, Expected Behavior, Actual Behavior.
+      For features: include Feature Description, Motivation, Proposed Solution.
+
+  - id: labels
+    ask: "Comma-separated labels to add on create (e.g. bug,backend)?"
+    type: text
+    required: false
+    show_when: "operation == create"
+    infer_from: "Did the user mention labels like bug, enhancement, documentation? Extract them comma-separated."
+
+  # --- label fields ---
+  - id: add_labels
+    ask: "Labels to add (comma-separated)?"
+    type: text
+    required: false
+    show_when: "operation == label"
+    infer_from: "Extract labels the user wants to add to the issue."
+
+  - id: remove_labels
+    ask: "Labels to remove (comma-separated)?"
+    type: text
+    required: false
+    show_when: "operation == label"
+    infer_from: "Extract labels the user wants to remove from the issue."
+
+  # --- comment field ---
+  - id: comment_body
+    ask: "Comment text?"
+    type: text
+    required: true
+    show_when: "operation == comment"
+    infer_from: "Extract the comment text the user wants to post on the issue."
+
+  # --- close field ---
+  - id: close_reason
+    ask: "Close reason?"
+    type: options
+    options:
+      completed: "Issue was completed/resolved"
+      not planned: "Won't be fixed (not planned)"
+    default: completed
+    required: false
+    show_when: "operation == close"
+    infer_from: "User says 'wontfix', 'not planned', 'won't do' -> not planned. Otherwise -> completed."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} GitHub issue:
+    {% if operation == "list" %}- Filters: state={{state}}{% if label %}, label={{label}}{% endif %}{% if assignee %}, assignee={{assignee}}{% endif %}{% if search %}, search="{{search}}"{% endif %}{% endif %}
+    {% if operation == "view" %}- Issue: #{{issue_number}}{% endif %}
+    {% if operation == "create" %}- Title: {{title}}
+    - Body: {{body}}
+    {% if labels %}- Labels: {{labels}}{% endif %}
+    {% if assignee %}- Assignee: {{assignee}}{% endif %}{% endif %}
+    {% if operation == "label" %}- Issue: #{{issue_number}}
+    {% if add_labels %}- Add labels: {{add_labels}}{% endif %}
+    {% if remove_labels %}- Remove labels: {{remove_labels}}{% endif %}{% endif %}
+    {% if operation == "assign" %}- Issue: #{{issue_number}}
+    - Assignee: {{assignee}}{% endif %}
+    {% if operation == "comment" %}- Issue: #{{issue_number}}
+    - Comment: {{comment_body}}{% endif %}
+    {% if operation == "close" %}- Issue: #{{issue_number}}, reason: {{close_reason}}{% endif %}
+    {% if operation == "reopen" %}- Issue: #{{issue_number}}{% endif %}
+    {% if operation == "develop" %}- Issue: #{{issue_number}} (creates branch + checks out){% endif %}
+    {% if repo %}- Repo: {{repo}}{% endif %}
+
+    Proceed? (yes/no)

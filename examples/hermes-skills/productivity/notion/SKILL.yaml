@@ -1,0 +1,246 @@
+skill:
+  name: notion
+  version: "1.0.0"
+  description: "Create, read, update, and query Notion pages, databases, and blocks via the Notion REST API."
+  tags: [notion, productivity, notes, database, api]
+
+action:
+  type: http
+  method: POST
+  url: "https://api.notion.com/v1/{{notion_endpoint}}"
+  headers:
+    Authorization: "Bearer {{NOTION_API_KEY}}"
+    Notion-Version: "2025-09-03"
+    Content-Type: "application/json"
+  env_vars:
+    - NOTION_API_KEY
+
+fields:
+  - id: operation
+    ask: "What do you want to do in Notion?"
+    type: options
+    options:
+      search: "Search for pages or databases by title"
+      get_page: "Get a page's metadata and properties"
+      get_blocks: "Get the content (blocks) of a page"
+      create_page: "Create a new page inside a database"
+      create_standalone_page: "Create a new standalone page under a parent page"
+      query_database: "Query/filter a database (data source)"
+      create_database: "Create a new database inside a page"
+      update_page: "Update page properties (e.g. Status, Date)"
+      add_content: "Append text/block content to a page"
+    required: true
+    infer_from: >-
+      User says "search", "find", "look for" pages or databases -> search.
+      User says "get page", "view page", "page details", "page info" -> get_page.
+      User says "get content", "read page", "page body", "page blocks" -> get_blocks.
+      User says "create page in database", "add row", "new database entry", "new record" -> create_page.
+      User says "create standalone page", "new page under", "add subpage" -> create_standalone_page.
+      User says "query database", "filter database", "database entries", "list rows" -> query_database.
+      User says "create database", "new database", "new data source" -> create_database.
+      User says "update page", "change property", "update status", "set checkbox" -> update_page.
+      User says "add content", "append text", "write to page", "add block" -> add_content.
+
+  # --- shared: page/database ID ---
+  - id: page_id
+    ask: "Page ID or database ID? (UUID from the Notion URL)"
+    type: text
+    required: true
+    show_when: "operation in [get_page, get_blocks, update_page, add_content, create_standalone_page, create_database]"
+    infer_from: "Extract the Notion page or database UUID from the user's message or URL. UUIDs look like 32 hex chars, with or without dashes."
+
+  # --- search ---
+  - id: search_query
+    ask: "Search query text?"
+    type: text
+    required: true
+    show_when: "operation == search"
+    infer_from: "Extract the search terms from the user's message."
+
+  - id: search_filter_type
+    ask: "Filter results by type?"
+    type: options
+    options:
+      "": "No filter — show pages and databases"
+      page: "Pages only"
+      database: "Databases only"
+    default: ""
+    required: false
+    show_when: "operation == search"
+    infer_from: "User says 'pages only' -> page. 'databases only' -> database. Otherwise leave blank."
+
+  # --- create page in database ---
+  - id: database_id
+    ask: "Database ID to create the page in? (UUID)"
+    type: text
+    required: true
+    show_when: "operation == create_page"
+    infer_from: "Extract the database UUID from the user's message or URL."
+
+  - id: page_title
+    ask: "Title/Name for the new page?"
+    type: text
+    required: true
+    show_when: "operation in [create_page, create_standalone_page, create_database]"
+    infer_from: "Extract the title or name from the user's message."
+
+  - id: page_status
+    ask: "Status property value? (e.g. Todo, In Progress, Done — leave blank to skip)"
+    type: text
+    required: false
+    show_when: "operation == create_page"
+    infer_from: "Did the user mention a status like Todo, Active, Done? Extract it. Otherwise leave blank."
+
+  - id: page_extra_properties
+    ask: "Additional properties as JSON? (e.g. {\"Priority\": {\"select\": {\"name\": \"High\"}}})"
+    type: text
+    required: false
+    show_when: "operation == create_page"
+    infer_from: "Did the user mention extra Notion properties beyond title and status? Format as Notion property JSON."
+
+  # --- query database ---
+  - id: data_source_id
+    ask: "Data source ID to query? (UUID — same as database_id for queries)"
+    type: text
+    required: true
+    show_when: "operation == query_database"
+    infer_from: "Extract the database/data source UUID from the user's message."
+
+  - id: filter_property
+    ask: "Filter by property name? (e.g. Status, Priority — leave blank for no filter)"
+    type: text
+    required: false
+    show_when: "operation == query_database"
+    infer_from: "Did the user mention filtering by a specific property? Extract the property name."
+
+  - id: filter_value
+    ask: "Filter value to match?"
+    type: text
+    required: false
+    show_when: "operation == query_database"
+    infer_from: "Extract the value the filter property should equal."
+
+  - id: sort_property
+    ask: "Sort by property? (leave blank for no sorting)"
+    type: text
+    required: false
+    show_when: "operation == query_database"
+    infer_from: "Did the user mention sorting by a field like Date, Created, Priority?"
+
+  - id: sort_direction
+    ask: "Sort direction?"
+    type: options
+    options:
+      ascending: "Ascending (oldest/lowest first)"
+      descending: "Descending (newest/highest first)"
+    default: descending
+    required: false
+    show_when: "operation == query_database"
+    infer_from: "User says 'oldest first', 'ascending' -> ascending. Otherwise default descending."
+
+  # --- update page ---
+  - id: update_property_name
+    ask: "Property name to update? (e.g. Status, Checkbox, Date)"
+    type: text
+    required: true
+    show_when: "operation == update_page"
+    infer_from: "Extract the Notion property name the user wants to update."
+
+  - id: update_property_value
+    ask: "New property value? (for select: option name; for checkbox: true/false; for date: YYYY-MM-DD)"
+    type: text
+    required: true
+    show_when: "operation == update_page"
+    infer_from: "Extract the new value for the property. Convert boolean to true/false, dates to YYYY-MM-DD."
+
+  - id: update_property_type
+    ask: "Property type?"
+    type: options
+    options:
+      select: "Select (single option)"
+      multi_select: "Multi-select (multiple options)"
+      checkbox: "Checkbox (true/false)"
+      date: "Date"
+      rich_text: "Rich text / plain text"
+      number: "Number"
+      url: "URL"
+      email: "Email"
+    required: true
+    show_when: "operation == update_page"
+    infer_from: >-
+      User mentions a status, category, or option -> select.
+      User mentions tags or multiple values -> multi_select.
+      User says 'check', 'tick', 'done', 'true/false' -> checkbox.
+      User mentions a date or deadline -> date.
+      User mentions text content -> rich_text.
+      User mentions a number -> number.
+      User mentions a URL/link -> url.
+
+  # --- add content ---
+  - id: block_content
+    ask: "Text content to append to the page?"
+    type: text
+    required: true
+    show_when: "operation == add_content"
+    infer_from: "Extract the text or content the user wants to add to the page."
+
+  - id: block_type
+    ask: "Block type to add?"
+    type: options
+    options:
+      paragraph: "Regular paragraph text"
+      heading_1: "Large heading (H1)"
+      heading_2: "Medium heading (H2)"
+      heading_3: "Small heading (H3)"
+      bulleted_list_item: "Bulleted list item"
+      numbered_list_item: "Numbered list item"
+      to_do: "To-do / checkbox item"
+      quote: "Block quote"
+      code: "Code block"
+    default: paragraph
+    required: false
+    show_when: "operation == add_content"
+    infer_from: >-
+      User says 'heading', 'title', 'H1' -> heading_1.
+      User says 'H2', 'subheading' -> heading_2.
+      User says 'bullet', 'list item' -> bulleted_list_item.
+      User says 'numbered', 'ordered list' -> numbered_list_item.
+      User says 'todo', 'checkbox', 'task' -> to_do.
+      User says 'quote', 'blockquote' -> quote.
+      User says 'code' -> code.
+      Otherwise -> paragraph.
+
+  # --- create database ---
+  - id: db_properties_json
+    ask: "Database properties schema as JSON? (e.g. {\"Status\": {\"select\": {\"options\": [{\"name\": \"Todo\"}, {\"name\": \"Done\"}]}}, \"Date\": {\"date\": {}}})"
+    type: text
+    required: false
+    show_when: "operation == create_database"
+    infer_from: "Did the user describe columns or properties for the database? Compose Notion property schema JSON."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} in Notion:
+    {% if operation == "search" %}- Query: "{{search_query}}"{% if search_filter_type %}, type: {{search_filter_type}}{% endif %}{% endif %}
+    {% if operation == "get_page" %}- Page ID: {{page_id}}{% endif %}
+    {% if operation == "get_blocks" %}- Page ID: {{page_id}}{% endif %}
+    {% if operation == "create_page" %}- Database: {{database_id}}
+    - Title: {{page_title}}
+    {% if page_status %}- Status: {{page_status}}{% endif %}
+    {% if page_extra_properties %}- Extra properties: {{page_extra_properties}}{% endif %}{% endif %}
+    {% if operation == "create_standalone_page" %}- Parent page: {{page_id}}
+    - Title: {{page_title}}{% endif %}
+    {% if operation == "query_database" %}- Data source: {{data_source_id}}
+    {% if filter_property %}- Filter: {{filter_property}} = "{{filter_value}}"{% endif %}
+    {% if sort_property %}- Sort: {{sort_property}} {{sort_direction}}{% endif %}{% endif %}
+    {% if operation == "update_page" %}- Page: {{page_id}}
+    - Property: {{update_property_name}} ({{update_property_type}}) = {{update_property_value}}{% endif %}
+    {% if operation == "add_content" %}- Page: {{page_id}}
+    - Block type: {{block_type}}
+    - Content: {{block_content}}{% endif %}
+    {% if operation == "create_database" %}- Parent page: {{page_id}}
+    - Name: {{page_title}}
+    {% if db_properties_json %}- Properties: {{db_properties_json}}{% endif %}{% endif %}
+
+    Proceed? (yes/no)

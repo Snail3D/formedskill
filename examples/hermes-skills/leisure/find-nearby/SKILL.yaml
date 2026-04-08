@@ -1,0 +1,106 @@
+skill:
+  name: find-nearby
+  version: "1.0.0"
+  description: "Find nearby places (restaurants, cafes, bars, pharmacies, etc.) using OpenStreetMap — no API keys needed."
+  tags: [location, maps, nearby, places, restaurants, local]
+  platforms: [macos, linux]
+
+action:
+  type: shell
+  command: >-
+    python3 ~/.hermes/skills/leisure/find-nearby/scripts/find_nearby.py
+    {% if lat and lon %}--lat {{lat}} --lon {{lon}}{% endif %}
+    {% if near %}--near "{{near}}"{% endif %}
+    {% for t in place_types %}--type {{t}} {% endfor %}
+    --radius {{radius}}
+    --limit {{limit}}
+    --json
+
+fields:
+  - id: location_mode
+    ask: "Do you have exact coordinates (lat/lon), or should I geocode an address, city, or landmark?"
+    type: options
+    options:
+      address: "Address, city, zip code, or landmark — I'll geocode it"
+      coordinates: "Exact latitude and longitude (e.g. from a Telegram location pin)"
+    required: true
+    infer_from: >-
+      User shares a Telegram location pin or says lat/lon numbers -> coordinates.
+      User mentions a street address, city, zip code, or landmark name -> address.
+
+  - id: near
+    ask: "What address, city, zip code, or landmark should I search near?"
+    type: text
+    required: true
+    show_when: "location_mode == address"
+    infer_from: >-
+      Extract the place name, address, city, zip code, or landmark from the user's message.
+      Examples: "Times Square, New York", "downtown Austin", "90210", "123 Main St, Springfield".
+
+  - id: lat
+    ask: "What is the latitude?"
+    type: number
+    required: true
+    show_when: "location_mode == coordinates"
+    infer_from: "Extract the latitude value from the user's message or Telegram location pin."
+
+  - id: lon
+    ask: "What is the longitude?"
+    type: number
+    required: true
+    show_when: "location_mode == coordinates"
+    infer_from: "Extract the longitude value from the user's message or Telegram location pin."
+
+  - id: place_types
+    ask: "What type(s) of places are you looking for?"
+    type: json_array
+    default: ["restaurant"]
+    infer_from: >-
+      Extract all place types mentioned. Common values: restaurant, cafe, bar, pub, fast_food,
+      pharmacy, hospital, bank, atm, fuel, parking, supermarket, convenience, hotel.
+      If the user says "food" -> restaurant. "coffee" -> cafe. "drinks" -> bar.
+      If none mentioned, default to restaurant.
+    aliases:
+      "food": "restaurant"
+      "coffee": "cafe"
+      "drinks": "bar"
+      "gas": "fuel"
+      "gas station": "fuel"
+      "drugstore": "pharmacy"
+      "grocery": "supermarket"
+      "groceries": "supermarket"
+
+  - id: radius
+    ask: "How far should I search? (in meters)"
+    type: number
+    default: 1500
+    infer_from: >-
+      Did the user mention a distance? Convert to meters.
+      "1km" -> 1000, "1 mile" -> 1609, "half a mile" -> 800.
+      If not mentioned, use default 1500.
+    validation:
+      min: 100
+      max: 10000
+
+  - id: limit
+    ask: "How many results do you want?"
+    type: number
+    default: 15
+    infer_from: >-
+      Did the user say "top 5", "show me 10", "a few"? Extract the number.
+      "a few" -> 5, "some" -> 10. If not mentioned, use default 15.
+    validation:
+      min: 1
+      max: 50
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to find nearby places:
+    {% if location_mode == address %}- Near: {{near}}{% endif %}
+    {% if location_mode == coordinates %}- Coordinates: {{lat}}, {{lon}}{% endif %}
+    - Types: {{place_types | join(", ")}}
+    - Radius: {{radius}}m
+    - Limit: {{limit}} results
+
+    Proceed? (yes/no)

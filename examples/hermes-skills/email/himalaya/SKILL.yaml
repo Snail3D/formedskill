@@ -1,0 +1,226 @@
+skill:
+  name: himalaya
+  version: "1.0.0"
+  description: "Manage email via himalaya CLI — list, read, search, compose, reply, forward, move, delete, and manage flags across IMAP/SMTP accounts."
+  tags: [email, imap, smtp, cli, communication]
+  platforms: [macos, linux]
+
+action:
+  type: shell
+  command: "himalaya {{_flags}}"
+
+fields:
+  - id: operation
+    ask: "What do you want to do with email?"
+    type: options
+    options:
+      list_folders: "List all mail folders"
+      list_emails: "List emails in a folder"
+      search: "Search emails by sender, subject, or keyword"
+      read: "Read a specific email by ID"
+      send: "Compose and send a new email"
+      reply: "Reply to an email by ID"
+      forward: "Forward an email to someone"
+      move: "Move an email to another folder"
+      copy: "Copy an email to another folder"
+      delete: "Delete an email"
+      flag_add: "Add a flag to an email (e.g. seen, flagged)"
+      flag_remove: "Remove a flag from an email"
+      download_attachment: "Download attachments from an email"
+      list_accounts: "List configured email accounts"
+    required: true
+    infer_from: >-
+      User says list folders/show folders -> list_folders.
+      User says list/show emails/inbox/messages -> list_emails.
+      User says search/find emails from/subject -> search.
+      User says read/open/view email [ID] -> read.
+      User says write/compose/send new email -> send.
+      User says reply to/respond to email -> reply.
+      User says forward email -> forward.
+      User says move email -> move.
+      User says copy email -> copy.
+      User says delete/trash email -> delete.
+      User says mark as read/seen/flag -> flag_add.
+      User says unmark/unflag/mark unread -> flag_remove.
+      User says download attachment -> download_attachment.
+      User says list accounts/show accounts -> list_accounts.
+
+  - id: account
+    ask: "Which email account? (leave blank for default)"
+    type: text
+    required: false
+    infer_from: "Did the user specify an email account name? Extract it (e.g. 'personal', 'work'). Otherwise leave blank for default."
+
+  - id: folder
+    ask: "Which folder? (e.g. INBOX, Sent, Archive, Trash)"
+    type: text
+    default: "INBOX"
+    required: false
+    show_when: "operation == list_emails"
+    infer_from: >-
+      Did the user mention a folder? Extract it. Common values: INBOX, Sent, Archive,
+      Trash, Spam, Drafts. Default to INBOX if not specified.
+
+  - id: page
+    ask: "Which page of results? (default: 1)"
+    type: number
+    default: 1
+    required: false
+    show_when: "operation == list_emails"
+    infer_from: "Did the user mention a page number? Extract it. Otherwise use 1."
+    validation:
+      min: 1
+
+  - id: page_size
+    ask: "How many emails per page? (default: 20)"
+    type: number
+    default: 20
+    required: false
+    show_when: "operation == list_emails"
+    infer_from: "Did the user specify how many emails to show? Extract it. Otherwise use 20."
+    validation:
+      min: 1
+      max: 100
+
+  - id: search_query
+    ask: "What should we search for? (e.g. 'from john@example.com subject meeting')"
+    type: text
+    required: true
+    show_when: "operation == search"
+    infer_from: >-
+      Extract search criteria from the user's message. Format as himalaya envelope list
+      query args: 'from email@example.com', 'subject keyword', or both combined.
+      Example: 'from boss@work.com subject Q4 report'.
+
+  - id: message_id
+    ask: "What is the email ID?"
+    type: text
+    required: true
+    show_when: "operation in [read, reply, forward, move, copy, delete, flag_add, flag_remove, download_attachment]"
+    infer_from: "Extract the numeric email ID from the user's message. This is the ID shown in envelope list output."
+
+  - id: to
+    ask: "Who should receive the email? (email address)"
+    type: text
+    required: true
+    show_when: "operation == send"
+    infer_from: "Extract the recipient email address from the user's message."
+
+  - id: subject
+    ask: "What is the email subject?"
+    type: text
+    required: true
+    show_when: "operation == send"
+    infer_from: "Extract the email subject line from the user's message."
+
+  - id: body
+    ask: "What is the email body content?"
+    type: text
+    required: true
+    show_when: "operation in [send, reply, forward]"
+    infer_from: "Extract the email body content from the user's message. This is the main message text."
+
+  - id: reply_to_all
+    ask: "Reply to all recipients?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == reply"
+    infer_from: "User says reply all/respond to all -> true. Otherwise false."
+
+  - id: forward_to
+    ask: "Who should the email be forwarded to? (email address)"
+    type: text
+    required: true
+    show_when: "operation == forward"
+    infer_from: "Extract the forwarding recipient email address from the user's message."
+
+  - id: target_folder
+    ask: "Which destination folder?"
+    type: text
+    required: true
+    show_when: "operation in [move, copy]"
+    infer_from: "Extract the destination folder name from the user's message. Common values: Archive, Important, Trash, Spam."
+
+  - id: flag
+    ask: "Which flag?"
+    type: options
+    options:
+      seen: "Mark as read"
+      flagged: "Star or flag the message"
+      answered: "Mark as replied"
+      draft: "Mark as draft"
+    required: true
+    show_when: "operation in [flag_add, flag_remove]"
+    infer_from: >-
+      User says mark as read/seen -> seen.
+      User says star/flag/important -> flagged.
+      User says mark as replied/answered -> answered.
+      User says mark as draft -> draft.
+
+  - id: download_dir
+    ask: "Where should attachments be saved? (default: ~/Downloads)"
+    type: text
+    default: "~/Downloads"
+    required: false
+    show_when: "operation == download_attachment"
+    infer_from: "Did the user mention a download directory? Extract it. Otherwise use ~/Downloads."
+
+  - id: output_format
+    ask: "Output format?"
+    type: options
+    options:
+      plain: "Human-readable plain text"
+      json: "JSON for programmatic parsing"
+    default: plain
+    required: false
+    show_when: "operation in [list_emails, search, list_folders, list_accounts]"
+    infer_from: "User wants structured/programmatic output -> json. Otherwise plain."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} email:
+    {% if account %}- Account: {{account}}{% endif %}
+    {% if operation == list_emails %}
+    - Folder: {{folder}}
+    - Page {{page}}, {{page_size}} per page
+    {% endif %}
+    {% if operation == search %}
+    - Query: {{search_query}}
+    {% endif %}
+    {% if operation == read %}
+    - Message ID: {{message_id}}
+    {% endif %}
+    {% if operation == send %}
+    - To: {{to}}
+    - Subject: "{{subject}}"
+    - Body: "{{body | truncate(80)}}"
+    {% endif %}
+    {% if operation == reply %}
+    - Reply to ID: {{message_id}}
+    {% if reply_to_all %}- Reply-All{% endif %}
+    - Body: "{{body | truncate(80)}}"
+    {% endif %}
+    {% if operation == forward %}
+    - Forward ID: {{message_id}}
+    - To: {{forward_to}}
+    - Body: "{{body | truncate(80)}}"
+    {% endif %}
+    {% if operation in [move, copy] %}
+    - Message ID: {{message_id}}
+    - Destination: {{target_folder}}
+    {% endif %}
+    {% if operation == delete %}
+    - Delete message ID: {{message_id}}
+    {% endif %}
+    {% if operation in [flag_add, flag_remove] %}
+    - Message ID: {{message_id}}
+    - Flag: {{flag}}
+    {% endif %}
+    {% if operation == download_attachment %}
+    - Message ID: {{message_id}}
+    - Save to: {{download_dir}}
+    {% endif %}
+
+    Proceed? (yes/no)

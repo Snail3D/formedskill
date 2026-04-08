@@ -1,0 +1,134 @@
+skill:
+  name: imessage
+  version: "1.0.0"
+  description: "Send and read iMessages/SMS via the imsg CLI — list chats, view history, send messages with optional attachments."
+  tags: [imessage, sms, messaging, macos, apple]
+  platforms: [macos]
+
+action:
+  type: shell
+  command: "imsg {{_flags}}"
+
+fields:
+  - id: operation
+    ask: "What do you want to do with iMessage?"
+    type: options
+    options:
+      list_chats: "List recent chats"
+      history: "View conversation history for a chat"
+      send: "Send a message to someone"
+      watch: "Watch a chat for new incoming messages"
+    required: true
+    infer_from: >-
+      User says list chats/show chats/recent messages -> list_chats.
+      User says view history/read conversation/show messages with [person] -> history.
+      User says send/text/message [person] -> send.
+      User says watch/monitor/listen for messages -> watch.
+
+  - id: limit
+    ask: "How many chats to show? (default: 10)"
+    type: number
+    default: 10
+    required: false
+    show_when: "operation == list_chats"
+    infer_from: "Did the user specify a number of chats? Extract it. Otherwise use default 10."
+    validation:
+      min: 1
+      max: 100
+
+  - id: chat_id
+    ask: "What is the chat ID? (run 'list chats' first to find IDs)"
+    type: number
+    required: true
+    show_when: "operation in [history, watch]"
+    infer_from: "Extract the numeric chat ID from the user's message. If they specified a contact name instead, you may need to list chats first."
+
+  - id: history_limit
+    ask: "How many messages to show? (default: 20)"
+    type: number
+    default: 20
+    required: false
+    show_when: "operation == history"
+    infer_from: "Did the user specify a number of messages? Extract it. Otherwise use default 20."
+    validation:
+      min: 1
+      max: 500
+
+  - id: include_attachments
+    ask: "Include attachment info in history?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation in [history, watch]"
+    infer_from: "User mentions attachments/files/images -> true. Otherwise false."
+
+  - id: recipient
+    ask: "Who should receive the message? (phone number or Apple ID email)"
+    type: text
+    required: true
+    show_when: "operation == send"
+    infer_from: >-
+      Extract the recipient from the user's message. This should be a phone number
+      (e.g. +14155551212) or an Apple ID email address. If the user says a contact
+      name like 'mom' or 'John', note that you'll need to look up their number first.
+
+  - id: message_text
+    ask: "What message should be sent?"
+    type: text
+    required: true
+    show_when: "operation == send"
+    infer_from: "Extract the message body from the user's request. This is what will be sent."
+
+  - id: attachment_path
+    ask: "Path to file to attach? (leave blank for text-only)"
+    type: text
+    required: false
+    show_when: "operation == send"
+    infer_from: "Did the user mention a file, image, or attachment path? Extract the full path. Otherwise leave blank."
+
+  - id: service
+    ask: "Which messaging service?"
+    type: options
+    options:
+      auto: "Let Messages.app decide (recommended)"
+      imessage: "Force iMessage (blue bubble — requires recipient has iMessage)"
+      sms: "Force SMS (green bubble)"
+    default: auto
+    required: false
+    show_when: "operation == send"
+    infer_from: >-
+      User says iMessage/blue bubble -> imessage.
+      User says SMS/text/green bubble -> sms.
+      Not specified -> auto.
+    aliases:
+      "imessage": "imessage"
+      "iMessage": "imessage"
+      "sms": "sms"
+      "SMS": "sms"
+      "text": "sms"
+      "auto": "auto"
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} via iMessage:
+    {% if operation == list_chats %}
+    - Show {{limit}} most recent chats
+    {% endif %}
+    {% if operation == history %}
+    - Chat ID: {{chat_id}}
+    - Messages to show: {{history_limit}}
+    {% if include_attachments %}- Including attachment info{% endif %}
+    {% endif %}
+    {% if operation == send %}
+    - To: {{recipient}}
+    - Message: "{{message_text}}"
+    {% if attachment_path %}- Attachment: {{attachment_path}}{% endif %}
+    - Service: {{service}}
+    {% endif %}
+    {% if operation == watch %}
+    - Watching chat ID: {{chat_id}}
+    {% if include_attachments %}- Including attachments{% endif %}
+    {% endif %}
+
+    Proceed? (yes/no)

@@ -1,0 +1,221 @@
+skill:
+  name: linear
+  version: "1.0.0"
+  description: "Manage Linear issues, projects, and teams via the GraphQL API — create, update, comment, assign, and search."
+  tags: [linear, project-management, issues, graphql, productivity]
+
+action:
+  type: http
+  method: POST
+  url: "https://api.linear.app/graphql"
+  headers:
+    Authorization: "{{LINEAR_API_KEY}}"
+    Content-Type: "application/json"
+  env_vars:
+    - LINEAR_API_KEY
+
+fields:
+  - id: operation
+    ask: "What do you want to do in Linear?"
+    type: options
+    options:
+      list_issues: "List issues (with optional filters)"
+      my_issues: "List issues assigned to me"
+      view_issue: "View a specific issue by identifier (e.g. ENG-123)"
+      search_issues: "Search issues by text"
+      create_issue: "Create a new issue"
+      update_status: "Change the status/state of an issue"
+      assign_issue: "Assign an issue to a team member"
+      set_priority: "Set the priority of an issue"
+      add_comment: "Add a comment to an issue"
+      set_due_date: "Set a due date on an issue"
+      add_labels: "Add labels to an issue"
+      list_teams: "List all teams"
+      list_states: "List workflow states for a team"
+      list_projects: "List projects"
+      create_project: "Create a new project"
+      list_members: "List team members"
+    required: true
+    infer_from: >-
+      User says "list issues", "show issues", "all issues" -> list_issues.
+      User says "my issues", "assigned to me" -> my_issues.
+      User says "view issue", "show issue ENG-123", "get issue" -> view_issue.
+      User says "search", "find issues", "look for" -> search_issues.
+      User says "create issue", "new issue", "add issue" -> create_issue.
+      User says "update status", "change state", "move to", "mark as" -> update_status.
+      User says "assign", "assignee" -> assign_issue.
+      User says "priority", "set priority", "urgent", "high priority" -> set_priority.
+      User says "comment", "add note", "reply" -> add_comment.
+      User says "due date", "deadline" -> set_due_date.
+      User says "label", "tag issue" -> add_labels.
+      User says "list teams", "show teams" -> list_teams.
+      User says "workflow states", "states", "statuses" -> list_states.
+      User says "projects", "list projects" -> list_projects.
+      User says "create project", "new project" -> create_project.
+      User says "members", "team members", "users" -> list_members.
+
+  # --- issue identifier (shared) ---
+  - id: issue_id
+    ask: "Issue identifier (e.g. ENG-123)?"
+    type: text
+    required: true
+    show_when: "operation in [view_issue, update_status, assign_issue, set_priority, add_comment, set_due_date, add_labels]"
+    infer_from: "Extract the Linear issue identifier from the user's message. Format is TEAM-NUMBER like ENG-42, DEV-7."
+
+  # --- list_issues filters ---
+  - id: state_filter
+    ask: "Filter by state type?"
+    type: options
+    options:
+      "": "No filter — show all"
+      triage: "Triage — incoming, needs review"
+      backlog: "Backlog — acknowledged, not yet planned"
+      unstarted: "Unstarted — planned but not started"
+      started: "In Progress — actively being worked on"
+      completed: "Completed — done"
+      canceled: "Canceled — won't do"
+    required: false
+    show_when: "operation == list_issues"
+    infer_from: >-
+      User says 'in progress', 'active', 'started' -> started.
+      User says 'backlog' -> backlog.
+      User says 'done', 'completed', 'finished' -> completed.
+      User says 'canceled', 'cancelled', 'wontfix' -> canceled.
+      User says 'triage' -> triage.
+      Not specified -> leave empty.
+
+  - id: team_key
+    ask: "Filter by team key (e.g. ENG)? Leave blank for all teams."
+    type: text
+    required: false
+    show_when: "operation in [list_issues, list_states]"
+    infer_from: "Did the user mention a team key or team name? Extract the team key (usually 2-4 uppercase letters)."
+
+  # --- search ---
+  - id: search_query
+    ask: "Search query text?"
+    type: text
+    required: true
+    show_when: "operation == search_issues"
+    infer_from: "Extract the search keywords from the user's message."
+
+  # --- create issue ---
+  - id: team_id
+    ask: "Team ID (UUID) for the new issue? (Run 'list teams' first to get IDs)"
+    type: text
+    required: true
+    show_when: "operation in [create_issue, create_project]"
+    infer_from: "Extract a team UUID from the user's message. If they mention a team name, note that you need the UUID."
+
+  - id: title
+    ask: "Issue title?"
+    type: text
+    required: true
+    show_when: "operation in [create_issue, create_project]"
+    infer_from: "Extract a concise title for the issue or project from the user's message."
+
+  - id: description
+    ask: "Issue description? (Markdown supported)"
+    type: text
+    required: false
+    show_when: "operation in [create_issue, create_project]"
+    infer_from: "Extract or compose a description from the user's message. Markdown formatting is supported."
+
+  - id: priority
+    ask: "Priority level?"
+    type: options
+    options:
+      0: "No priority"
+      1: "Urgent"
+      2: "High"
+      3: "Medium"
+      4: "Low"
+    default: 0
+    required: false
+    show_when: "operation in [create_issue, set_priority]"
+    infer_from: >-
+      User says 'urgent', 'critical', 'blocker' -> 1.
+      User says 'high' -> 2.
+      User says 'medium', 'normal' -> 3.
+      User says 'low' -> 4.
+      Not specified -> 0 (no priority).
+    aliases:
+      urgent: "1"
+      critical: "1"
+      high: "2"
+      medium: "3"
+      normal: "3"
+      low: "4"
+      none: "0"
+
+  # --- update status ---
+  - id: state_id
+    ask: "Target state UUID? (Run 'list states' for your team to get state UUIDs)"
+    type: text
+    required: true
+    show_when: "operation == update_status"
+    infer_from: "Extract the target workflow state UUID from the user's message. States are UUIDs, not names."
+
+  # --- assign issue ---
+  - id: assignee_id
+    ask: "Assignee user UUID? (Run 'list members' to find user IDs)"
+    type: text
+    required: true
+    show_when: "operation == assign_issue"
+    infer_from: "Extract the user UUID to assign the issue to. If user mentions a name, note that a UUID is required."
+
+  # --- add comment ---
+  - id: comment_body
+    ask: "Comment text? (Markdown supported)"
+    type: text
+    required: true
+    show_when: "operation == add_comment"
+    infer_from: "Extract the comment text the user wants to post."
+
+  # --- set due date ---
+  - id: due_date
+    ask: "Due date? (YYYY-MM-DD format)"
+    type: text
+    required: true
+    show_when: "operation == set_due_date"
+    infer_from: "Extract the due date from the user's message and convert to YYYY-MM-DD format."
+
+  # --- add labels ---
+  - id: label_ids
+    ask: "Label UUIDs to add (as JSON array, e.g. [\"uuid1\", \"uuid2\"])? (Run 'list labels' first)"
+    type: json_array
+    required: true
+    show_when: "operation == add_labels"
+    infer_from: "Extract label UUIDs from the user's message as a JSON array of UUID strings."
+
+  # --- create project additional fields ---
+  - id: project_description
+    ask: "Project description?"
+    type: text
+    required: false
+    show_when: "operation == create_project"
+    infer_from: "Extract a project description from the user's message."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} in Linear:
+    {% if operation == "list_issues" %}- Filters:{% if state_filter %} state={{state_filter}}{% endif %}{% if team_key %} team={{team_key}}{% endif %}{% if not state_filter and not team_key %} none (showing all){% endif %}{% endif %}
+    {% if operation == "my_issues" %}- Showing your assigned issues{% endif %}
+    {% if operation == "view_issue" %}- Issue: {{issue_id}}{% endif %}
+    {% if operation == "search_issues" %}- Query: "{{search_query}}"{% endif %}
+    {% if operation == "create_issue" %}- Team: {{team_id}}
+    - Title: {{title}}
+    {% if description %}- Description: {{description}}{% endif %}
+    {% if priority %}- Priority: {{priority}}{% endif %}{% endif %}
+    {% if operation == "update_status" %}- Issue: {{issue_id}}, new state UUID: {{state_id}}{% endif %}
+    {% if operation == "assign_issue" %}- Issue: {{issue_id}}, assignee UUID: {{assignee_id}}{% endif %}
+    {% if operation == "set_priority" %}- Issue: {{issue_id}}, priority: {{priority}}{% endif %}
+    {% if operation == "add_comment" %}- Issue: {{issue_id}}
+    - Comment: {{comment_body}}{% endif %}
+    {% if operation == "set_due_date" %}- Issue: {{issue_id}}, due: {{due_date}}{% endif %}
+    {% if operation == "add_labels" %}- Issue: {{issue_id}}, labels: {{label_ids}}{% endif %}
+    {% if operation == "list_states" %}- Team: {{team_key}}{% endif %}
+    {% if operation == "create_project" %}- Team: {{team_id}}, name: {{title}}{% if project_description %}, desc: {{project_description}}{% endif %}{% endif %}
+
+    Proceed? (yes/no)

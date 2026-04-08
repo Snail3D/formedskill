@@ -1,0 +1,128 @@
+skill:
+  name: apple-reminders
+  version: "1.0.0"
+  description: "Manage Apple Reminders via remindctl — list, add, complete, and delete tasks that sync to iPhone/iPad."
+  tags: [reminders, tasks, todo, macos, apple, icloud]
+  platforms: [macos]
+
+action:
+  type: shell
+  command: "remindctl {{_flags}}"
+
+fields:
+  - id: operation
+    ask: "What do you want to do with Apple Reminders?"
+    type: options
+    options:
+      list_today: "Show today's reminders"
+      list_week: "Show this week's reminders"
+      list_overdue: "Show overdue reminders"
+      list_all: "Show all reminders"
+      list_date: "Show reminders for a specific date"
+      list_lists: "List all reminder lists"
+      add: "Create a new reminder"
+      complete: "Mark a reminder as complete"
+      delete: "Delete a reminder"
+      create_list: "Create a new reminders list"
+      delete_list: "Delete a reminders list"
+    required: true
+    infer_from: >-
+      User says show/list/what reminders today -> list_today.
+      User says this week/week's reminders -> list_week.
+      User says overdue/past due -> list_overdue.
+      User says all reminders/everything -> list_all.
+      User says reminders on [date] -> list_date.
+      User says show lists/what lists -> list_lists.
+      User says add/create/remind me/set a reminder -> add.
+      User says complete/done/finish/mark -> complete.
+      User says delete/remove reminder -> delete.
+      User says create list/new list -> create_list.
+      User says delete list -> delete_list.
+
+  - id: date
+    ask: "Which date? (today, tomorrow, yesterday, YYYY-MM-DD, or YYYY-MM-DD HH:mm)"
+    type: text
+    required: true
+    show_when: "operation == list_date"
+    infer_from: >-
+      Extract the date from the user's message. Accepts: today, tomorrow, yesterday,
+      YYYY-MM-DD, YYYY-MM-DD HH:mm, ISO 8601. Convert natural language to one of these formats.
+
+  - id: list_name
+    ask: "Which list? (e.g. Personal, Work, Shopping)"
+    type: text
+    required: false
+    show_when: "operation in [list_lists, add]"
+    infer_from: "Did the user mention a list name? Extract it. Common values: Personal, Work, Shopping, Home."
+
+  - id: title
+    ask: "What is the reminder?"
+    type: text
+    required: true
+    show_when: "operation == add"
+    infer_from: "Extract what the user wants to be reminded of. This is the reminder title text."
+
+  - id: due
+    ask: "When is it due? (today, tomorrow, YYYY-MM-DD, or YYYY-MM-DD HH:mm)"
+    type: text
+    required: false
+    show_when: "operation == add"
+    infer_from: >-
+      Did the user mention a time or date? Extract it and convert to one of:
+      today, tomorrow, YYYY-MM-DD, or YYYY-MM-DD HH:mm.
+      If no due date mentioned, leave blank.
+
+  - id: reminder_ids
+    ask: "What are the reminder IDs to complete? (space-separated numbers)"
+    type: text
+    required: true
+    show_when: "operation == complete"
+    infer_from: "Extract the reminder ID numbers from the user's message. These are numeric IDs shown when listing reminders."
+
+  - id: reminder_id
+    ask: "What is the reminder ID to delete?"
+    type: text
+    required: true
+    show_when: "operation == delete"
+    infer_from: "Extract the reminder ID from the user's message. This is the ID shown when listing reminders."
+
+  - id: new_list_name
+    ask: "What should the new list be called?"
+    type: text
+    required: true
+    show_when: "operation == create_list"
+    infer_from: "Extract the name for the new reminders list."
+
+  - id: delete_list_name
+    ask: "Which list should be deleted?"
+    type: text
+    required: true
+    show_when: "operation == delete_list"
+    infer_from: "Extract the name of the list to delete."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}} in Apple Reminders:
+    {% if operation == add %}
+    - Reminder: "{{title}}"
+    {% if list_name %}- List: {{list_name}}{% endif %}
+    {% if due %}- Due: {{due}}{% endif %}
+    {% endif %}
+    {% if operation == complete %}
+    - Complete IDs: {{reminder_ids}}
+    {% endif %}
+    {% if operation == delete %}
+    - Delete ID: {{reminder_id}}
+    {% endif %}
+    {% if operation == list_date %}
+    - Date: {{date}}
+    {% endif %}
+    {% if operation == create_list %}
+    - New list: "{{new_list_name}}"
+    {% endif %}
+    {% if operation == delete_list %}
+    - Delete list: "{{delete_list_name}}"
+    {% endif %}
+
+    Proceed? (yes/no)

@@ -1,0 +1,362 @@
+skill:
+  name: github-repo-management
+  version: "1.0.0"
+  description: "Clone, create, fork, configure repos, manage secrets, create releases, and trigger GitHub Actions workflows."
+  tags: [github, repositories, git, releases, secrets, actions]
+
+action:
+  type: shell
+  command: |
+    {% if operation == "clone" %}
+    {% if shallow %}
+    gh repo clone {{repo}} -- --depth 1 {% if clone_dir %}{{clone_dir}}{% endif %}
+    {% else %}
+    gh repo clone {{repo}} {% if clone_dir %}{{clone_dir}}{% endif %} {% if clone_branch %}-- --branch {{clone_branch}}{% endif %}
+    {% endif %}
+    {% elif operation == "create" %}
+    gh repo create {{repo_name}} \
+      --{{visibility}} \
+      {% if description %}--description "{{description}}"{% endif %} \
+      {% if license %}--license {{license}}{% endif %} \
+      {% if template %}--template "{{template}}"{% endif %} \
+      --clone
+    {% elif operation == "fork" %}
+    gh repo fork {{repo}} --clone
+    {% elif operation == "view" %}
+    gh repo view {% if repo %}{{repo}}{% endif %}
+    {% elif operation == "list" %}
+    gh repo list --limit 20
+    {% elif operation == "edit" %}
+    gh repo edit \
+      {% if description %}--description "{{description}}"{% endif %} \
+      {% if visibility %}--visibility {{visibility}}{% endif %} \
+      {% if topics %}--add-topic "{{topics}}"{% endif %} \
+      {% if enable_wiki is defined %}--enable-wiki={{enable_wiki}}{% endif %} \
+      {% if enable_issues is defined %}--enable-issues={{enable_issues}}{% endif %} \
+      {% if enable_auto_merge is defined %}--enable-auto-merge={{enable_auto_merge}}{% endif %}
+    {% elif operation == "sync_fork" %}
+    gh repo sync
+    {% elif operation == "secret_set" %}
+    gh secret set {{secret_name}} --body "{{secret_value}}"
+    {% elif operation == "secret_list" %}
+    gh secret list
+    {% elif operation == "secret_delete" %}
+    gh secret delete {{secret_name}}
+    {% elif operation == "release_create" %}
+    gh release create {{tag_name}} \
+      --title "{{release_title}}" \
+      {% if generate_notes %}--generate-notes{% endif %} \
+      {% if release_notes %}--notes "{{release_notes}}"{% endif %} \
+      {% if draft_release %}--draft{% endif %} \
+      {% if prerelease %}--prerelease{% endif %}
+    {% elif operation == "release_list" %}
+    gh release list
+    {% elif operation == "workflow_list" %}
+    gh workflow list
+    {% elif operation == "workflow_run_list" %}
+    gh run list --limit 10
+    {% elif operation == "workflow_trigger" %}
+    gh workflow run {{workflow_file}} --ref {{workflow_ref}} {% if workflow_inputs %}{{workflow_inputs}}{% endif %}
+    {% elif operation == "workflow_rerun" %}
+    gh run rerun {{run_id}} {% if rerun_failed_only %}--failed{% endif %}
+    {% elif operation == "gist_create" %}
+    gh gist create {{gist_file}} --desc "{{gist_description}}" {% if gist_public %}--public{% endif %}
+    {% endif %}
+
+fields:
+  - id: operation
+    ask: "What repository operation do you want to perform?"
+    type: options
+    options:
+      clone: "Clone a repository"
+      create: "Create a new repository"
+      fork: "Fork a repository"
+      view: "View repository details"
+      list: "List your repositories"
+      edit: "Edit repository settings"
+      sync_fork: "Sync a fork with its upstream"
+      secret_set: "Set a GitHub Actions secret"
+      secret_list: "List repository secrets"
+      secret_delete: "Delete a repository secret"
+      release_create: "Create a new release"
+      release_list: "List releases"
+      workflow_list: "List GitHub Actions workflows"
+      workflow_run_list: "List recent workflow runs"
+      workflow_trigger: "Trigger a workflow manually"
+      workflow_rerun: "Re-run a workflow run"
+      gist_create: "Create a new Gist"
+    required: true
+    infer_from: >-
+      User says "clone" -> clone.
+      User says "create repo", "new repo", "new repository" -> create.
+      User says "fork" -> fork.
+      User says "view repo", "repo info", "repo details" -> view.
+      User says "list repos", "my repos" -> list.
+      User says "edit repo", "update repo settings", "change repo settings" -> edit.
+      User says "sync fork", "update fork" -> sync_fork.
+      User says "set secret", "add secret" -> secret_set.
+      User says "list secrets" -> secret_list.
+      User says "delete secret", "remove secret" -> secret_delete.
+      User says "create release", "new release", "tag release" -> release_create.
+      User says "list releases" -> release_list.
+      User says "list workflows" -> workflow_list.
+      User says "recent runs", "workflow runs", "run list" -> workflow_run_list.
+      User says "trigger workflow", "run workflow", "dispatch workflow" -> workflow_trigger.
+      User says "rerun", "retry run" -> workflow_rerun.
+      User says "create gist", "new gist" -> gist_create.
+
+  # --- clone fields ---
+  - id: repo
+    ask: "Repository to clone/fork/view? (owner/repo format)"
+    type: text
+    required: true
+    show_when: "operation in [clone, fork, view]"
+    infer_from: "Extract the owner/repo from the user's message (e.g. octocat/Hello-World)."
+
+  - id: clone_dir
+    ask: "Local directory name to clone into? (leave blank for default)"
+    type: text
+    required: false
+    show_when: "operation == clone"
+    infer_from: "Did the user specify a target directory or folder name? Otherwise leave blank."
+
+  - id: clone_branch
+    ask: "Specific branch to clone? (leave blank for default)"
+    type: text
+    required: false
+    show_when: "operation == clone"
+    infer_from: "Did the user mention a specific branch to clone? Otherwise leave blank."
+
+  - id: shallow
+    ask: "Shallow clone (faster, no full history)?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == clone"
+    infer_from: "User says 'shallow', 'fast', 'no history', 'depth 1' -> true. Otherwise false."
+
+  # --- create fields ---
+  - id: repo_name
+    ask: "Repository name to create?"
+    type: text
+    required: true
+    show_when: "operation == create"
+    infer_from: "Extract the desired repository name from the user's message."
+
+  - id: visibility
+    ask: "Visibility?"
+    type: options
+    options:
+      public: "Publicly visible to everyone"
+      private: "Only visible to you and collaborators"
+      internal: "Visible to organization members"
+    default: public
+    required: true
+    show_when: "operation in [create, edit]"
+    infer_from: "User says 'private' -> private. 'internal' -> internal. Otherwise default public."
+
+  - id: description
+    ask: "Repository description?"
+    type: text
+    required: false
+    show_when: "operation in [create, edit]"
+    infer_from: "Did the user provide a description for the repo? Extract it."
+
+  - id: license
+    ask: "License?"
+    type: options
+    options:
+      mit: "MIT License"
+      apache-2.0: "Apache 2.0"
+      gpl-3.0: "GPL v3"
+      unlicense: "Unlicense (public domain)"
+    required: false
+    show_when: "operation == create"
+    infer_from: "Did the user mention a license? MIT -> mit, Apache -> apache-2.0, GPL -> gpl-3.0. If not mentioned, leave blank."
+    aliases:
+      MIT: "mit"
+      Apache: "apache-2.0"
+      GPL: "gpl-3.0"
+
+  - id: template
+    ask: "Template repo to use? (owner/repo format, optional)"
+    type: text
+    required: false
+    show_when: "operation == create"
+    infer_from: "Did the user mention creating from a template repository? Extract owner/repo."
+
+  # --- edit fields ---
+  - id: topics
+    ask: "Topics to add (comma-separated, e.g. machine-learning,python)?"
+    type: text
+    required: false
+    show_when: "operation == edit"
+    infer_from: "Did the user mention topics or tags for the repo? Extract them comma-separated."
+
+  - id: enable_wiki
+    ask: "Enable wiki?"
+    type: boolean
+    required: false
+    show_when: "operation == edit"
+    infer_from: "Did the user mention enabling or disabling the wiki?"
+
+  - id: enable_issues
+    ask: "Enable issues?"
+    type: boolean
+    required: false
+    show_when: "operation == edit"
+    infer_from: "Did the user mention enabling or disabling issues?"
+
+  - id: enable_auto_merge
+    ask: "Enable auto-merge?"
+    type: boolean
+    required: false
+    show_when: "operation == edit"
+    infer_from: "Did the user mention enabling auto-merge for PRs?"
+
+  # --- secret fields ---
+  - id: secret_name
+    ask: "Secret name (e.g. API_KEY)?"
+    type: text
+    required: true
+    show_when: "operation in [secret_set, secret_delete]"
+    infer_from: "Extract the secret/environment variable name from the user's message."
+
+  - id: secret_value
+    ask: "Secret value?"
+    type: text
+    required: true
+    show_when: "operation == secret_set"
+    infer_from: "Extract the secret value the user wants to store. Handle with care — do not log."
+
+  # --- release fields ---
+  - id: tag_name
+    ask: "Release tag (e.g. v1.0.0)?"
+    type: text
+    required: true
+    show_when: "operation == release_create"
+    infer_from: "Extract the version tag from the user's message. Should start with v (e.g. v1.0.0, v2.1.0-rc1)."
+
+  - id: release_title
+    ask: "Release title?"
+    type: text
+    required: false
+    show_when: "operation == release_create"
+    infer_from: "Extract the release title. Often the same as the tag name if not specified."
+
+  - id: generate_notes
+    ask: "Auto-generate release notes from commits?"
+    type: boolean
+    default: true
+    required: false
+    show_when: "operation == release_create"
+    infer_from: "User says 'generate notes', 'auto notes', 'auto changelog' -> true. Otherwise default true."
+
+  - id: release_notes
+    ask: "Manual release notes? (leave blank to use auto-generated)"
+    type: text
+    required: false
+    show_when: "operation == release_create"
+    infer_from: "Did the user provide specific release notes text? Extract it. Otherwise leave blank."
+
+  - id: draft_release
+    ask: "Create as draft release?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == release_create"
+    infer_from: "User says 'draft' -> true. Otherwise false."
+
+  - id: prerelease
+    ask: "Mark as pre-release?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == release_create"
+    infer_from: "User says 'rc', 'alpha', 'beta', 'pre-release', 'prerelease' -> true. Otherwise false."
+
+  # --- workflow fields ---
+  - id: workflow_file
+    ask: "Workflow filename or ID to trigger (e.g. ci.yml)?"
+    type: text
+    required: true
+    show_when: "operation == workflow_trigger"
+    infer_from: "Extract the workflow filename (e.g. ci.yml, deploy.yml) or ID from the user's message."
+
+  - id: workflow_ref
+    ask: "Branch or ref to run the workflow on?"
+    type: text
+    default: main
+    required: false
+    show_when: "operation == workflow_trigger"
+    infer_from: "Did the user specify a branch or ref? Default main."
+
+  - id: workflow_inputs
+    ask: "Workflow input parameters? (e.g. -f environment=staging)"
+    type: text
+    required: false
+    show_when: "operation == workflow_trigger"
+    infer_from: "Did the user provide any workflow_dispatch inputs? Format as '-f key=value -f key2=value2'."
+
+  - id: run_id
+    ask: "Workflow run ID to re-run?"
+    type: number
+    required: true
+    show_when: "operation == workflow_rerun"
+    infer_from: "Extract the numeric run ID from the user's message."
+
+  - id: rerun_failed_only
+    ask: "Re-run only failed jobs?"
+    type: boolean
+    default: true
+    required: false
+    show_when: "operation == workflow_rerun"
+    infer_from: "User says 'all jobs' -> false. Otherwise default true (failed only)."
+
+  # --- gist fields ---
+  - id: gist_file
+    ask: "File path to upload as a Gist?"
+    type: text
+    required: true
+    show_when: "operation == gist_create"
+    infer_from: "Extract the file path from the user's message."
+
+  - id: gist_description
+    ask: "Gist description?"
+    type: text
+    required: false
+    show_when: "operation == gist_create"
+    infer_from: "Extract a description for the Gist from the user's message."
+
+  - id: gist_public
+    ask: "Make Gist public?"
+    type: boolean
+    default: false
+    required: false
+    show_when: "operation == gist_create"
+    infer_from: "User says 'public' -> true. Otherwise default false (secret gist)."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{operation}}:
+    {% if operation == "clone" %}- Repo: {{repo}}{% if clone_dir %}, into: {{clone_dir}}{% endif %}{% if clone_branch %}, branch: {{clone_branch}}{% endif %}{% if shallow %}, shallow clone{% endif %}{% endif %}
+    {% if operation == "create" %}- Name: {{repo_name}}, visibility: {{visibility}}
+    {% if description %}- Description: {{description}}{% endif %}
+    {% if license %}- License: {{license}}{% endif %}
+    {% if template %}- Template: {{template}}{% endif %}{% endif %}
+    {% if operation == "fork" %}- Forking: {{repo}}{% endif %}
+    {% if operation == "view" %}- Repo: {{repo}}{% endif %}
+    {% if operation == "edit" %}{% if description %}- Description: {{description}}{% endif %}
+    {% if visibility %}- Visibility: {{visibility}}{% endif %}
+    {% if topics %}- Topics: {{topics}}{% endif %}{% endif %}
+    {% if operation == "secret_set" %}- Secret: {{secret_name}} = [hidden]{% endif %}
+    {% if operation == "secret_delete" %}- Delete secret: {{secret_name}}{% endif %}
+    {% if operation == "release_create" %}- Tag: {{tag_name}}, title: {{release_title}}
+    {% if draft_release %}- Mode: DRAFT{% endif %}
+    {% if prerelease %}- Pre-release: yes{% endif %}{% endif %}
+    {% if operation == "workflow_trigger" %}- Workflow: {{workflow_file}}, ref: {{workflow_ref}}{% if workflow_inputs %}, inputs: {{workflow_inputs}}{% endif %}{% endif %}
+    {% if operation == "workflow_rerun" %}- Run ID: {{run_id}}{% if rerun_failed_only %} (failed jobs only){% endif %}{% endif %}
+    {% if operation == "gist_create" %}- File: {{gist_file}}{% if gist_description %}, desc: {{gist_description}}{% endif %}, public: {{gist_public}}{% endif %}
+
+    Proceed? (yes/no)

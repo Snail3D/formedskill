@@ -1,0 +1,368 @@
+skill:
+  name: google-workspace
+  version: "1.0.0"
+  description: "Gmail, Calendar, Drive, Contacts, Sheets, and Docs integration via OAuth2 — send email, manage events, search files, read/write spreadsheets."
+  tags: [Google, Gmail, Calendar, Drive, Sheets, Docs, Contacts, email, OAuth]
+  platforms: [macos, linux]
+  required_credential_files:
+    - path: "~/.hermes/google_token.json"
+      description: "Google OAuth2 token (created by setup script)"
+    - path: "~/.hermes/google_client_secret.json"
+      description: "Google OAuth2 client credentials (from Google Cloud Console)"
+
+action:
+  type: shell
+  command: >-
+    {% set GAPI = "python ~/.hermes/skills/productivity/google-workspace/scripts/google_api.py" %}
+    {% if service == "gmail" %}
+      {% if gmail_action == "search" %}
+      {{GAPI}} gmail search "{{gmail_query}}"{% if gmail_max %} --max {{gmail_max}}{% endif %}
+      {% elif gmail_action == "get" %}
+      {{GAPI}} gmail get {{gmail_message_id}}
+      {% elif gmail_action == "send" %}
+      {{GAPI}} gmail send --to "{{gmail_to}}" --subject "{{gmail_subject}}" --body "{{gmail_body}}"{% if gmail_html %} --html{% endif %}
+      {% elif gmail_action == "reply" %}
+      {{GAPI}} gmail reply {{gmail_message_id}} --body "{{gmail_body}}"
+      {% elif gmail_action == "labels" %}
+      {{GAPI}} gmail labels
+      {% elif gmail_action == "modify" %}
+      {{GAPI}} gmail modify {{gmail_message_id}}{% if gmail_add_labels %} --add-labels {{gmail_add_labels}}{% endif %}{% if gmail_remove_labels %} --remove-labels {{gmail_remove_labels}}{% endif %}
+      {% endif %}
+    {% elif service == "calendar" %}
+      {% if calendar_action == "list" %}
+      {{GAPI}} calendar list{% if calendar_start %} --start {{calendar_start}}{% endif %}{% if calendar_end %} --end {{calendar_end}}{% endif %}
+      {% elif calendar_action == "create" %}
+      {{GAPI}} calendar create --summary "{{calendar_summary}}" --start {{calendar_start}} --end {{calendar_end}}{% if calendar_location %} --location "{{calendar_location}}"{% endif %}{% if calendar_attendees %} --attendees "{{calendar_attendees}}"{% endif %}
+      {% elif calendar_action == "delete" %}
+      {{GAPI}} calendar delete {{calendar_event_id}}
+      {% endif %}
+    {% elif service == "drive" %}
+      {{GAPI}} drive search "{{drive_query}}"{% if drive_raw_query %} --raw-query{% endif %}{% if drive_max %} --max {{drive_max}}{% endif %}
+    {% elif service == "contacts" %}
+      {{GAPI}} contacts list{% if contacts_max %} --max {{contacts_max}}{% endif %}
+    {% elif service == "sheets" %}
+      {% if sheets_action == "get" %}
+      {{GAPI}} sheets get {{sheets_id}} "{{sheets_range}}"
+      {% elif sheets_action == "update" %}
+      {{GAPI}} sheets update {{sheets_id}} "{{sheets_range}}" --values '{{sheets_values}}'
+      {% elif sheets_action == "append" %}
+      {{GAPI}} sheets append {{sheets_id}} "{{sheets_range}}" --values '{{sheets_values}}'
+      {% endif %}
+    {% elif service == "docs" %}
+      {{GAPI}} docs get {{docs_id}}
+    {% endif %}
+
+fields:
+  - id: service
+    ask: "Which Google Workspace service do you need?"
+    type: options
+    options:
+      gmail: "Gmail — search, read, send, and manage email"
+      calendar: "Google Calendar — list, create, or delete events"
+      drive: "Google Drive — search for files and documents"
+      contacts: "Google Contacts — list your contacts"
+      sheets: "Google Sheets — read, write, or append data"
+      docs: "Google Docs — read a document"
+    required: true
+    infer_from: >-
+      User mentions email, inbox, message, send email -> gmail.
+      User mentions calendar, event, meeting, schedule, appointment -> calendar.
+      User mentions Drive, file search, documents, PDF search -> drive.
+      User mentions contacts, address book -> contacts.
+      User mentions spreadsheet, Sheets, rows, columns, cells -> sheets.
+      User mentions Google Doc, document content -> docs.
+
+  # --- Gmail fields ---
+
+  - id: gmail_action
+    ask: "What do you want to do in Gmail?"
+    type: options
+    options:
+      search: "Search for emails"
+      get: "Read a specific email by ID"
+      send: "Send a new email"
+      reply: "Reply to an existing email thread"
+      labels: "List all Gmail labels"
+      modify: "Add or remove labels from a message"
+    required: true
+    show_when: "service == gmail"
+    infer_from: >-
+      "search", "find emails", "show emails", "inbox", "unread" -> search.
+      "read", "open", "get message", "show email" -> get.
+      "send", "compose", "write email", "email someone" -> send.
+      "reply", "respond", "answer" -> reply.
+      "list labels", "show labels" -> labels.
+      "label", "mark", "tag", "archive", "mark as read" -> modify.
+
+  - id: gmail_query
+    ask: "What Gmail search query? (e.g. 'is:unread', 'from:boss@company.com newer_than:1d')"
+    type: text
+    required: true
+    show_when: "service == gmail and gmail_action == search"
+    infer_from: >-
+      Extract Gmail search operators from the user's message.
+      "unread" -> "is:unread". "from X" -> "from:X". "today" -> "newer_than:1d".
+      "last week" -> "newer_than:7d". "with attachment" -> "has:attachment".
+      Build the search string from what the user describes.
+
+  - id: gmail_max
+    ask: "Maximum number of emails to return?"
+    type: number
+    default: 10
+    show_when: "service == gmail and gmail_action == search"
+    infer_from: "Did the user specify a limit? Extract the number. Default is 10."
+    validation:
+      min: 1
+      max: 100
+
+  - id: gmail_message_id
+    ask: "What is the Gmail message ID?"
+    type: text
+    required: true
+    show_when: "service == gmail and gmail_action in [get, reply, modify]"
+    infer_from: "Extract the Gmail message ID from the user's message or previous search results."
+
+  - id: gmail_to
+    ask: "Who should the email be sent to? (email address)"
+    type: text
+    required: true
+    show_when: "service == gmail and gmail_action == send"
+    infer_from: "Extract the recipient email address from the user's message."
+
+  - id: gmail_subject
+    ask: "What is the email subject?"
+    type: text
+    required: true
+    show_when: "service == gmail and gmail_action == send"
+    infer_from: "Extract the email subject from the user's message."
+
+  - id: gmail_body
+    ask: "What is the email body / message content?"
+    type: text
+    required: true
+    show_when: "service == gmail and gmail_action in [send, reply]"
+    infer_from: "Extract the email body or reply content from the user's message."
+
+  - id: gmail_html
+    ask: "Send as HTML email?"
+    type: boolean
+    default: false
+    show_when: "service == gmail and gmail_action == send"
+    infer_from: "User mentions HTML, rich text, formatting -> true. Otherwise false."
+
+  - id: gmail_add_labels
+    ask: "Labels to add (label ID or name, e.g. 'STARRED')?"
+    type: text
+    required: false
+    show_when: "service == gmail and gmail_action == modify"
+    infer_from: "Extract label IDs or names to add from the user's message. Example: STARRED, IMPORTANT."
+
+  - id: gmail_remove_labels
+    ask: "Labels to remove (label ID or name, e.g. 'UNREAD')?"
+    type: text
+    required: false
+    show_when: "service == gmail and gmail_action == modify"
+    infer_from: "Extract label IDs or names to remove. 'Mark as read' -> UNREAD. 'Unstar' -> STARRED."
+
+  # --- Calendar fields ---
+
+  - id: calendar_action
+    ask: "What do you want to do with Google Calendar?"
+    type: options
+    options:
+      list: "List upcoming events"
+      create: "Create a new event"
+      delete: "Delete an event"
+    required: true
+    show_when: "service == calendar"
+    infer_from: >-
+      "list", "show events", "what's on", "upcoming", "schedule" -> list.
+      "create", "add event", "schedule meeting", "book" -> create.
+      "delete", "cancel", "remove event" -> delete.
+
+  - id: calendar_summary
+    ask: "What is the event title/name?"
+    type: text
+    required: true
+    show_when: "service == calendar and calendar_action == create"
+    infer_from: "Extract the event name or title from the user's message."
+
+  - id: calendar_start
+    ask: "Event start time? (ISO 8601 with timezone, e.g. '2026-04-10T10:00:00-06:00')"
+    type: text
+    required: false
+    show_when: "service == calendar and calendar_action in [list, create]"
+    infer_from: >-
+      Extract or construct the start datetime in ISO 8601 format with timezone offset.
+      "tomorrow 10am CST" -> "2026-04-08T10:00:00-06:00".
+      For list: the beginning of the date range to filter by.
+      For create: the event start time. Always include timezone.
+
+  - id: calendar_end
+    ask: "Event end time? (ISO 8601 with timezone, e.g. '2026-04-10T11:00:00-06:00')"
+    type: text
+    required: false
+    show_when: "service == calendar and calendar_action in [list, create]"
+    infer_from: >-
+      Extract or construct the end datetime in ISO 8601 format with timezone offset.
+      For create: the event end time (required). For list: end of the date range filter.
+      Always include timezone offset.
+
+  - id: calendar_location
+    ask: "Event location? (optional)"
+    type: text
+    required: false
+    show_when: "service == calendar and calendar_action == create"
+    infer_from: "Did the user mention a location or address for the event? Extract it."
+
+  - id: calendar_attendees
+    ask: "Attendee email addresses? (comma-separated)"
+    type: text
+    required: false
+    show_when: "service == calendar and calendar_action == create"
+    infer_from: >-
+      Did the user mention people to invite? Extract email addresses as a comma-separated string.
+      Example: "alice@company.com,bob@company.com".
+
+  - id: calendar_event_id
+    ask: "What is the event ID to delete?"
+    type: text
+    required: true
+    show_when: "service == calendar and calendar_action == delete"
+    infer_from: "Extract the Google Calendar event ID from the user's message or previous list results."
+
+  # --- Drive fields ---
+
+  - id: drive_query
+    ask: "What should I search for in Google Drive?"
+    type: text
+    required: true
+    show_when: "service == drive"
+    infer_from: >-
+      Extract the search query from the user's message.
+      Can be a filename, keyword, or Drive query syntax if user is advanced.
+      Example: "quarterly report", "mimeType='application/pdf'".
+
+  - id: drive_raw_query
+    ask: "Is this a raw Drive API query (using Drive query syntax)?"
+    type: boolean
+    default: false
+    show_when: "service == drive"
+    infer_from: >-
+      User uses Drive query syntax like mimeType=, trashed=, parents= -> true.
+      User just provides keywords -> false.
+
+  - id: drive_max
+    ask: "Maximum number of files to return?"
+    type: number
+    default: 10
+    show_when: "service == drive"
+    infer_from: "Did the user specify a limit? Extract the number. Default is 10."
+    validation:
+      min: 1
+      max: 100
+
+  # --- Contacts fields ---
+
+  - id: contacts_max
+    ask: "How many contacts to return?"
+    type: number
+    default: 20
+    show_when: "service == contacts"
+    infer_from: "Did the user specify a limit? Default is 20."
+    validation:
+      min: 1
+      max: 200
+
+  # --- Sheets fields ---
+
+  - id: sheets_action
+    ask: "What do you want to do with Google Sheets?"
+    type: options
+    options:
+      get: "Read data from a range"
+      update: "Write/overwrite data to a range"
+      append: "Append new rows to a sheet"
+    required: true
+    show_when: "service == sheets"
+    infer_from: >-
+      "read", "get", "fetch data", "show cells" -> get.
+      "write", "update", "set", "overwrite" -> update.
+      "append", "add rows", "insert rows" -> append.
+
+  - id: sheets_id
+    ask: "What is the Google Sheets spreadsheet ID? (from the URL)"
+    type: text
+    required: true
+    show_when: "service == sheets"
+    infer_from: "Extract the spreadsheet ID from the user's message or the URL they shared."
+
+  - id: sheets_range
+    ask: "What cell range? (e.g. 'Sheet1!A1:D10' or 'Sheet1!A:C')"
+    type: text
+    required: true
+    show_when: "service == sheets"
+    infer_from: >-
+      Extract the A1 notation range from the user's message.
+      Examples: "Sheet1!A1:D10", "Sheet1!A:C", "Data!B2:E20".
+      If user just says "the first sheet" -> "Sheet1!A1:Z1000".
+
+  - id: sheets_values
+    ask: "Data to write as a JSON 2D array (e.g. '[[\"Name\",\"Score\"],[\"Alice\",\"95\"]]')"
+    type: text
+    required: true
+    show_when: "service == sheets and sheets_action in [update, append]"
+    infer_from: >-
+      Construct a JSON 2D array from the user's data.
+      Example: user says "write Name, Score headers and Alice 95" ->
+      [["Name","Score"],["Alice","95"]].
+
+  # --- Docs fields ---
+
+  - id: docs_id
+    ask: "What is the Google Docs document ID? (from the URL)"
+    type: text
+    required: true
+    show_when: "service == docs"
+    infer_from: "Extract the document ID from the user's message or the URL they shared."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to run Google Workspace operation:
+    - Service: {{service}}
+    {% if service == "gmail" %}
+    - Action: {{gmail_action}}
+    {% if gmail_action == "search" %}- Query: {{gmail_query}} (max {{gmail_max}}){% endif %}
+    {% if gmail_action == "get" %}- Message ID: {{gmail_message_id}}{% endif %}
+    {% if gmail_action == "send" %}- To: {{gmail_to}}
+    - Subject: {{gmail_subject}}
+    - Body: {{gmail_body[:100]}}{% if gmail_body|length > 100 %}...{% endif %}
+    {% if gmail_html %}- Format: HTML{% endif %}{% endif %}
+    {% if gmail_action == "reply" %}- Thread: {{gmail_message_id}}
+    - Body: {{gmail_body[:100]}}{% if gmail_body|length > 100 %}...{% endif %}{% endif %}
+    {% if gmail_action == "modify" %}- Message: {{gmail_message_id}}
+    {% if gmail_add_labels %}- Add labels: {{gmail_add_labels}}{% endif %}
+    {% if gmail_remove_labels %}- Remove labels: {{gmail_remove_labels}}{% endif %}{% endif %}
+    {% endif %}
+    {% if service == "calendar" %}
+    - Action: {{calendar_action}}
+    {% if calendar_action == "create" %}- Title: {{calendar_summary}}
+    - Start: {{calendar_start}}
+    - End: {{calendar_end}}
+    {% if calendar_location %}- Location: {{calendar_location}}{% endif %}
+    {% if calendar_attendees %}- Attendees: {{calendar_attendees}}{% endif %}{% endif %}
+    {% if calendar_action == "delete" %}- Event ID: {{calendar_event_id}}{% endif %}
+    {% if calendar_action == "list" %}{% if calendar_start %}- From: {{calendar_start}}{% endif %}{% if calendar_end %} to {{calendar_end}}{% endif %}{% endif %}
+    {% endif %}
+    {% if service == "drive" %}- Search: {{drive_query}} (max {{drive_max}}){% endif %}
+    {% if service == "contacts" %}- Max contacts: {{contacts_max}}{% endif %}
+    {% if service == "sheets" %}
+    - Action: {{sheets_action}}
+    - Sheet ID: {{sheets_id}}
+    - Range: {{sheets_range}}
+    {% if sheets_action in ["update", "append"] %}- Values: {{sheets_values[:80]}}{% if sheets_values|length > 80 %}...{% endif %}{% endif %}
+    {% endif %}
+    {% if service == "docs" %}- Document ID: {{docs_id}}{% endif %}
+
+    Proceed? (yes/no)
