@@ -130,7 +130,7 @@ class FormRunner:
                 step_results.append(StepResult(id=f.id, answer=None, skipped=True))
                 continue
 
-            prompt = _build_step_prompt(f, collected, user_message)
+            prompt = _build_step_prompt(f, collected, user_message, preamble=form.preamble)
             messages = [
                 {"role": "system", "content": _EXTRACTION_SYSTEM},
                 {"role": "user", "content": prompt},
@@ -207,9 +207,12 @@ class FormRunner:
 
 # ── Prompt builders ───────────────────────────────────────────────────────────
 
-def _build_step_prompt(f: Field, collected: dict[str, Any], user_message: str) -> str:
+def _build_step_prompt(f: Field, collected: dict[str, Any], user_message: str, preamble: str = "") -> str:
     """Build a minimal prompt for extracting a single field value."""
-    parts = [f'User said: "{user_message}"']
+    parts = []
+    if preamble:
+        parts.append(f"Context: {preamble}\n")
+    parts.append(f'User said: "{user_message}"')
 
     if collected:
         parts.append(f"Already collected: {json.dumps(collected)}")

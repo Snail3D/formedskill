@@ -370,6 +370,7 @@ class SkillForm:
     meta: SkillMeta
     action: Action
     fields: list[Field]
+    preamble: str = ""  # Short context paragraph injected before each extraction step
     confirmation: Optional[Confirmation] = None
     source_path: Optional[Path] = None
 
@@ -394,10 +395,13 @@ class SkillForm:
         if "confirmation" in data:
             confirmation = Confirmation.from_dict(data["confirmation"])
 
+        preamble = str(data.get("preamble", "")).strip()
+
         return cls(
             meta=meta,
             action=action,
             fields=fields,
+            preamble=preamble,
             confirmation=confirmation,
             source_path=source_path,
         )

@@ -7,6 +7,13 @@ skill:
   tags: [3d-print, bambu, makerworld, generate, slicer]
   platforms: [macos, linux]
 
+preamble: >
+  SnailPrint controls two Bambu P2S 3D printers (P2D2 and P3Pio). It can
+  generate 3D models from text descriptions, convert photos to 3D figurines,
+  search MakerWorld for existing models, or print local STL/3MF files.
+  Hunyuan engine is for production quality (~5min), Spar3D is for quick
+  previews (~1.5min). PLA is the default material. Default size is 50mm.
+
 action:
   type: http
   method: POST
