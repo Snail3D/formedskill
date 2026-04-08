@@ -92,7 +92,30 @@ def _clean_raw(raw: str) -> str:
 
 def _is_sentinel(text: str) -> bool:
     """Return True if text is a sentinel meaning 'use the default'."""
-    return text.lower() in _DEFAULT_SENTINELS or text == ""
+    lower = text.lower().strip()
+    if lower in _DEFAULT_SENTINELS or lower == "":
+        return True
+    # Catch verbose non-answers from chatty models:
+    # "(Note: no color was mentioned...)" / "(No reviewers specified)" / "(empty)"
+    verbose_patterns = [
+        r"^\s*\(note[\s:]",          # (Note: ...)
+        r"^\s*\(no\s+.+(provided|mentioned|specified|given)\)",  # (No X specified)
+        r"^\s*\(empty\)",            # (empty)
+        r"^\s*\(not\s+",            # (Not specified...)
+        r"^\s*\(none\)",            # (None)
+        r"^\s*\(blank\)",           # (blank)
+        r"^\s*\(n/a\)",             # (N/A)
+        r"not\s+(specified|mentioned|provided|given)$",  # ends with "not specified"
+        r"no\s+\w+\s+(was\s+)?(specified|mentioned|provided|given)",  # "no X was specified"
+        r"^blank$",                  # just "blank"
+        r"^empty$",                  # just "empty"
+        r"</think>",                 # leaked reasoning tokens
+        r"<think>",
+    ]
+    for pat in verbose_patterns:
+        if re.search(pat, lower):
+            return True
+    return False
 
 
 def _resolve_alias(text: str, field: Field) -> str:

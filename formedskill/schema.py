@@ -117,8 +117,18 @@ def _parse_block(lines: list[str], start: int, base_indent: int) -> tuple[Any, i
                     if _get_indent(r2) < item_indent:
                         break
                     if ":" in s2:
-                        k2, _, v2 = s2.partition(":")
-                        v2 = v2.strip()
+                        # Handle quoted keys with colons
+                        if s2.startswith('"') and '":' in s2:
+                            eq = s2.index('":', 1)
+                            k2 = s2[1:eq]
+                            v2 = s2[eq + 2:].strip()
+                        elif s2.startswith("'") and "':" in s2:
+                            eq = s2.index("':", 1)
+                            k2 = s2[1:eq]
+                            v2 = s2[eq + 2:].strip()
+                        else:
+                            k2, _, v2 = s2.partition(":")
+                            v2 = v2.strip()
                         if v2:
                             sub[k2.strip()] = _parse_scalar(v2)
                         else:
@@ -149,9 +159,19 @@ def _parse_block(lines: list[str], start: int, base_indent: int) -> tuple[Any, i
             if not isinstance(result, dict):
                 break
 
-            key, _, val_part = stripped.partition(":")
-            key = key.strip()
-            val_part = val_part.strip()
+            # Handle quoted keys that contain colons, e.g. "clone:eric": "value"
+            if stripped.startswith('"') and '":' in stripped:
+                end_quote = stripped.index('":', 1)
+                key = stripped[1:end_quote]  # strip surrounding quotes
+                val_part = stripped[end_quote + 2:].strip()
+            elif stripped.startswith("'") and "':" in stripped:
+                end_quote = stripped.index("':", 1)
+                key = stripped[1:end_quote]
+                val_part = stripped[end_quote + 2:].strip()
+            else:
+                key, _, val_part = stripped.partition(":")
+                key = key.strip()
+                val_part = val_part.strip()
 
             # Multiline block scalar (| or >-)
             if val_part in ("|", ">", ">-", "|-"):

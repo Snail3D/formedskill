@@ -1,0 +1,904 @@
+{
+  "skills": [
+    {
+      "name": "snailprint",
+      "skill_md_path": "~/.hermes/skills/media/snailprint/SKILL.md",
+      "skill_yaml_path": null,
+      "builtin_yaml_path": "~/formedskill/formedskill/skills/snailprint.yaml",
+      "tests": [
+        {
+          "id": "snailprint_1",
+          "user_message": "Print me a dragon figurine in black PLA, 80mm tall",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "dragon figurine",
+            "filament": "PLA",
+            "color": "black",
+            "scale_mm": 80
+          },
+          "description": "Basic text-to-print with color and size"
+        },
+        {
+          "id": "snailprint_2",
+          "user_message": "Search MakerWorld for a cable management box and print it in white PETG on P3Pio, 120mm",
+          "expected_fields": {
+            "mode": "makerworld",
+            "query": "cable management box",
+            "filament": "PETG",
+            "color": "white",
+            "scale_mm": 120,
+            "printer": "22E8AJ612200029"
+          },
+          "description": "MakerWorld search with filament override, color, size, and specific printer"
+        },
+        {
+          "id": "snailprint_3",
+          "user_message": "Print a small phone stand for me",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "phone stand",
+            "filament": "PLA",
+            "scale_mm": 50,
+            "engine": "hunyuan",
+            "auto_print": true
+          },
+          "description": "Minimal request — tests correct defaults (PLA, 50mm, hunyuan, auto_print)"
+        },
+        {
+          "id": "snailprint_4",
+          "user_message": "Just slice this file for me, don't print it: /home/eric/models/bracket.stl",
+          "expected_fields": {
+            "mode": "file",
+            "file": "/home/eric/models/bracket.stl",
+            "auto_print": false
+          },
+          "description": "File mode with auto_print disabled (slice-only edge case)"
+        },
+        {
+          "id": "snailprint_5",
+          "user_message": "Make a quick preview of a castle tower, flexible material, kinda big",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "castle tower",
+            "filament": "TPU",
+            "engine": "spar3d",
+            "scale_mm": 200
+          },
+          "description": "Conversational request with implicit filament (flexible=TPU), quick=spar3d, big size"
+        }
+      ]
+    },
+    {
+      "name": "snailstudio",
+      "skill_md_path": "~/.hermes/skills/media/snailstudio/SKILL.md",
+      "skill_yaml_path": null,
+      "builtin_yaml_path": "~/formedskill/formedskill/skills/snailstudio.yaml",
+      "tests": [
+        {
+          "id": "snailstudio_1",
+          "user_message": "Make a video about the Mariana Trench",
+          "expected_fields": {
+            "topic": "Mariana Trench",
+            "style": "cinematic",
+            "segments": 6,
+            "voice": "clone:eric"
+          },
+          "description": "Basic video creation — tests all defaults (cinematic style, 6 segments, eric voice)"
+        },
+        {
+          "id": "snailstudio_2",
+          "user_message": "Create a 10-segment documentary video about the Roman Empire with epic orchestral music",
+          "expected_fields": {
+            "topic": "Roman Empire",
+            "style": "documentary",
+            "segments": 10,
+            "music_style": "epic orchestral"
+          },
+          "description": "Multiple explicit params: documentary style, long segment count, specific music"
+        },
+        {
+          "id": "snailstudio_3",
+          "user_message": "Short educational video on black holes",
+          "expected_fields": {
+            "topic": "Black Holes",
+            "style": "educational",
+            "segments": 3
+          },
+          "description": "Short=3 segments inferred from 'short', educational style"
+        },
+        {
+          "id": "snailstudio_4",
+          "user_message": "Make an artistic video about bioluminescent deep sea creatures, 4K resolution, use Emma's voice",
+          "expected_fields": {
+            "topic": "bioluminescent deep sea creatures",
+            "style": "artistic",
+            "voice": "bf_emma",
+            "width": 3840,
+            "height": 2160
+          },
+          "description": "Edge case: 4K resolution dimensions, non-default voice (Emma)"
+        },
+        {
+          "id": "snailstudio_5",
+          "user_message": "Hey can you make me a cool video about the Amazon rainforest? Something dramatic with jungle sounds music",
+          "expected_fields": {
+            "topic": "Amazon rainforest",
+            "style": "cinematic",
+            "music_style": "jungle sounds"
+          },
+          "description": "Conversational/real-world request with casual language and implicit cinematic style"
+        }
+      ]
+    },
+    {
+      "name": "apple-notes",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/apple/apple-notes/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "apple-notes_1",
+          "user_message": "Create a new note called 'Shopping List'",
+          "expected_fields": {
+            "operation": "create",
+            "title": "Shopping List"
+          },
+          "description": "Basic note creation with explicit title"
+        },
+        {
+          "id": "apple-notes_2",
+          "user_message": "Search my notes for 'kubernetes deployment'",
+          "expected_fields": {
+            "operation": "search",
+            "query": "kubernetes deployment"
+          },
+          "description": "Keyword search in notes"
+        },
+        {
+          "id": "apple-notes_3",
+          "user_message": "List all my notes in the Work folder",
+          "expected_fields": {
+            "operation": "list",
+            "folder": "Work"
+          },
+          "description": "List with folder filter"
+        },
+        {
+          "id": "apple-notes_4",
+          "user_message": "Export my notes to markdown",
+          "expected_fields": {
+            "operation": "export"
+          },
+          "description": "Export edge case"
+        },
+        {
+          "id": "apple-notes_5",
+          "user_message": "Can you show me all my notes?",
+          "expected_fields": {
+            "operation": "list"
+          },
+          "description": "Conversational list request — no folder filter, tests blank folder default"
+        }
+      ]
+    },
+    {
+      "name": "apple-reminders",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/apple/apple-reminders/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "apple-reminders_1",
+          "user_message": "Remind me to call the dentist tomorrow at 9am",
+          "expected_fields": {
+            "operation": "add",
+            "title": "Call the dentist",
+            "due": "2026-04-08 09:00"
+          },
+          "description": "Basic add reminder with due date and time"
+        },
+        {
+          "id": "apple-reminders_2",
+          "user_message": "Add 'Buy milk and eggs' to my Shopping list",
+          "expected_fields": {
+            "operation": "add",
+            "title": "Buy milk and eggs",
+            "list_name": "Shopping"
+          },
+          "description": "Add to specific list with no due date"
+        },
+        {
+          "id": "apple-reminders_3",
+          "user_message": "What reminders do I have today?",
+          "expected_fields": {
+            "operation": "list_today"
+          },
+          "description": "List today's reminders — simple query"
+        },
+        {
+          "id": "apple-reminders_4",
+          "user_message": "Show me my overdue reminders",
+          "expected_fields": {
+            "operation": "list_overdue"
+          },
+          "description": "List overdue — edge case operation"
+        },
+        {
+          "id": "apple-reminders_5",
+          "user_message": "Create a new list called Vacation Planning",
+          "expected_fields": {
+            "operation": "create_list",
+            "new_list_name": "Vacation Planning"
+          },
+          "description": "Create list — uncommon operation"
+        }
+      ]
+    },
+    {
+      "name": "imessage",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/apple/imessage/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "imessage_1",
+          "user_message": "Send a message to +14155551234 saying 'On my way, be there in 10!'",
+          "expected_fields": {
+            "operation": "send",
+            "recipient": "+14155551234",
+            "message_text": "On my way, be there in 10!",
+            "service": "auto"
+          },
+          "description": "Basic send with phone number — tests default service=auto"
+        },
+        {
+          "id": "imessage_2",
+          "user_message": "Text john@icloud.com via iMessage: 'Hey, did you get my email?'",
+          "expected_fields": {
+            "operation": "send",
+            "recipient": "john@icloud.com",
+            "message_text": "Hey, did you get my email?",
+            "service": "imessage"
+          },
+          "description": "Send with Apple ID and explicit iMessage service"
+        },
+        {
+          "id": "imessage_3",
+          "user_message": "Show me my recent chats",
+          "expected_fields": {
+            "operation": "list_chats",
+            "limit": 10
+          },
+          "description": "List chats with default limit=10"
+        },
+        {
+          "id": "imessage_4",
+          "user_message": "Show me the last 50 messages from chat 7, including attachments",
+          "expected_fields": {
+            "operation": "history",
+            "chat_id": 7,
+            "history_limit": 50,
+            "include_attachments": true
+          },
+          "description": "History with non-default limit and attachments enabled"
+        },
+        {
+          "id": "imessage_5",
+          "user_message": "Can you watch chat 3 for new incoming messages?",
+          "expected_fields": {
+            "operation": "watch",
+            "chat_id": 3
+          },
+          "description": "Watch mode — uncommon operation, conversational phrasing"
+        }
+      ]
+    },
+    {
+      "name": "himalaya",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/email/himalaya/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "himalaya_1",
+          "user_message": "Show me my inbox",
+          "expected_fields": {
+            "operation": "list_emails",
+            "folder": "INBOX",
+            "page": 1
+          },
+          "description": "Basic inbox listing — tests INBOX default and page=1 default"
+        },
+        {
+          "id": "himalaya_2",
+          "user_message": "Send an email to alice@example.com with subject 'Meeting Tomorrow' and body 'Hi Alice, can we meet at 2pm?'",
+          "expected_fields": {
+            "operation": "send",
+            "to": "alice@example.com",
+            "subject": "Meeting Tomorrow",
+            "body": "Hi Alice, can we meet at 2pm?"
+          },
+          "description": "Compose and send with all required fields"
+        },
+        {
+          "id": "himalaya_3",
+          "user_message": "Search for emails from boss@company.com about Q4 report",
+          "expected_fields": {
+            "operation": "search",
+            "search_query": "from boss@company.com subject Q4 report"
+          },
+          "description": "Search with from and subject operators"
+        },
+        {
+          "id": "himalaya_4",
+          "user_message": "Forward email 42 to backup@gmail.com with the note 'FYI, see below'",
+          "expected_fields": {
+            "operation": "forward",
+            "message_id": "42",
+            "forward_to": "backup@gmail.com",
+            "body": "FYI, see below"
+          },
+          "description": "Forward operation with all required fields"
+        },
+        {
+          "id": "himalaya_5",
+          "user_message": "Can you download the attachments from email 99 and save them to my desktop?",
+          "expected_fields": {
+            "operation": "download_attachment",
+            "message_id": "99",
+            "download_dir": "~/Desktop"
+          },
+          "description": "Download attachments to non-default directory"
+        }
+      ]
+    },
+    {
+      "name": "gif-search",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/media/gif-search/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "gif-search_1",
+          "user_message": "Find me a thumbs up GIF",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "thumbs up",
+            "limit": 5,
+            "format": "tinygif"
+          },
+          "description": "Basic GIF search — tests defaults (search_urls, limit=5, tinygif)"
+        },
+        {
+          "id": "gif-search_2",
+          "user_message": "Search for 10 celebration GIFs in full quality",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "celebration",
+            "limit": 10,
+            "format": "gif"
+          },
+          "description": "Multiple explicit params: count and full quality format"
+        },
+        {
+          "id": "gif-search_3",
+          "user_message": "Download a mind blown GIF and save it to ~/Downloads/mindblown.gif",
+          "expected_fields": {
+            "operation": "download",
+            "query": "mind blown",
+            "save_path": "~/Downloads/mindblown.gif"
+          },
+          "description": "Download mode with explicit save path"
+        },
+        {
+          "id": "gif-search_4",
+          "user_message": "Get the full metadata for 3 cat surprised GIFs, family safe",
+          "expected_fields": {
+            "operation": "metadata",
+            "query": "cat surprised",
+            "limit": 3,
+            "content_filter": "high"
+          },
+          "description": "Metadata mode with safe filter — edge case operation"
+        },
+        {
+          "id": "gif-search_5",
+          "user_message": "Send me a funny reaction gif for when something goes wrong",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "something went wrong",
+            "content_filter": "medium"
+          },
+          "description": "Conversational/real-world request — natural language, default filter"
+        }
+      ]
+    },
+    {
+      "name": "github-issues",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/github/github-issues/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "github-issues_1",
+          "user_message": "Create a bug report in Snail3D/SnailOrchestrator: title 'Pipeline crashes on empty queue', body 'Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash.'",
+          "expected_fields": {
+            "operation": "create",
+            "repo": "Snail3D/SnailOrchestrator",
+            "title": "Pipeline crashes on empty queue",
+            "labels": "bug"
+          },
+          "description": "Create issue with repo, title, body, and implied bug label"
+        },
+        {
+          "id": "github-issues_2",
+          "user_message": "List all open issues labeled 'enhancement' in the current repo",
+          "expected_fields": {
+            "operation": "list",
+            "state": "open",
+            "label": "enhancement"
+          },
+          "description": "List with state and label filters"
+        },
+        {
+          "id": "github-issues_3",
+          "user_message": "View issue #47",
+          "expected_fields": {
+            "operation": "view",
+            "issue_number": 47
+          },
+          "description": "Simple issue view by number"
+        },
+        {
+          "id": "github-issues_4",
+          "user_message": "Close issue #12 in Snail3D/snailprint as won't fix",
+          "expected_fields": {
+            "operation": "close",
+            "issue_number": 12,
+            "repo": "Snail3D/snailprint",
+            "close_reason": "not planned"
+          },
+          "description": "Close with wontfix reason — tests close_reason inference"
+        },
+        {
+          "id": "github-issues_5",
+          "user_message": "Hey can you add a comment to issue 33 saying 'I reproduced this on macOS 15, will investigate'",
+          "expected_fields": {
+            "operation": "comment",
+            "issue_number": 33,
+            "comment_body": "I reproduced this on macOS 15, will investigate"
+          },
+          "description": "Add comment — conversational phrasing"
+        }
+      ]
+    },
+    {
+      "name": "github-pr-workflow",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/github/github-pr-workflow/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "github-pr-workflow_1",
+          "user_message": "Create a new branch called feat/add-webhook-retry from main",
+          "expected_fields": {
+            "operation": "create_branch",
+            "branch_name": "feat/add-webhook-retry",
+            "base_branch": "main"
+          },
+          "description": "Create branch with explicit name and default base branch"
+        },
+        {
+          "id": "github-pr-workflow_2",
+          "user_message": "Open a PR titled 'fix: handle null pointer in parser', request review from octocat and monalisa",
+          "expected_fields": {
+            "operation": "create_pr",
+            "title": "fix: handle null pointer in parser",
+            "reviewers": "octocat,monalisa",
+            "draft": false
+          },
+          "description": "Create PR with multiple reviewers and conventional title"
+        },
+        {
+          "id": "github-pr-workflow_3",
+          "user_message": "Check the CI status on PR 88 and watch until it finishes",
+          "expected_fields": {
+            "operation": "checks",
+            "pr_number": 88,
+            "watch": true
+          },
+          "description": "CI checks with watch=true"
+        },
+        {
+          "id": "github-pr-workflow_4",
+          "user_message": "Merge PR 55 using squash and delete the branch",
+          "expected_fields": {
+            "operation": "merge",
+            "pr_number": 55,
+            "merge_method": "squash",
+            "delete_branch": true
+          },
+          "description": "Merge with squash and branch deletion"
+        },
+        {
+          "id": "github-pr-workflow_5",
+          "user_message": "Open a draft PR for my current branch, still WIP, targeting develop",
+          "expected_fields": {
+            "operation": "create_pr",
+            "draft": true,
+            "base_branch": "develop"
+          },
+          "description": "Draft PR targeting non-main base branch"
+        }
+      ]
+    },
+    {
+      "name": "github-repo-management",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/github/github-repo-management/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "github-repo-management_1",
+          "user_message": "Clone Snail3D/snailprint",
+          "expected_fields": {
+            "operation": "clone",
+            "repo": "Snail3D/snailprint",
+            "shallow": false
+          },
+          "description": "Basic clone — tests shallow=false default"
+        },
+        {
+          "id": "github-repo-management_2",
+          "user_message": "Create a new private repo called hermes-plugins with MIT license and description 'Plugin extensions for Hermes'",
+          "expected_fields": {
+            "operation": "create",
+            "repo_name": "hermes-plugins",
+            "visibility": "private",
+            "license": "mit",
+            "description": "Plugin extensions for Hermes"
+          },
+          "description": "Create repo with visibility, license, and description"
+        },
+        {
+          "id": "github-repo-management_3",
+          "user_message": "Create a release v2.0.0 titled 'Version 2 - Major Rewrite' with auto-generated notes",
+          "expected_fields": {
+            "operation": "release_create",
+            "tag_name": "v2.0.0",
+            "release_title": "Version 2 - Major Rewrite",
+            "generate_notes": true
+          },
+          "description": "Release creation with auto-generated notes"
+        },
+        {
+          "id": "github-repo-management_4",
+          "user_message": "Set a secret called OPENAI_API_KEY with value sk-abc123xyz in the current repo",
+          "expected_fields": {
+            "operation": "secret_set",
+            "secret_name": "OPENAI_API_KEY",
+            "secret_value": "sk-abc123xyz"
+          },
+          "description": "Secret management — sensitive data handling"
+        },
+        {
+          "id": "github-repo-management_5",
+          "user_message": "Trigger the deploy.yml workflow on the staging branch with environment set to staging",
+          "expected_fields": {
+            "operation": "workflow_trigger",
+            "workflow_file": "deploy.yml",
+            "workflow_ref": "staging",
+            "workflow_inputs": "-f environment=staging"
+          },
+          "description": "Workflow dispatch with branch and inputs"
+        }
+      ]
+    },
+    {
+      "name": "linear",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/productivity/linear/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "linear_1",
+          "user_message": "Show me all my assigned issues in Linear",
+          "expected_fields": {
+            "operation": "my_issues"
+          },
+          "description": "List my issues — simple common operation"
+        },
+        {
+          "id": "linear_2",
+          "user_message": "Create a new issue in team abc-123-def titled 'Add rate limiting to API' with high priority and description 'Implement token bucket rate limiting on all public endpoints'",
+          "expected_fields": {
+            "operation": "create_issue",
+            "team_id": "abc-123-def",
+            "title": "Add rate limiting to API",
+            "priority": 2,
+            "description": "Implement token bucket rate limiting on all public endpoints"
+          },
+          "description": "Create issue with team ID, priority, and description"
+        },
+        {
+          "id": "linear_3",
+          "user_message": "View issue ENG-42",
+          "expected_fields": {
+            "operation": "view_issue",
+            "issue_id": "ENG-42"
+          },
+          "description": "View specific issue by identifier"
+        },
+        {
+          "id": "linear_4",
+          "user_message": "Add a comment to ENG-17 saying 'Fixed in PR #234, waiting for deploy'",
+          "expected_fields": {
+            "operation": "add_comment",
+            "issue_id": "ENG-17",
+            "comment_body": "Fixed in PR #234, waiting for deploy"
+          },
+          "description": "Add comment to specific issue"
+        },
+        {
+          "id": "linear_5",
+          "user_message": "Mark ENG-55 as urgent",
+          "expected_fields": {
+            "operation": "set_priority",
+            "issue_id": "ENG-55",
+            "priority": 1
+          },
+          "description": "Set priority — tests urgent=1 alias mapping"
+        }
+      ]
+    },
+    {
+      "name": "notion",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/productivity/notion/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "notion_1",
+          "user_message": "Search Notion for 'project roadmap'",
+          "expected_fields": {
+            "operation": "search",
+            "search_query": "project roadmap"
+          },
+          "description": "Basic Notion search"
+        },
+        {
+          "id": "notion_2",
+          "user_message": "Add a new page called 'Sprint 14 Review' to database abc123def456",
+          "expected_fields": {
+            "operation": "create_page",
+            "database_id": "abc123def456",
+            "page_title": "Sprint 14 Review"
+          },
+          "description": "Create page in database with title"
+        },
+        {
+          "id": "notion_3",
+          "user_message": "Query the database 789xyz and filter by Status = Done, sorted by Date descending",
+          "expected_fields": {
+            "operation": "query_database",
+            "data_source_id": "789xyz",
+            "filter_property": "Status",
+            "filter_value": "Done",
+            "sort_property": "Date",
+            "sort_direction": "descending"
+          },
+          "description": "Database query with filter and sort"
+        },
+        {
+          "id": "notion_4",
+          "user_message": "Update the Status property of page def-456-ghi to 'In Progress' (it's a select field)",
+          "expected_fields": {
+            "operation": "update_page",
+            "page_id": "def-456-ghi",
+            "update_property_name": "Status",
+            "update_property_value": "In Progress",
+            "update_property_type": "select"
+          },
+          "description": "Update page property with type specified"
+        },
+        {
+          "id": "notion_5",
+          "user_message": "Append a bullet point to my notes page abc-999 that says 'Follow up with the design team on Monday'",
+          "expected_fields": {
+            "operation": "add_content",
+            "page_id": "abc-999",
+            "block_content": "Follow up with the design team on Monday",
+            "block_type": "bulleted_list_item"
+          },
+          "description": "Add bullet content block to page"
+        }
+      ]
+    },
+    {
+      "name": "find-nearby",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/leisure/find-nearby/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "find-nearby_1",
+          "user_message": "Find restaurants near downtown Austin",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "downtown Austin",
+            "place_types": ["restaurant"],
+            "radius": 1500
+          },
+          "description": "Basic restaurant search by city — tests defaults (radius=1500, limit=15)"
+        },
+        {
+          "id": "find-nearby_2",
+          "user_message": "Find coffee shops and pharmacies within 500 meters of Times Square, New York, top 5",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "Times Square, New York",
+            "place_types": ["cafe", "pharmacy"],
+            "radius": 500,
+            "limit": 5
+          },
+          "description": "Multiple place types, custom radius and limit"
+        },
+        {
+          "id": "find-nearby_3",
+          "user_message": "Find gas stations near coordinates 30.2672, -97.7431",
+          "expected_fields": {
+            "location_mode": "coordinates",
+            "lat": 30.2672,
+            "lon": -97.7431,
+            "place_types": ["fuel"]
+          },
+          "description": "Coordinates mode with fuel alias"
+        },
+        {
+          "id": "find-nearby_4",
+          "user_message": "Find hotels within 2km of 90210",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "90210",
+            "place_types": ["hotel"],
+            "radius": 2000
+          },
+          "description": "Zip code location, hotel type, km to meters conversion"
+        },
+        {
+          "id": "find-nearby_5",
+          "user_message": "I'm hungry, what's around me? I'm at the Eiffel Tower",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "Eiffel Tower",
+            "place_types": ["restaurant"]
+          },
+          "description": "Casual real-world request — landmark, food implied as restaurant"
+        }
+      ]
+    },
+    {
+      "name": "webhook-subscriptions",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/devops/webhook-subscriptions/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "webhook-subscriptions_1",
+          "user_message": "List all my webhook subscriptions",
+          "expected_fields": {
+            "operation": "list"
+          },
+          "description": "Simple list operation"
+        },
+        {
+          "id": "webhook-subscriptions_2",
+          "user_message": "Create a webhook subscription named 'github-issues' that triggers on 'issues' events and uses the prompt 'New issue #{issue.number}: {issue.title}', deliver to my Telegram chat 123456789",
+          "expected_fields": {
+            "operation": "subscribe",
+            "name": "github-issues",
+            "prompt": "New issue #{issue.number}: {issue.title}",
+            "events": "issues",
+            "deliver": "telegram",
+            "deliver_chat_id": "123456789"
+          },
+          "description": "Full subscription creation with events, prompt template, and Telegram delivery"
+        },
+        {
+          "id": "webhook-subscriptions_3",
+          "user_message": "Remove the webhook subscription called stripe-payments",
+          "expected_fields": {
+            "operation": "remove",
+            "name": "stripe-payments"
+          },
+          "description": "Remove subscription by name"
+        },
+        {
+          "id": "webhook-subscriptions_4",
+          "user_message": "Test the ci-builds webhook with payload {\"action\": \"completed\", \"status\": \"failure\"}",
+          "expected_fields": {
+            "operation": "test",
+            "name": "ci-builds",
+            "test_payload": "{\"action\": \"completed\", \"status\": \"failure\"}"
+          },
+          "description": "Test webhook with JSON payload"
+        },
+        {
+          "id": "webhook-subscriptions_5",
+          "user_message": "Set up a webhook called 'alerts' that fires on all events, sends the prompt 'Alert received: {message}', and posts a GitHub comment back",
+          "expected_fields": {
+            "operation": "subscribe",
+            "name": "alerts",
+            "prompt": "Alert received: {message}",
+            "deliver": "github_comment"
+          },
+          "description": "Subscribe with GitHub comment delivery and no event filter"
+        }
+      ]
+    },
+    {
+      "name": "google-workspace",
+      "skill_md_path": null,
+      "skill_yaml_path": "~/.hermes/skills/productivity/google-workspace/SKILL.yaml",
+      "builtin_yaml_path": null,
+      "tests": [
+        {
+          "id": "google-workspace_1",
+          "user_message": "Show me my unread emails from today",
+          "expected_fields": {
+            "service": "gmail",
+            "gmail_action": "search",
+            "gmail_query": "is:unread newer_than:1d"
+          },
+          "description": "Gmail search — unread + today query combination"
+        },
+        {
+          "id": "google-workspace_2",
+          "user_message": "Schedule a team meeting called 'Q2 Planning' on April 10 from 10am to 11am CST, invite alice@company.com and bob@company.com, at the Zoom link location",
+          "expected_fields": {
+            "service": "calendar",
+            "calendar_action": "create",
+            "calendar_summary": "Q2 Planning",
+            "calendar_start": "2026-04-10T10:00:00-06:00",
+            "calendar_end": "2026-04-10T11:00:00-06:00",
+            "calendar_attendees": "alice@company.com,bob@company.com"
+          },
+          "description": "Calendar event creation with attendees and time range"
+        },
+        {
+          "id": "google-workspace_3",
+          "user_message": "Search Google Drive for 'quarterly budget 2026'",
+          "expected_fields": {
+            "service": "drive",
+            "drive_query": "quarterly budget 2026",
+            "drive_raw_query": false
+          },
+          "description": "Drive file search with keyword query"
+        },
+        {
+          "id": "google-workspace_4",
+          "user_message": "Read rows A1:D20 from my Google Sheet with ID 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+          "expected_fields": {
+            "service": "sheets",
+            "sheets_action": "get",
+            "sheets_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+            "sheets_range": "Sheet1!A1:D20"
+          },
+          "description": "Sheets read with specific range"
+        },
+        {
+          "id": "google-workspace_5",
+          "user_message": "Send an email to team@mycompany.com with subject 'Heads up — server maintenance tonight' saying 'Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.'",
+          "expected_fields": {
+            "service": "gmail",
+            "gmail_action": "send",
+            "gmail_to": "team@mycompany.com",
+            "gmail_subject": "Heads up — server maintenance tonight",
+            "gmail_html": false
+          },
+          "description": "Send email — tests html=false default and plain text body"
+        }
+      ]
+    }
+  ]
+}
