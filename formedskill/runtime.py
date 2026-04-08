@@ -98,6 +98,7 @@ class FormRunner:
         api_key: Optional[str] = None,
         timeout: int = 120,
         verbose: bool = False,
+        max_tokens: Optional[int] = None,
     ):
         self.client = LLMClient(
             endpoint=endpoint,
@@ -108,6 +109,7 @@ class FormRunner:
         )
         self.temperature = temperature
         self.verbose = verbose
+        self.max_tokens = max_tokens
 
     def run_step_by_step(self, form: SkillForm, user_message: str) -> FormResult:
         """
@@ -138,7 +140,8 @@ class FormRunner:
                 print(f"  [{f.id}] asking: {f.ask[:60]}...")
 
             raw, stats = self.client.chat_completion(
-                messages, temperature=self.temperature
+                messages, temperature=self.temperature,
+                max_tokens=self.max_tokens,
             )
 
             answer = extract_answer(raw, f)
