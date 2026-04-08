@@ -3,7 +3,7 @@
     {
       "name": "snailprint",
       "skill_md_path": "~/.hermes/skills/media/snailprint/SKILL.md",
-      "skill_yaml_path": null,
+      "skill_yaml_path": "~/formedskill/formedskill/skills/snailprint.yaml",
       "builtin_yaml_path": "~/formedskill/formedskill/skills/snailprint.yaml",
       "tests": [
         {
@@ -42,7 +42,7 @@
             "engine": "hunyuan",
             "auto_print": true
           },
-          "description": "Minimal request — tests correct defaults (PLA, 50mm, hunyuan, auto_print)"
+          "description": "Minimal request \u2014 tests correct defaults (PLA, 50mm, hunyuan, auto_print)"
         },
         {
           "id": "snailprint_4",
@@ -71,7 +71,7 @@
     {
       "name": "snailstudio",
       "skill_md_path": "~/.hermes/skills/media/snailstudio/SKILL.md",
-      "skill_yaml_path": null,
+      "skill_yaml_path": "~/formedskill/formedskill/skills/snailstudio.yaml",
       "builtin_yaml_path": "~/formedskill/formedskill/skills/snailstudio.yaml",
       "tests": [
         {
@@ -83,7 +83,7 @@
             "segments": 6,
             "voice": "clone:eric"
           },
-          "description": "Basic video creation — tests all defaults (cinematic style, 6 segments, eric voice)"
+          "description": "Basic video creation \u2014 tests all defaults (cinematic style, 6 segments, eric voice)"
         },
         {
           "id": "snailstudio_2",
@@ -132,7 +132,7 @@
     },
     {
       "name": "apple-notes",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/apple/apple-notes/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/apple/apple-notes/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -177,13 +177,13 @@
           "expected_fields": {
             "operation": "list"
           },
-          "description": "Conversational list request — no folder filter, tests blank folder default"
+          "description": "Conversational list request \u2014 no folder filter, tests blank folder default"
         }
       ]
     },
     {
       "name": "apple-reminders",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/apple/apple-reminders/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/apple/apple-reminders/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -213,7 +213,7 @@
           "expected_fields": {
             "operation": "list_today"
           },
-          "description": "List today's reminders — simple query"
+          "description": "List today's reminders \u2014 simple query"
         },
         {
           "id": "apple-reminders_4",
@@ -221,7 +221,7 @@
           "expected_fields": {
             "operation": "list_overdue"
           },
-          "description": "List overdue — edge case operation"
+          "description": "List overdue \u2014 edge case operation"
         },
         {
           "id": "apple-reminders_5",
@@ -230,13 +230,13 @@
             "operation": "create_list",
             "new_list_name": "Vacation Planning"
           },
-          "description": "Create list — uncommon operation"
+          "description": "Create list \u2014 uncommon operation"
         }
       ]
     },
     {
       "name": "imessage",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/apple/imessage/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/apple/imessage/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -249,7 +249,7 @@
             "message_text": "On my way, be there in 10!",
             "service": "auto"
           },
-          "description": "Basic send with phone number — tests default service=auto"
+          "description": "Basic send with phone number \u2014 tests default service=auto"
         },
         {
           "id": "imessage_2",
@@ -289,13 +289,13 @@
             "operation": "watch",
             "chat_id": 3
           },
-          "description": "Watch mode — uncommon operation, conversational phrasing"
+          "description": "Watch mode \u2014 uncommon operation, conversational phrasing"
         }
       ]
     },
     {
       "name": "himalaya",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/email/himalaya/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/email/himalaya/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -307,7 +307,7 @@
             "folder": "INBOX",
             "page": 1
           },
-          "description": "Basic inbox listing — tests INBOX default and page=1 default"
+          "description": "Basic inbox listing \u2014 tests INBOX default and page=1 default"
         },
         {
           "id": "himalaya_2",
@@ -354,7 +354,7 @@
     },
     {
       "name": "gif-search",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/media/gif-search/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/media/gif-search/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -367,7 +367,7 @@
             "limit": 5,
             "format": "tinygif"
           },
-          "description": "Basic GIF search — tests defaults (search_urls, limit=5, tinygif)"
+          "description": "Basic GIF search \u2014 tests defaults (search_urls, limit=5, tinygif)"
         },
         {
           "id": "gif-search_2",
@@ -399,7 +399,7 @@
             "limit": 3,
             "content_filter": "high"
           },
-          "description": "Metadata mode with safe filter — edge case operation"
+          "description": "Metadata mode with safe filter \u2014 edge case operation"
         },
         {
           "id": "gif-search_5",
@@ -409,13 +409,13 @@
             "query": "something went wrong",
             "content_filter": "medium"
           },
-          "description": "Conversational/real-world request — natural language, default filter"
+          "description": "Conversational/real-world request \u2014 natural language, default filter"
         }
       ]
     },
     {
       "name": "github-issues",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/github/github-issues/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/github/github-issues/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -458,7 +458,7 @@
             "repo": "Snail3D/snailprint",
             "close_reason": "not planned"
           },
-          "description": "Close with wontfix reason — tests close_reason inference"
+          "description": "Close with wontfix reason \u2014 tests close_reason inference"
         },
         {
           "id": "github-issues_5",
@@ -468,13 +468,13 @@
             "issue_number": 33,
             "comment_body": "I reproduced this on macOS 15, will investigate"
           },
-          "description": "Add comment — conversational phrasing"
+          "description": "Add comment \u2014 conversational phrasing"
         }
       ]
     },
     {
       "name": "github-pr-workflow",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/github/github-pr-workflow/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/github/github-pr-workflow/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -534,7 +534,7 @@
     },
     {
       "name": "github-repo-management",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/github/github-repo-management/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/github/github-repo-management/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -546,7 +546,7 @@
             "repo": "Snail3D/snailprint",
             "shallow": false
           },
-          "description": "Basic clone — tests shallow=false default"
+          "description": "Basic clone \u2014 tests shallow=false default"
         },
         {
           "id": "github-repo-management_2",
@@ -579,7 +579,7 @@
             "secret_name": "OPENAI_API_KEY",
             "secret_value": "sk-abc123xyz"
           },
-          "description": "Secret management — sensitive data handling"
+          "description": "Secret management \u2014 sensitive data handling"
         },
         {
           "id": "github-repo-management_5",
@@ -596,7 +596,7 @@
     },
     {
       "name": "linear",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/productivity/linear/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/productivity/linear/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -606,7 +606,7 @@
           "expected_fields": {
             "operation": "my_issues"
           },
-          "description": "List my issues — simple common operation"
+          "description": "List my issues \u2014 simple common operation"
         },
         {
           "id": "linear_2",
@@ -647,13 +647,13 @@
             "issue_id": "ENG-55",
             "priority": 1
           },
-          "description": "Set priority — tests urgent=1 alias mapping"
+          "description": "Set priority \u2014 tests urgent=1 alias mapping"
         }
       ]
     },
     {
       "name": "notion",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/productivity/notion/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/productivity/notion/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -716,7 +716,7 @@
     },
     {
       "name": "find-nearby",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/leisure/find-nearby/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/leisure/find-nearby/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -726,10 +726,12 @@
           "expected_fields": {
             "location_mode": "address",
             "near": "downtown Austin",
-            "place_types": ["restaurant"],
+            "place_types": [
+              "restaurant"
+            ],
             "radius": 1500
           },
-          "description": "Basic restaurant search by city — tests defaults (radius=1500, limit=15)"
+          "description": "Basic restaurant search by city \u2014 tests defaults (radius=1500, limit=15)"
         },
         {
           "id": "find-nearby_2",
@@ -737,7 +739,10 @@
           "expected_fields": {
             "location_mode": "address",
             "near": "Times Square, New York",
-            "place_types": ["cafe", "pharmacy"],
+            "place_types": [
+              "cafe",
+              "pharmacy"
+            ],
             "radius": 500,
             "limit": 5
           },
@@ -750,7 +755,9 @@
             "location_mode": "coordinates",
             "lat": 30.2672,
             "lon": -97.7431,
-            "place_types": ["fuel"]
+            "place_types": [
+              "fuel"
+            ]
           },
           "description": "Coordinates mode with fuel alias"
         },
@@ -760,7 +767,9 @@
           "expected_fields": {
             "location_mode": "address",
             "near": "90210",
-            "place_types": ["hotel"],
+            "place_types": [
+              "hotel"
+            ],
             "radius": 2000
           },
           "description": "Zip code location, hotel type, km to meters conversion"
@@ -771,15 +780,17 @@
           "expected_fields": {
             "location_mode": "address",
             "near": "Eiffel Tower",
-            "place_types": ["restaurant"]
+            "place_types": [
+              "restaurant"
+            ]
           },
-          "description": "Casual real-world request — landmark, food implied as restaurant"
+          "description": "Casual real-world request \u2014 landmark, food implied as restaurant"
         }
       ]
     },
     {
       "name": "webhook-subscriptions",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/devops/webhook-subscriptions/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/devops/webhook-subscriptions/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -838,7 +849,7 @@
     },
     {
       "name": "google-workspace",
-      "skill_md_path": null,
+      "skill_md_path": "~/.hermes/skills/productivity/google-workspace/SKILL.md",
       "skill_yaml_path": "~/.hermes/skills/productivity/google-workspace/SKILL.yaml",
       "builtin_yaml_path": null,
       "tests": [
@@ -850,7 +861,7 @@
             "gmail_action": "search",
             "gmail_query": "is:unread newer_than:1d"
           },
-          "description": "Gmail search — unread + today query combination"
+          "description": "Gmail search \u2014 unread + today query combination"
         },
         {
           "id": "google-workspace_2",
@@ -888,15 +899,15 @@
         },
         {
           "id": "google-workspace_5",
-          "user_message": "Send an email to team@mycompany.com with subject 'Heads up — server maintenance tonight' saying 'Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.'",
+          "user_message": "Send an email to team@mycompany.com with subject 'Heads up \u2014 server maintenance tonight' saying 'Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.'",
           "expected_fields": {
             "service": "gmail",
             "gmail_action": "send",
             "gmail_to": "team@mycompany.com",
-            "gmail_subject": "Heads up — server maintenance tonight",
+            "gmail_subject": "Heads up \u2014 server maintenance tonight",
             "gmail_html": false
           },
-          "description": "Send email — tests html=false default and plain text body"
+          "description": "Send email \u2014 tests html=false default and plain text body"
         }
       ]
     }

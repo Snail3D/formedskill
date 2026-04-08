@@ -204,16 +204,26 @@ def run_monolithic(
 
     skill_md_content = md_path.read_text(encoding="utf-8")
 
+    # Realistic Hermes prompt: model sees a system prompt with skill index,
+    # then gets full SKILL.md via a simulated skill_view() tool result.
+    # This matches how Hermes actually works — the model doesn't get the
+    # full skill definition in the system prompt.
     system_prompt = (
-        "You are Hermes Agent. Here is a skill definition:\n\n"
-        f"{skill_md_content}\n\n"
-        "The user wants to perform an action. Generate ONLY the exact command or API call. "
-        "Output the parameters as JSON."
+        "You are Hermes Agent, an intelligent AI assistant. You have tools available. "
+        "Use them when appropriate. Be direct and efficient.\n\n"
+        "## Available Skills\n"
+        f"  - {Path(skill_md_path).parent.name}: (loaded below)\n"
     )
 
     messages = [
         {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_message},
+        {"role": "assistant", "content": None, "tool_calls": [
+            {"id": "call_sv", "type": "function", "function": {
+                "name": "skill_view", "arguments": json.dumps({"name": Path(skill_md_path).parent.name})
+            }}
+        ]},
+        {"role": "tool", "content": skill_md_content, "tool_call_id": "call_sv"},
+        {"role": "user", "content": user_message + "\n\nRespond with the exact command or API call as JSON parameters."},
     ]
 
     try:
