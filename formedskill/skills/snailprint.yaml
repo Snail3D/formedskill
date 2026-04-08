@@ -1,0 +1,153 @@
+skill:
+  name: snailprint
+  version: "1.0.0"
+  description: >-
+    3D print pipeline — generate, search, slice, print. Supports text-to-3D,
+    photo-to-3D, MakerWorld search, and direct STL/3MF file printing.
+  tags: [3d-print, bambu, makerworld, generate, slicer]
+  platforms: [macos, linux]
+
+action:
+  type: http
+  method: POST
+  url: "http://localhost:7780/api/print/start"
+  headers:
+    Content-Type: "application/json"
+  timeout: 120
+
+fields:
+  - id: mode
+    ask: "What type of print job is this?"
+    type: options
+    options:
+      generate: "Create a 3D model from a text description"
+      image: "Convert a single photo into a 3D model"
+      photos: "Reconstruct 3D model from multiple photos of a real object"
+      file: "Print an existing STL or 3MF file"
+      makerworld: "Search MakerWorld for a model and print it"
+    required: true
+    infer_from: >-
+      User describes an object to create -> generate.
+      User mentions a photo/image -> image.
+      User mentions multiple photos/angles -> photos.
+      User mentions a file path ending in .stl/.3mf -> file.
+      User wants to search/find/browse -> makerworld.
+
+  - id: prompt
+    ask: "What should we generate? Describe the 3D model."
+    type: text
+    show_when: "mode == generate"
+    infer_from: >-
+      Extract the object description from the user's message.
+      Keep it concise but descriptive. Examples: "dragon figurine",
+      "phone stand with cable slot", "miniature castle tower".
+
+  - id: query
+    ask: "What should we search for on MakerWorld?"
+    type: text
+    show_when: "mode == makerworld"
+    infer_from: "Extract the search terms from the user's message."
+
+  - id: image
+    ask: "What is the path to the photo?"
+    type: text
+    show_when: "mode == image"
+    infer_from: "Extract the file path from the user's message."
+
+  - id: images
+    ask: "List all photo paths as a JSON array."
+    type: json_array
+    show_when: "mode == photos"
+    infer_from: "Extract all file paths mentioned by the user as a JSON array of strings."
+    validation:
+      min_items: 2
+      max_items: 12
+      item_pattern: ".*\\.(jpg|jpeg|png|webp)$"
+
+  - id: file
+    ask: "What is the path to the STL/3MF file?"
+    type: text
+    show_when: "mode == file"
+    infer_from: "Extract the file path from the user's message."
+
+  - id: filament
+    ask: "What filament type?"
+    type: options
+    options:
+      PLA: "Standard, easy to print, most common"
+      PETG: "Stronger, heat resistant, slightly flexible"
+      TPU: "Flexible/rubber-like material"
+      ABS: "Strong, heat resistant, needs enclosure"
+    default: PLA
+    infer_from: "Did the user mention a material? PLA, PETG, TPU, or ABS. If not mentioned, use default."
+
+  - id: color
+    ask: "What color filament?"
+    type: text
+    default: null
+    infer_from: "Did the user mention a color? If not, leave blank."
+
+  - id: scale_mm
+    ask: "What size in millimeters?"
+    type: number
+    default: 50
+    infer_from: >-
+      Did the user mention a size? Look for mm, cm, inches.
+      Convert to mm. If not mentioned, use default 50.
+    validation:
+      min: 5
+      max: 500
+
+  - id: engine
+    ask: "Which 3D generation engine?"
+    type: options
+    options:
+      hunyuan: "High detail, production quality prints (~5 min generation)"
+      spar3d: "Quick preview, fast iteration (~1.5 min generation)"
+    default: hunyuan
+    show_when: "mode in [generate, image, photos]"
+    infer_from: >-
+      User says quick/fast/preview/test/rough/draft -> spar3d.
+      User says detailed/production/final/high quality/best -> hunyuan.
+      Not specified -> use default hunyuan.
+
+  - id: printer
+    ask: "Which printer?"
+    type: options
+    options:
+      auto: "Auto-select first available printer"
+      "22E8AJ5C2800915": "P2D2 (Bambu P2S)"
+      "22E8AJ612200029": "P3Pio (Bambu P2S)"
+    default: auto
+    infer_from: >-
+      User says P2D2 -> 22E8AJ5C2800915.
+      User says P3Pio -> 22E8AJ612200029.
+      User names a printer -> match it. Otherwise -> auto.
+    aliases:
+      P2D2: "22E8AJ5C2800915"
+      p2d2: "22E8AJ5C2800915"
+      P3Pio: "22E8AJ612200029"
+      p3pio: "22E8AJ612200029"
+
+  - id: auto_print
+    ask: "Send to printer automatically after slicing?"
+    type: boolean
+    default: true
+    infer_from: "User says 'just slice' or 'don't print' or 'preview only' -> false. Otherwise true."
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to {{mode}} print:
+    {% if mode == generate %}- Model: {{prompt}}{% endif %}
+    {% if mode == makerworld %}- Search: {{query}}{% endif %}
+    {% if mode == image %}- Photo: {{image}}{% endif %}
+    {% if mode == photos %}- Photos: {{images}}{% endif %}
+    {% if mode == file %}- File: {{file}}{% endif %}
+    - Filament: {{filament}}{% if color %} ({{color}}){% endif %}
+    - Size: {{scale_mm}}mm
+    {% if engine %}- Engine: {{engine}}{% endif %}
+    - Printer: {{printer}}
+    - Auto-print: {{auto_print}}
+
+    Proceed? (yes/no)

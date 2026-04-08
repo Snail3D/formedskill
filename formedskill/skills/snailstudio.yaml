@@ -1,0 +1,113 @@
+skill:
+  name: snailstudio
+  version: "1.0.0"
+  description: >-
+    Video production pipeline — create documentary, cinematic, educational, or
+    artistic videos from topics. Uses wiki-to-video with AI narration and music.
+  tags: [video, documentary, cinematic, tts, music, wiki]
+  platforms: [macos, linux]
+
+action:
+  type: http
+  method: POST
+  url: "http://localhost:7777/api/story/create"
+  headers:
+    Content-Type: "application/json"
+  timeout: 300
+
+fields:
+  - id: topic
+    ask: "What is the video topic? Use the Wikipedia article name if possible."
+    type: text
+    required: true
+    infer_from: >-
+      Extract the main subject/topic from the user's message.
+      Prefer the canonical Wikipedia article title.
+      Examples: "Mariana Trench", "Black Holes", "The Roman Empire".
+
+  - id: segments
+    ask: "How many video segments?"
+    type: number
+    default: 6
+    infer_from: >-
+      Did the user mention a number of segments, parts, or sections?
+      Words like "short" -> 3, "long" or "detailed" -> 8-10.
+      If not specified, use default 6.
+    validation:
+      min: 1
+      max: 20
+
+  - id: style
+    ask: "What visual style?"
+    type: options
+    options:
+      cinematic: "Dramatic, movie-like visuals with sweeping shots"
+      documentary: "Informative, factual presentation with evidence-based framing"
+      artistic: "Creative, abstract visuals with expressive imagery"
+      educational: "Clear, instructional format with step-by-step presentation"
+    default: cinematic
+    infer_from: >-
+      User says documentary/informative/factual/news -> documentary.
+      User says educational/teach/learn/explain/tutorial -> educational.
+      User says artistic/creative/abstract/experimental -> artistic.
+      User says cinematic/dramatic/epic/movie/film -> cinematic.
+      Not specified -> use default cinematic.
+
+  - id: music_style
+    ask: "Describe the background music style in a few words."
+    type: text
+    default: null
+    infer_from: >-
+      Did the user describe the music or soundtrack?
+      Extract that description directly (e.g., "eerie deep ocean music",
+      "epic orchestral", "calm ambient piano").
+      If not mentioned, leave blank.
+
+  - id: voice
+    ask: "Which voice for narration?"
+    type: options
+    options:
+      "clone:eric": "Eric's cloned voice (default, Qwen3-TTS, natural)"
+      bf_emma: "Emma (Kokoro TTS, female, clear)"
+    default: "clone:eric"
+    infer_from: >-
+      User says 'my voice', 'Eric', or 'use my voice' -> clone:eric.
+      User says 'Emma' or 'female voice' -> bf_emma.
+      Not specified -> default clone:eric.
+    aliases:
+      eric: "clone:eric"
+      "my voice": "clone:eric"
+      Emma: bf_emma
+      emma: bf_emma
+      female: bf_emma
+
+  - id: width
+    ask: "Video width in pixels?"
+    type: number
+    default: 1920
+    infer_from: >-
+      Did the user specify a resolution or aspect ratio?
+      1080p/HD -> 1920. 4K -> 3840. Square/Instagram -> 1080. Vertical/portrait -> 1080.
+      If not specified, use default 1920.
+
+  - id: height
+    ask: "Video height in pixels?"
+    type: number
+    default: 1080
+    infer_from: >-
+      Did the user specify a resolution or aspect ratio?
+      1080p/HD -> 1080. 4K -> 2160. Square/Instagram -> 1080. Vertical/portrait -> 1920.
+      If not specified, use default 1080.
+
+confirmation:
+  enabled: true
+  template: |
+    Ready to create video:
+    - Topic: {{topic}}
+    - Segments: {{segments}}
+    - Style: {{style}}
+    {% if music_style %}- Music: {{music_style}}{% endif %}
+    - Voice: {{voice}}
+    - Resolution: {{width}}x{{height}}
+
+    This will take several minutes. Proceed? (yes/no)

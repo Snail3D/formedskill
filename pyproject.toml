@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "formedskill"
+version = "0.1.0"
+description = "Break complex LLM tool calls into step-by-step form filling. 3B models score 100%."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Eric Woodard", email = "eric@snail3d.com" }
+]
+keywords = ["llm", "forms", "tool-calling", "hermes", "agents"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+yaml = ["pyyaml>=6.0"]
+hermes = ["pyyaml>=6.0"]
+dev = ["pytest>=7.0", "pyyaml>=6.0"]
+
+[project.scripts]
+formedskill = "formedskill.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Snail3D/formedskill"
+Repository = "https://github.com/Snail3D/formedskill"
+Issues = "https://github.com/Snail3D/formedskill/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["formedskill"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
