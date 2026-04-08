@@ -1,0 +1,2582 @@
+{
+  "meta": {
+    "model": "nemotron-cascade-2",
+    "endpoint": "http://localhost:11434",
+    "mode": "batched",
+    "timestamp": "20260408T073511Z",
+    "description": "Single-shot batched prompt \u2014 all fields in one call"
+  },
+  "skills": [
+    {
+      "name": "snailprint",
+      "yaml_path": "/Users/snailmac/formedskill/formedskill/skills/snailprint.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "snailprint_1",
+          "user_message": "Print me a dragon figurine in black PLA, 80mm tall",
+          "description": "Basic text-to-print with color and size",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "dragon figurine",
+            "filament": "PLA",
+            "color": "black",
+            "scale_mm": 80
+          },
+          "collected": {
+            "mode": "generate",
+            "prompt": "dragon figurine",
+            "filament": "PLA",
+            "color": "black",
+            "scale_mm": 80,
+            "engine": "hunyuan",
+            "printer": "auto"
+          },
+          "raw_response": "mode: generate\nprompt: dragon figurine\nfilament: PLA\ncolor: black\nscale_mm: 80\nengine: hunyuan\nprinter: auto",
+          "elapsed": 9.008,
+          "score": {
+            "per_field": {
+              "mode": true,
+              "prompt": true,
+              "filament": true,
+              "color": true,
+              "scale_mm": true
+            },
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "engine",
+              "printer"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailprint_2",
+          "user_message": "Search MakerWorld for a cable management box and print it in white PETG on P3Pio, 120mm",
+          "description": "MakerWorld search with filament override, color, size, and specific printer",
+          "expected_fields": {
+            "mode": "makerworld",
+            "query": "cable management box",
+            "filament": "PETG",
+            "color": "white",
+            "scale_mm": 120,
+            "printer": "22E8AJ612200029"
+          },
+          "collected": {
+            "mode": "makerworld",
+            "query": "cable management box",
+            "filament": "PETG",
+            "color": "white",
+            "scale_mm": 120,
+            "printer": "22E8AJ612200029",
+            "auto_print": true
+          },
+          "raw_response": "mode: makerworld\nquery: cable management box\nfilament: PETG\ncolor: white\nscale_mm: 120\nprinter: 22E8AJ612200029\nauto_print: true",
+          "elapsed": 13.112,
+          "score": {
+            "per_field": {
+              "mode": true,
+              "query": true,
+              "filament": true,
+              "color": true,
+              "scale_mm": true,
+              "printer": true
+            },
+            "correct": 6,
+            "total": 6,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "auto_print"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailprint_3",
+          "user_message": "Print a small phone stand for me",
+          "description": "Minimal request \u2014 tests correct defaults (PLA, 50mm, hunyuan, auto_print)",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "phone stand",
+            "filament": "PLA",
+            "scale_mm": 50,
+            "engine": "hunyuan",
+            "auto_print": true
+          },
+          "collected": {
+            "mode": "generate",
+            "prompt": "small phone stand",
+            "filament": "PLA",
+            "scale_mm": 50,
+            "engine": "hunyuan",
+            "printer": "auto",
+            "auto_print": true
+          },
+          "raw_response": "mode: generate\nprompt: small phone stand\nfilament: PLA\ncolor:\nscale_mm: 50\nengine: hunyuan\nprinter: auto\nauto_print: true",
+          "elapsed": 12.455,
+          "score": {
+            "per_field": {
+              "mode": true,
+              "prompt": true,
+              "filament": true,
+              "scale_mm": true,
+              "engine": true,
+              "auto_print": true
+            },
+            "correct": 6,
+            "total": 6,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "printer"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailprint_4",
+          "user_message": "Just slice this file for me, don't print it: /home/eric/models/bracket.stl",
+          "description": "File mode with auto_print disabled (slice-only edge case)",
+          "expected_fields": {
+            "mode": "file",
+            "file": "/home/eric/models/bracket.stl",
+            "auto_print": false
+          },
+          "collected": {
+            "mode": "file",
+            "file": "/home/eric/models/bracket.stl",
+            "filament": "PLA",
+            "scale_mm": 50,
+            "printer": "auto",
+            "auto_print": false
+          },
+          "raw_response": "mode: file\nfile: /home/eric/models/bracket.stl\nfilament: PLA\nscale_mm: 50\nprinter: auto\nauto_print: false",
+          "elapsed": 17.813,
+          "score": {
+            "per_field": {
+              "mode": true,
+              "file": true,
+              "auto_print": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "filament",
+              "printer",
+              "scale_mm"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailprint_5",
+          "user_message": "Make a quick preview of a castle tower, flexible material, kinda big",
+          "description": "Conversational request with implicit filament (flexible=TPU), quick=spar3d, big size",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "castle tower",
+            "filament": "TPU",
+            "engine": "spar3d",
+            "scale_mm": 200
+          },
+          "collected": {
+            "mode": "generate",
+            "prompt": "castle tower",
+            "filament": "TPU",
+            "scale_mm": 50,
+            "engine": "spar3d",
+            "printer": "auto",
+            "auto_print": true
+          },
+          "raw_response": "mode: generate\nprompt: castle tower\nfilament: TPU\ncolor: \nscale_mm: 50\nengine: spar3d\nprinter: auto\nauto_print: true",
+          "elapsed": 22.002,
+          "score": {
+            "per_field": {
+              "mode": true,
+              "prompt": true,
+              "filament": true,
+              "engine": true,
+              "scale_mm": false
+            },
+            "correct": 4,
+            "total": 5,
+            "accuracy": 0.8,
+            "hallucinated_keys": [
+              "auto_print",
+              "printer"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 24,
+      "total": 25,
+      "accuracy": 0.96,
+      "elapsed": 74.38999999999999
+    },
+    {
+      "name": "snailstudio",
+      "yaml_path": "/Users/snailmac/formedskill/formedskill/skills/snailstudio.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "snailstudio_1",
+          "user_message": "Make a video about the Mariana Trench",
+          "description": "Basic video creation \u2014 tests all defaults (cinematic style, 6 segments, eric voice)",
+          "expected_fields": {
+            "topic": "Mariana Trench",
+            "style": "cinematic",
+            "segments": 6,
+            "voice": "clone:eric"
+          },
+          "collected": {
+            "topic": "Mariana Trench",
+            "segments": 6,
+            "style": "cinematic",
+            "voice": "clone:eric",
+            "width": 1920,
+            "height": 1080
+          },
+          "raw_response": "topic: Mariana Trench\nsegments: 6\nstyle: cinematic\nvoice: clone:eric\nwidth: 1920\nheight: 1080",
+          "elapsed": 8.066,
+          "score": {
+            "per_field": {
+              "topic": true,
+              "style": true,
+              "segments": true,
+              "voice": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "height",
+              "width"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailstudio_2",
+          "user_message": "Create a 10-segment documentary video about the Roman Empire with epic orchestral music",
+          "description": "Multiple explicit params: documentary style, long segment count, specific music",
+          "expected_fields": {
+            "topic": "Roman Empire",
+            "style": "documentary",
+            "segments": 10,
+            "music_style": "epic orchestral"
+          },
+          "collected": {
+            "topic": "Roman Empire",
+            "segments": 10,
+            "style": "documentary",
+            "music_style": "epic orchestral",
+            "voice": "clone:eric",
+            "width": 1920,
+            "height": 1080
+          },
+          "raw_response": "topic: Roman Empire\nsegments: 10\nstyle: documentary\nmusic_style: epic orchestral\nvoice: clone:eric\nwidth: 1920\nheight: 1080",
+          "elapsed": 9.215,
+          "score": {
+            "per_field": {
+              "topic": true,
+              "style": true,
+              "segments": true,
+              "music_style": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "height",
+              "voice",
+              "width"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailstudio_3",
+          "user_message": "Short educational video on black holes",
+          "description": "Short=3 segments inferred from 'short', educational style",
+          "expected_fields": {
+            "topic": "Black Holes",
+            "style": "educational",
+            "segments": 3
+          },
+          "collected": {
+            "topic": "Black holes",
+            "segments": 3,
+            "style": "educational",
+            "voice": "clone:eric",
+            "width": 1920,
+            "height": 1080
+          },
+          "raw_response": "topic: Black holes\nsegments: 3\nstyle: educational\nvoice: clone:eric\nwidth: 1920\nheight: 1080",
+          "elapsed": 5.732,
+          "score": {
+            "per_field": {
+              "topic": true,
+              "style": true,
+              "segments": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "height",
+              "voice",
+              "width"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailstudio_4",
+          "user_message": "Make an artistic video about bioluminescent deep sea creatures, 4K resolution, use Emma's voice",
+          "description": "Edge case: 4K resolution dimensions, non-default voice (Emma)",
+          "expected_fields": {
+            "topic": "bioluminescent deep sea creatures",
+            "style": "artistic",
+            "voice": "bf_emma",
+            "width": 3840,
+            "height": 2160
+          },
+          "collected": {
+            "topic": "bioluminescent deep sea creatures",
+            "segments": 6,
+            "style": "artistic",
+            "voice": "bf_emma",
+            "width": 3840,
+            "height": 2160
+          },
+          "raw_response": "topic: bioluminescent deep sea creatures\nsegments: 6\nstyle: artistic\nvoice: bf_emma\nwidth: 3840\nheight: 2160",
+          "elapsed": 9.749,
+          "score": {
+            "per_field": {
+              "topic": true,
+              "style": true,
+              "voice": true,
+              "width": true,
+              "height": true
+            },
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "segments"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "snailstudio_5",
+          "user_message": "Hey can you make me a cool video about the Amazon rainforest? Something dramatic with jungle sounds music",
+          "description": "Conversational/real-world request with casual language and implicit cinematic style",
+          "expected_fields": {
+            "topic": "Amazon rainforest",
+            "style": "cinematic",
+            "music_style": "jungle sounds"
+          },
+          "collected": {
+            "topic": "Amazon rainforest",
+            "style": "cinematic",
+            "music_style": "jungle sounds music"
+          },
+          "raw_response": "topic: Amazon rainforest\nstyle: cinematic\nmusic_style: jungle sounds music",
+          "elapsed": 6.579,
+          "score": {
+            "per_field": {
+              "topic": true,
+              "style": true,
+              "music_style": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 19,
+      "total": 19,
+      "accuracy": 1.0,
+      "elapsed": 39.341
+    },
+    {
+      "name": "apple-notes",
+      "yaml_path": "/Users/snailmac/.hermes/skills/apple/apple-notes/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "apple-notes_1",
+          "user_message": "Create a new note called 'Shopping List'",
+          "description": "Basic note creation with explicit title",
+          "expected_fields": {
+            "operation": "create",
+            "title": "Shopping List"
+          },
+          "collected": {
+            "operation": "create",
+            "title": "Shopping List"
+          },
+          "raw_response": "operation: create\ntitle: Shopping List",
+          "elapsed": 2.424,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "title": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-notes_2",
+          "user_message": "Search my notes for 'kubernetes deployment'",
+          "description": "Keyword search in notes",
+          "expected_fields": {
+            "operation": "search",
+            "query": "kubernetes deployment"
+          },
+          "collected": {
+            "operation": "search",
+            "query": "kubernetes deployment"
+          },
+          "raw_response": "operation: search\nquery: kubernetes deployment",
+          "elapsed": 2.257,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "query": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-notes_3",
+          "user_message": "List all my notes in the Work folder",
+          "description": "List with folder filter",
+          "expected_fields": {
+            "operation": "list",
+            "folder": "Work"
+          },
+          "collected": {
+            "operation": "list",
+            "folder": "Work"
+          },
+          "raw_response": "operation: list\nfolder: Work",
+          "elapsed": 2.433,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "folder": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-notes_4",
+          "user_message": "Export my notes to markdown",
+          "description": "Export edge case",
+          "expected_fields": {
+            "operation": "export"
+          },
+          "collected": {
+            "operation": "export"
+          },
+          "raw_response": "operation: export",
+          "elapsed": 2.83,
+          "score": {
+            "per_field": {
+              "operation": true
+            },
+            "correct": 1,
+            "total": 1,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-notes_5",
+          "user_message": "Can you show me all my notes?",
+          "description": "Conversational list request \u2014 no folder filter, tests blank folder default",
+          "expected_fields": {
+            "operation": "list"
+          },
+          "collected": {
+            "operation": "list"
+          },
+          "raw_response": "operation: list\nfolder:",
+          "elapsed": 4.583,
+          "score": {
+            "per_field": {
+              "operation": true
+            },
+            "correct": 1,
+            "total": 1,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 8,
+      "total": 8,
+      "accuracy": 1.0,
+      "elapsed": 14.527
+    },
+    {
+      "name": "apple-reminders",
+      "yaml_path": "/Users/snailmac/.hermes/skills/apple/apple-reminders/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "apple-reminders_1",
+          "user_message": "Remind me to call the dentist tomorrow at 9am",
+          "description": "Basic add reminder with due date and time",
+          "expected_fields": {
+            "operation": "add",
+            "title": "Call the dentist",
+            "due": "2026-04-08 09:00"
+          },
+          "collected": {
+            "operation": "add",
+            "title": "call the dentist",
+            "due": "tomorrow 09:00"
+          },
+          "raw_response": "operation: add\ntitle: call the dentist\ndue: tomorrow 09:00",
+          "elapsed": 13.66,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "title": true,
+              "due": false
+            },
+            "correct": 2,
+            "total": 3,
+            "accuracy": 0.6667,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-reminders_2",
+          "user_message": "Add 'Buy milk and eggs' to my Shopping list",
+          "description": "Add to specific list with no due date",
+          "expected_fields": {
+            "operation": "add",
+            "title": "Buy milk and eggs",
+            "list_name": "Shopping"
+          },
+          "collected": {
+            "operation": "add",
+            "title": "Buy milk and eggs",
+            "list_name": "Shopping"
+          },
+          "raw_response": "operation: add\ntitle: Buy milk and eggs\nlist_name: Shopping",
+          "elapsed": 4.98,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "title": true,
+              "list_name": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-reminders_3",
+          "user_message": "What reminders do I have today?",
+          "description": "List today's reminders \u2014 simple query",
+          "expected_fields": {
+            "operation": "list_today"
+          },
+          "collected": {
+            "operation": "list_today"
+          },
+          "raw_response": "operation: list_today",
+          "elapsed": 4.264,
+          "score": {
+            "per_field": {
+              "operation": true
+            },
+            "correct": 1,
+            "total": 1,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-reminders_4",
+          "user_message": "Show me my overdue reminders",
+          "description": "List overdue \u2014 edge case operation",
+          "expected_fields": {
+            "operation": "list_overdue"
+          },
+          "collected": {
+            "operation": "list_overdue"
+          },
+          "raw_response": "operation: list_overdue",
+          "elapsed": 2.909,
+          "score": {
+            "per_field": {
+              "operation": true
+            },
+            "correct": 1,
+            "total": 1,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "apple-reminders_5",
+          "user_message": "Create a new list called Vacation Planning",
+          "description": "Create list \u2014 uncommon operation",
+          "expected_fields": {
+            "operation": "create_list",
+            "new_list_name": "Vacation Planning"
+          },
+          "collected": {
+            "operation": "create_list",
+            "new_list_name": "Vacation Planning"
+          },
+          "raw_response": "operation: create_list\nnew_list_name: Vacation Planning",
+          "elapsed": 3.828,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "new_list_name": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 9,
+      "total": 10,
+      "accuracy": 0.9,
+      "elapsed": 29.641
+    },
+    {
+      "name": "imessage",
+      "yaml_path": "/Users/snailmac/.hermes/skills/apple/imessage/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "imessage_1",
+          "user_message": "Send a message to +14155551234 saying 'On my way, be there in 10!'",
+          "description": "Basic send with phone number \u2014 tests default service=auto",
+          "expected_fields": {
+            "operation": "send",
+            "recipient": "+14155551234",
+            "message_text": "On my way, be there in 10!",
+            "service": "auto"
+          },
+          "collected": {
+            "operation": "send",
+            "recipient": "+14155551234",
+            "message_text": "On my way, be there in 10!",
+            "service": "auto"
+          },
+          "raw_response": "operation: send\nrecipient: +14155551234\nmessage_text: On my way, be there in 10!\nattachment_path: \nservice: auto",
+          "elapsed": 10.129,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "recipient": true,
+              "message_text": true,
+              "service": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "imessage_2",
+          "user_message": "Text john@icloud.com via iMessage: 'Hey, did you get my email?'",
+          "description": "Send with Apple ID and explicit iMessage service",
+          "expected_fields": {
+            "operation": "send",
+            "recipient": "john@icloud.com",
+            "message_text": "Hey, did you get my email?",
+            "service": "imessage"
+          },
+          "collected": {
+            "operation": "send",
+            "recipient": "john@icloud.com",
+            "message_text": "Hey, did you get my email?",
+            "service": "imessage"
+          },
+          "raw_response": "operation: send\nrecipient: john@icloud.com\nmessage_text: Hey, did you get my email?\nattachment_path: \nservice: imessage",
+          "elapsed": 11.536,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "recipient": true,
+              "message_text": true,
+              "service": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "imessage_3",
+          "user_message": "Show me my recent chats",
+          "description": "List chats with default limit=10",
+          "expected_fields": {
+            "operation": "list_chats",
+            "limit": 10
+          },
+          "collected": {
+            "operation": "list_chats",
+            "limit": 10
+          },
+          "raw_response": "operation: list_chats\nlimit: 10",
+          "elapsed": 3.557,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "limit": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "imessage_4",
+          "user_message": "Show me the last 50 messages from chat 7, including attachments",
+          "description": "History with non-default limit and attachments enabled",
+          "expected_fields": {
+            "operation": "history",
+            "chat_id": 7,
+            "history_limit": 50,
+            "include_attachments": true
+          },
+          "collected": {
+            "operation": "history",
+            "chat_id": 7,
+            "history_limit": 50,
+            "include_attachments": true
+          },
+          "raw_response": "operation: history\nchat_id: 7\nhistory_limit: 50\ninclude_attachments: true",
+          "elapsed": 5.209,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "chat_id": true,
+              "history_limit": true,
+              "include_attachments": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "imessage_5",
+          "user_message": "Can you watch chat 3 for new incoming messages?",
+          "description": "Watch mode \u2014 uncommon operation, conversational phrasing",
+          "expected_fields": {
+            "operation": "watch",
+            "chat_id": 3
+          },
+          "collected": {
+            "operation": "watch",
+            "chat_id": 3,
+            "include_attachments": false
+          },
+          "raw_response": "operation: watch\nchat_id: 3\ninclude_attachments: false",
+          "elapsed": 5.52,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "chat_id": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "include_attachments"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 16,
+      "total": 16,
+      "accuracy": 1.0,
+      "elapsed": 35.95099999999999
+    },
+    {
+      "name": "himalaya",
+      "yaml_path": "/Users/snailmac/.hermes/skills/email/himalaya/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "himalaya_1",
+          "user_message": "Show me my inbox",
+          "description": "Basic inbox listing \u2014 tests INBOX default and page=1 default",
+          "expected_fields": {
+            "operation": "list_emails",
+            "folder": "INBOX",
+            "page": 1
+          },
+          "collected": {
+            "operation": "list_emails",
+            "folder": "INBOX",
+            "page": 1,
+            "page_size": 20,
+            "output_format": "plain"
+          },
+          "raw_response": "operation: list_emails\naccount:\nfolder: INBOX\npage: 1\npage_size: 20\noutput_format: plain",
+          "elapsed": 9.343,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "folder": true,
+              "page": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "output_format",
+              "page_size"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "himalaya_2",
+          "user_message": "Send an email to alice@example.com with subject 'Meeting Tomorrow' and body 'Hi Alice, can we meet at 2pm?'",
+          "description": "Compose and send with all required fields",
+          "expected_fields": {
+            "operation": "send",
+            "to": "alice@example.com",
+            "subject": "Meeting Tomorrow",
+            "body": "Hi Alice, can we meet at 2pm?"
+          },
+          "collected": {
+            "operation": "send",
+            "to": "alice@example.com",
+            "subject": "Meeting Tomorrow",
+            "body": "Hi Alice, can we meet at 2pm?"
+          },
+          "raw_response": "operation: send\nto: alice@example.com\nsubject: Meeting Tomorrow\nbody: Hi Alice, can we meet at 2pm?",
+          "elapsed": 6.542,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "to": true,
+              "subject": true,
+              "body": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "himalaya_3",
+          "user_message": "Search for emails from boss@company.com about Q4 report",
+          "description": "Search with from and subject operators",
+          "expected_fields": {
+            "operation": "search",
+            "search_query": "from boss@company.com subject Q4 report"
+          },
+          "collected": {
+            "operation": "search",
+            "search_query": "from boss@company.com subject Q4 report",
+            "output_format": "plain"
+          },
+          "raw_response": "operation: search\nsearch_query: from boss@company.com subject Q4 report\noutput_format: plain",
+          "elapsed": 7.393,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "search_query": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "output_format"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "himalaya_4",
+          "user_message": "Forward email 42 to backup@gmail.com with the note 'FYI, see below'",
+          "description": "Forward operation with all required fields",
+          "expected_fields": {
+            "operation": "forward",
+            "message_id": "42",
+            "forward_to": "backup@gmail.com",
+            "body": "FYI, see below"
+          },
+          "collected": {
+            "operation": "forward",
+            "message_id": "42",
+            "forward_to": "backup@gmail.com",
+            "body": "FYI, see below"
+          },
+          "raw_response": "operation: forward\nmessage_id: 42\nforward_to: backup@gmail.com\nbody: FYI, see below",
+          "elapsed": 7.117,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "message_id": true,
+              "forward_to": true,
+              "body": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "himalaya_5",
+          "user_message": "Can you download the attachments from email 99 and save them to my desktop?",
+          "description": "Download attachments to non-default directory",
+          "expected_fields": {
+            "operation": "download_attachment",
+            "message_id": "99",
+            "download_dir": "~/Desktop"
+          },
+          "collected": {
+            "operation": "download_attachment",
+            "message_id": "99",
+            "download_dir": "Desktop"
+          },
+          "raw_response": "operation: download_attachment\nmessage_id: 99\ndownload_dir: Desktop",
+          "elapsed": 7.203,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "message_id": true,
+              "download_dir": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 16,
+      "total": 16,
+      "accuracy": 1.0,
+      "elapsed": 37.598
+    },
+    {
+      "name": "gif-search",
+      "yaml_path": "/Users/snailmac/.hermes/skills/media/gif-search/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "gif-search_1",
+          "user_message": "Find me a thumbs up GIF",
+          "description": "Basic GIF search \u2014 tests defaults (search_urls, limit=5, tinygif)",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "thumbs up",
+            "limit": 5,
+            "format": "tinygif"
+          },
+          "collected": {
+            "operation": "search_urls",
+            "query": "thumbs+up",
+            "limit": 5,
+            "format": "tinygif",
+            "content_filter": "medium",
+            "locale": "en_US"
+          },
+          "raw_response": "operation: search_urls\nquery: thumbs+up\nlimit: 5\nformat: tinygif\ncontent_filter: medium\nlocale: en_US",
+          "elapsed": 11.762,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "query": false,
+              "limit": true,
+              "format": true
+            },
+            "correct": 3,
+            "total": 4,
+            "accuracy": 0.75,
+            "hallucinated_keys": [
+              "content_filter",
+              "locale"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "gif-search_2",
+          "user_message": "Search for 10 celebration GIFs in full quality",
+          "description": "Multiple explicit params: count and full quality format",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "celebration",
+            "limit": 10,
+            "format": "gif"
+          },
+          "collected": {
+            "operation": "search_urls",
+            "query": "celebration+GIFs",
+            "limit": 10,
+            "format": "gif"
+          },
+          "raw_response": "operation: search_urls\nquery: celebration+GIFs\nlimit: 10\nformat: gif",
+          "elapsed": 13.814,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "query": true,
+              "limit": true,
+              "format": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "gif-search_3",
+          "user_message": "Download a mind blown GIF and save it to ~/Downloads/mindblown.gif",
+          "description": "Download mode with explicit save path",
+          "expected_fields": {
+            "operation": "download",
+            "query": "mind blown",
+            "save_path": "~/Downloads/mindblown.gif"
+          },
+          "collected": {
+            "operation": "download",
+            "query": "mind+blown",
+            "save_path": "~/Downloads/mindblown.gif",
+            "content_filter": "medium",
+            "locale": "en_US"
+          },
+          "raw_response": "operation: download\nquery: mind+blown\nsave_path: ~/Downloads/mindblown.gif\ncontent_filter: medium\nlocale: en_US",
+          "elapsed": 8.947,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "query": false,
+              "save_path": true
+            },
+            "correct": 2,
+            "total": 3,
+            "accuracy": 0.6667,
+            "hallucinated_keys": [
+              "content_filter",
+              "locale"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "gif-search_4",
+          "user_message": "Get the full metadata for 3 cat surprised GIFs, family safe",
+          "description": "Metadata mode with safe filter \u2014 edge case operation",
+          "expected_fields": {
+            "operation": "metadata",
+            "query": "cat surprised",
+            "limit": 3,
+            "content_filter": "high"
+          },
+          "collected": {
+            "operation": "metadata",
+            "query": "cat+surprised",
+            "limit": 3,
+            "format": "tinygif",
+            "content_filter": "high"
+          },
+          "raw_response": "operation: metadata\nquery: cat+surprised\nlimit: 3\nformat: tinygif\ncontent_filter: high",
+          "elapsed": 6.875,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "query": false,
+              "limit": true,
+              "content_filter": true
+            },
+            "correct": 3,
+            "total": 4,
+            "accuracy": 0.75,
+            "hallucinated_keys": [
+              "format"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "gif-search_5",
+          "user_message": "Send me a funny reaction gif for when something goes wrong",
+          "description": "Conversational/real-world request \u2014 natural language, default filter",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "something went wrong",
+            "content_filter": "medium"
+          },
+          "collected": {
+            "operation": "search_urls",
+            "query": "funny+reaction+gif+for+when+something+goes+wrong",
+            "limit": 5,
+            "format": "gif",
+            "content_filter": "medium",
+            "locale": "en_US"
+          },
+          "raw_response": "operation: search_urls\nquery: funny+reaction+gif+for+when+something+goes+wrong\nlimit: 5\nformat: gif\ncontent_filter: medium\nlocale: en_US",
+          "elapsed": 13.109,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "query": false,
+              "content_filter": true
+            },
+            "correct": 2,
+            "total": 3,
+            "accuracy": 0.6667,
+            "hallucinated_keys": [
+              "format",
+              "limit",
+              "locale"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 14,
+      "total": 18,
+      "accuracy": 0.7778,
+      "elapsed": 54.507
+    },
+    {
+      "name": "github-issues",
+      "yaml_path": "/Users/snailmac/.hermes/skills/github/github-issues/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "github-issues_1",
+          "user_message": "Create a bug report in Snail3D/SnailOrchestrator: title 'Pipeline crashes on empty queue', body 'Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash.'",
+          "description": "Create issue with repo, title, body, and implied bug label",
+          "expected_fields": {
+            "operation": "create",
+            "repo": "Snail3D/SnailOrchestrator",
+            "title": "Pipeline crashes on empty queue",
+            "labels": "bug"
+          },
+          "collected": {
+            "operation": "create",
+            "repo": "Snail3D/SnailOrchestrator",
+            "title": "Pipeline crashes on empty queue",
+            "body": "Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash.",
+            "labels": "bug"
+          },
+          "raw_response": "operation: create\nrepo: Snail3D/SnailOrchestrator\ntitle: Pipeline crashes on empty queue\nbody: Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash.\nlabels: bug",
+          "elapsed": 11.611,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "repo": true,
+              "title": true,
+              "labels": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "body"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "github-issues_2",
+          "user_message": "List all open issues labeled 'enhancement' in the current repo",
+          "description": "List with state and label filters",
+          "expected_fields": {
+            "operation": "list",
+            "state": "open",
+            "label": "enhancement"
+          },
+          "collected": {
+            "operation": "list",
+            "state": "open",
+            "label": "enhancement"
+          },
+          "raw_response": "operation: list\nstate: open\nlabel: enhancement",
+          "elapsed": 5.489,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "state": true,
+              "label": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-issues_3",
+          "user_message": "View issue #47",
+          "description": "Simple issue view by number",
+          "expected_fields": {
+            "operation": "view",
+            "issue_number": 47
+          },
+          "collected": {
+            "operation": "view",
+            "issue_number": 47
+          },
+          "raw_response": "operation: view\nissue_number: 47",
+          "elapsed": 3.237,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "issue_number": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-issues_4",
+          "user_message": "Close issue #12 in Snail3D/snailprint as won't fix",
+          "description": "Close with wontfix reason \u2014 tests close_reason inference",
+          "expected_fields": {
+            "operation": "close",
+            "issue_number": 12,
+            "repo": "Snail3D/snailprint",
+            "close_reason": "not planned"
+          },
+          "collected": {
+            "operation": "close",
+            "repo": "Snail3D/snailprint",
+            "issue_number": 12,
+            "close_reason": "not planned"
+          },
+          "raw_response": "operation: close\nrepo: Snail3D/snailprint\nissue_number: 12\nclose_reason: not planned",
+          "elapsed": 5.36,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "issue_number": true,
+              "repo": true,
+              "close_reason": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-issues_5",
+          "user_message": "Hey can you add a comment to issue 33 saying 'I reproduced this on macOS 15, will investigate'",
+          "description": "Add comment \u2014 conversational phrasing",
+          "expected_fields": {
+            "operation": "comment",
+            "issue_number": 33,
+            "comment_body": "I reproduced this on macOS 15, will investigate"
+          },
+          "collected": {
+            "operation": "comment",
+            "issue_number": 33,
+            "comment_body": "I reproduced this on macOS 15, will investigate"
+          },
+          "raw_response": "operation: comment\nissue_number: 33\ncomment_body: I reproduced this on macOS 15, will investigate",
+          "elapsed": 4.758,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "issue_number": true,
+              "comment_body": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 16,
+      "total": 16,
+      "accuracy": 1.0,
+      "elapsed": 30.455000000000002
+    },
+    {
+      "name": "github-pr-workflow",
+      "yaml_path": "/Users/snailmac/.hermes/skills/github/github-pr-workflow/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "github-pr-workflow_1",
+          "user_message": "Create a new branch called feat/add-webhook-retry from main",
+          "description": "Create branch with explicit name and default base branch",
+          "expected_fields": {
+            "operation": "create_branch",
+            "branch_name": "feat/add-webhook-retry",
+            "base_branch": "main"
+          },
+          "collected": {
+            "operation": "create_branch",
+            "branch_name": "feat/add-webhook-retry",
+            "base_branch": "main"
+          },
+          "raw_response": "operation: create_branch\nbranch_name: feat/add-webhook-retry\nbase_branch: main",
+          "elapsed": 5.385,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "branch_name": true,
+              "base_branch": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-pr-workflow_2",
+          "user_message": "Open a PR titled 'fix: handle null pointer in parser', request review from octocat and monalisa",
+          "description": "Create PR with multiple reviewers and conventional title",
+          "expected_fields": {
+            "operation": "create_pr",
+            "title": "fix: handle null pointer in parser",
+            "reviewers": "octocat,monalisa",
+            "draft": false
+          },
+          "collected": {
+            "operation": "create_pr",
+            "title": "fix: handle null pointer in parser",
+            "body": "Summary: handle null pointer in parser; Test Plan: add unit tests for null handling",
+            "draft": false,
+            "reviewers": "octocat,monalisa",
+            "base_branch": "main"
+          },
+          "raw_response": "operation: create_pr\ntitle: fix: handle null pointer in parser\nbody: Summary: handle null pointer in parser; Test Plan: add unit tests for null handling\ndraft: false\nreviewers: octocat,monalisa\nbase_branch: main",
+          "elapsed": 16.503,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "title": true,
+              "reviewers": true,
+              "draft": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "base_branch",
+              "body"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "github-pr-workflow_3",
+          "user_message": "Check the CI status on PR 88 and watch until it finishes",
+          "description": "CI checks with watch=true",
+          "expected_fields": {
+            "operation": "checks",
+            "pr_number": 88,
+            "watch": true
+          },
+          "collected": {
+            "operation": "checks",
+            "pr_number": 88,
+            "watch": true
+          },
+          "raw_response": "operation: checks\npr_number: 88\nwatch: true",
+          "elapsed": 10.396,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "pr_number": true,
+              "watch": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-pr-workflow_4",
+          "user_message": "Merge PR 55 using squash and delete the branch",
+          "description": "Merge with squash and branch deletion",
+          "expected_fields": {
+            "operation": "merge",
+            "pr_number": 55,
+            "merge_method": "squash",
+            "delete_branch": true
+          },
+          "collected": {
+            "operation": "merge",
+            "pr_number": 55,
+            "merge_method": "squash",
+            "delete_branch": true,
+            "auto_merge": false
+          },
+          "raw_response": "operation: merge\npr_number: 55\nmerge_method: squash\ndelete_branch: true\nauto_merge: false",
+          "elapsed": 7.421,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "pr_number": true,
+              "merge_method": true,
+              "delete_branch": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "auto_merge"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "github-pr-workflow_5",
+          "user_message": "Open a draft PR for my current branch, still WIP, targeting develop",
+          "description": "Draft PR targeting non-main base branch",
+          "expected_fields": {
+            "operation": "create_pr",
+            "draft": true,
+            "base_branch": "develop"
+          },
+          "collected": {
+            "operation": "create_pr",
+            "base_branch": "develop",
+            "title": "Open a draft PR",
+            "draft": true
+          },
+          "raw_response": "operation: create_pr\nbase_branch: develop\ntitle: Open a draft PR\ndraft: true\nbody:",
+          "elapsed": 10.319,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "draft": true,
+              "base_branch": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "title"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 17,
+      "total": 17,
+      "accuracy": 1.0,
+      "elapsed": 50.024
+    },
+    {
+      "name": "github-repo-management",
+      "yaml_path": "/Users/snailmac/.hermes/skills/github/github-repo-management/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "github-repo-management_1",
+          "user_message": "Clone Snail3D/snailprint",
+          "description": "Basic clone \u2014 tests shallow=false default",
+          "expected_fields": {
+            "operation": "clone",
+            "repo": "Snail3D/snailprint",
+            "shallow": false
+          },
+          "collected": {
+            "operation": "clone",
+            "repo": "Snail3D/snailprint",
+            "shallow": false
+          },
+          "raw_response": "operation: clone\nrepo: Snail3D/snailprint\nclone_dir:\nclone_branch:\nshallow: false",
+          "elapsed": 7.068,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "repo": true,
+              "shallow": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-repo-management_2",
+          "user_message": "Create a new private repo called hermes-plugins with MIT license and description 'Plugin extensions for Hermes'",
+          "description": "Create repo with visibility, license, and description",
+          "expected_fields": {
+            "operation": "create",
+            "repo_name": "hermes-plugins",
+            "visibility": "private",
+            "license": "mit",
+            "description": "Plugin extensions for Hermes"
+          },
+          "collected": {
+            "operation": "create",
+            "repo_name": "hermes-plugins",
+            "visibility": "private",
+            "license": "mit",
+            "description": "Plugin extensions for Hermes"
+          },
+          "raw_response": "operation: create\nrepo_name: hermes-plugins\nvisibility: private\nlicense: mit\ndescription: Plugin extensions for Hermes",
+          "elapsed": 6.355,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "repo_name": true,
+              "visibility": true,
+              "license": true,
+              "description": true
+            },
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-repo-management_3",
+          "user_message": "Create a release v2.0.0 titled 'Version 2 - Major Rewrite' with auto-generated notes",
+          "description": "Release creation with auto-generated notes",
+          "expected_fields": {
+            "operation": "release_create",
+            "tag_name": "v2.0.0",
+            "release_title": "Version 2 - Major Rewrite",
+            "generate_notes": true
+          },
+          "collected": {
+            "operation": "release_create",
+            "tag_name": "v2.0.0",
+            "release_title": "Version 2 - Major Rewrite",
+            "generate_notes": true
+          },
+          "raw_response": "operation: release_create\ntag_name: v2.0.0\nrelease_title: Version 2 - Major Rewrite\ngenerate_notes: true",
+          "elapsed": 10.486,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "tag_name": true,
+              "release_title": true,
+              "generate_notes": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-repo-management_4",
+          "user_message": "Set a secret called OPENAI_API_KEY with value sk-abc123xyz in the current repo",
+          "description": "Secret management \u2014 sensitive data handling",
+          "expected_fields": {
+            "operation": "secret_set",
+            "secret_name": "OPENAI_API_KEY",
+            "secret_value": "sk-abc123xyz"
+          },
+          "collected": {
+            "operation": "secret_set",
+            "secret_name": "OPENAI_API_KEY",
+            "secret_value": "sk-abc123xyz"
+          },
+          "raw_response": "operation: secret_set\nsecret_name: OPENAI_API_KEY\nsecret_value: sk-abc123xyz",
+          "elapsed": 5.445,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "secret_name": true,
+              "secret_value": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "github-repo-management_5",
+          "user_message": "Trigger the deploy.yml workflow on the staging branch with environment set to staging",
+          "description": "Workflow dispatch with branch and inputs",
+          "expected_fields": {
+            "operation": "workflow_trigger",
+            "workflow_file": "deploy.yml",
+            "workflow_ref": "staging",
+            "workflow_inputs": "-f environment=staging"
+          },
+          "collected": {
+            "operation": "workflow_trigger",
+            "workflow_file": "deploy.yml",
+            "workflow_ref": "staging",
+            "workflow_inputs": "environment=staging"
+          },
+          "raw_response": "operation: workflow_trigger\nworkflow_file: deploy.yml\nworkflow_ref: staging\nworkflow_inputs: environment=staging",
+          "elapsed": 8.495,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "workflow_file": true,
+              "workflow_ref": true,
+              "workflow_inputs": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 19,
+      "total": 19,
+      "accuracy": 1.0,
+      "elapsed": 37.849
+    },
+    {
+      "name": "linear",
+      "yaml_path": "/Users/snailmac/.hermes/skills/productivity/linear/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "linear_1",
+          "user_message": "Show me all my assigned issues in Linear",
+          "description": "List my issues \u2014 simple common operation",
+          "expected_fields": {
+            "operation": "my_issues"
+          },
+          "collected": {
+            "operation": "my_issues"
+          },
+          "raw_response": "operation: my_issues",
+          "elapsed": 6.198,
+          "score": {
+            "per_field": {
+              "operation": true
+            },
+            "correct": 1,
+            "total": 1,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "linear_2",
+          "user_message": "Create a new issue in team abc-123-def titled 'Add rate limiting to API' with high priority and description 'Implement token bucket rate limiting on all public endpoints'",
+          "description": "Create issue with team ID, priority, and description",
+          "expected_fields": {
+            "operation": "create_issue",
+            "team_id": "abc-123-def",
+            "title": "Add rate limiting to API",
+            "priority": 2,
+            "description": "Implement token bucket rate limiting on all public endpoints"
+          },
+          "collected": {
+            "operation": "create_issue",
+            "title": "Add rate limiting to API",
+            "description": "Implement token bucket rate limiting on all public endpoints",
+            "priority": 2,
+            "team_id": "abc-123-def"
+          },
+          "raw_response": "operation: create_issue\ntitle: Add rate limiting to API\ndescription: Implement token bucket rate limiting on all public endpoints\npriority: 2\nteam_id: abc-123-def",
+          "elapsed": 8.95,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "team_id": true,
+              "title": true,
+              "priority": true,
+              "description": true
+            },
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "linear_3",
+          "user_message": "View issue ENG-42",
+          "description": "View specific issue by identifier",
+          "expected_fields": {
+            "operation": "view_issue",
+            "issue_id": "ENG-42"
+          },
+          "collected": {
+            "operation": "view_issue",
+            "issue_id": "ENG-42"
+          },
+          "raw_response": "operation: view_issue\nissue_id: ENG-42",
+          "elapsed": 3.022,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "issue_id": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "linear_4",
+          "user_message": "Add a comment to ENG-17 saying 'Fixed in PR #234, waiting for deploy'",
+          "description": "Add comment to specific issue",
+          "expected_fields": {
+            "operation": "add_comment",
+            "issue_id": "ENG-17",
+            "comment_body": "Fixed in PR #234, waiting for deploy"
+          },
+          "collected": {
+            "operation": "add_comment",
+            "issue_id": "ENG-17",
+            "comment_body": "Fixed in PR #234, waiting for deploy"
+          },
+          "raw_response": "operation: add_comment\nissue_id: ENG-17\ncomment_body: Fixed in PR #234, waiting for deploy",
+          "elapsed": 7.248,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "issue_id": true,
+              "comment_body": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "linear_5",
+          "user_message": "Mark ENG-55 as urgent",
+          "description": "Set priority \u2014 tests urgent=1 alias mapping",
+          "expected_fields": {
+            "operation": "set_priority",
+            "issue_id": "ENG-55",
+            "priority": 1
+          },
+          "collected": {
+            "operation": "set_priority",
+            "issue_id": "ENG-55",
+            "priority": 1
+          },
+          "raw_response": "operation: set_priority\nissue_id: ENG-55\npriority: 1",
+          "elapsed": 5.4,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "issue_id": true,
+              "priority": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 14,
+      "total": 14,
+      "accuracy": 1.0,
+      "elapsed": 30.817999999999998
+    },
+    {
+      "name": "notion",
+      "yaml_path": "/Users/snailmac/.hermes/skills/productivity/notion/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "notion_1",
+          "user_message": "Search Notion for 'project roadmap'",
+          "description": "Basic Notion search",
+          "expected_fields": {
+            "operation": "search",
+            "search_query": "project roadmap"
+          },
+          "collected": {
+            "operation": "search",
+            "search_query": "project roadmap"
+          },
+          "raw_response": "operation: search\nsearch_query: project roadmap",
+          "elapsed": 20.795,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "search_query": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "notion_2",
+          "user_message": "Add a new page called 'Sprint 14 Review' to database abc123def456",
+          "description": "Create page in database with title",
+          "expected_fields": {
+            "operation": "create_page",
+            "database_id": "abc123def456",
+            "page_title": "Sprint 14 Review"
+          },
+          "collected": {
+            "operation": "create_page",
+            "database_id": "abc123def456",
+            "page_title": "Sprint 14 Review"
+          },
+          "raw_response": "operation: create_page\ndatabase_id: abc123def456\npage_title: Sprint 14 Review",
+          "elapsed": 25.884,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "database_id": true,
+              "page_title": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "notion_3",
+          "user_message": "Query the database 789xyz and filter by Status = Done, sorted by Date descending",
+          "description": "Database query with filter and sort",
+          "expected_fields": {
+            "operation": "query_database",
+            "data_source_id": "789xyz",
+            "filter_property": "Status",
+            "filter_value": "Done",
+            "sort_property": "Date",
+            "sort_direction": "descending"
+          },
+          "collected": {
+            "operation": "query_database",
+            "filter_property": "Status",
+            "filter_value": "Done",
+            "sort_property": "Date",
+            "sort_direction": "descending"
+          },
+          "raw_response": "operation: query_database\nfilter_property: Status\nfilter_value: Done\nsort_property: Date\nsort_direction: descending",
+          "elapsed": 19.554,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "data_source_id": false,
+              "filter_property": true,
+              "filter_value": true,
+              "sort_property": true,
+              "sort_direction": true
+            },
+            "correct": 5,
+            "total": 6,
+            "accuracy": 0.8333,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "notion_4",
+          "user_message": "Update the Status property of page def-456-ghi to 'In Progress' (it's a select field)",
+          "description": "Update page property with type specified",
+          "expected_fields": {
+            "operation": "update_page",
+            "page_id": "def-456-ghi",
+            "update_property_name": "Status",
+            "update_property_value": "In Progress",
+            "update_property_type": "select"
+          },
+          "collected": {
+            "operation": "update_page",
+            "page_id": "def-456-ghi",
+            "update_property_name": "Status",
+            "update_property_value": "In Progress",
+            "update_property_type": "select"
+          },
+          "raw_response": "operation: update_page\npage_id: def-456-ghi\nupdate_property_name: Status\nupdate_property_value: In Progress\nupdate_property_type: select",
+          "elapsed": 20.922,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "page_id": true,
+              "update_property_name": true,
+              "update_property_value": true,
+              "update_property_type": true
+            },
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "notion_5",
+          "user_message": "Append a bullet point to my notes page abc-999 that says 'Follow up with the design team on Monday'",
+          "description": "Add bullet content block to page",
+          "expected_fields": {
+            "operation": "add_content",
+            "page_id": "abc-999",
+            "block_content": "Follow up with the design team on Monday",
+            "block_type": "bulleted_list_item"
+          },
+          "collected": {
+            "operation": "add_content",
+            "page_id": "abc-999",
+            "block_content": "Follow up with the design team on Monday",
+            "block_type": "bulleted_list_item"
+          },
+          "raw_response": "operation: add_content\npage_id: abc-999\nblock_content: Follow up with the design team on Monday\nblock_type: bulleted_list_item",
+          "elapsed": 21.433,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "page_id": true,
+              "block_content": true,
+              "block_type": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        }
+      ],
+      "correct": 19,
+      "total": 20,
+      "accuracy": 0.95,
+      "elapsed": 108.588
+    },
+    {
+      "name": "find-nearby",
+      "yaml_path": "/Users/snailmac/.hermes/skills/leisure/find-nearby/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "find-nearby_1",
+          "user_message": "Find restaurants near downtown Austin",
+          "description": "Basic restaurant search by city \u2014 tests defaults (radius=1500, limit=15)",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "downtown Austin",
+            "place_types": [
+              "restaurant"
+            ],
+            "radius": 1500
+          },
+          "collected": {
+            "location_mode": "address",
+            "near": "downtown Austin",
+            "place_types": "[\"restaurant\"]"
+          },
+          "raw_response": "location_mode: address\nnear: downtown Austin\nplace_types: [\"restaurant\"]",
+          "elapsed": 11.935,
+          "score": {
+            "per_field": {
+              "location_mode": true,
+              "near": true,
+              "place_types": false,
+              "radius": false
+            },
+            "correct": 2,
+            "total": 4,
+            "accuracy": 0.5,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "find-nearby_2",
+          "user_message": "Find coffee shops and pharmacies within 500 meters of Times Square, New York, top 5",
+          "description": "Multiple place types, custom radius and limit",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "Times Square, New York",
+            "place_types": [
+              "cafe",
+              "pharmacy"
+            ],
+            "radius": 500,
+            "limit": 5
+          },
+          "collected": {
+            "location_mode": "address",
+            "near": "Times Square, New York",
+            "place_types": "[\"cafe\",\"pharmacy\"]",
+            "radius": 500,
+            "limit": 5
+          },
+          "raw_response": "location_mode: address\nnear: Times Square, New York\nplace_types: [\"cafe\",\"pharmacy\"]\nradius: 500\nlimit: 5",
+          "elapsed": 9.484,
+          "score": {
+            "per_field": {
+              "location_mode": true,
+              "near": true,
+              "place_types": false,
+              "radius": true,
+              "limit": true
+            },
+            "correct": 4,
+            "total": 5,
+            "accuracy": 0.8,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "find-nearby_3",
+          "user_message": "Find gas stations near coordinates 30.2672, -97.7431",
+          "description": "Coordinates mode with fuel alias",
+          "expected_fields": {
+            "location_mode": "coordinates",
+            "lat": 30.2672,
+            "lon": -97.7431,
+            "place_types": [
+              "fuel"
+            ]
+          },
+          "collected": {
+            "location_mode": "coordinates",
+            "lat": 30.2672,
+            "lon": -97.7431,
+            "place_types": "[\"fuel\"]",
+            "radius": 1500,
+            "limit": 15
+          },
+          "raw_response": "location_mode: coordinates\nlat: 30.2672\nlon: -97.7431\nplace_types: [\"fuel\"]\nradius: 1500\nlimit: 15",
+          "elapsed": 15.748,
+          "score": {
+            "per_field": {
+              "location_mode": true,
+              "lat": true,
+              "lon": true,
+              "place_types": false
+            },
+            "correct": 3,
+            "total": 4,
+            "accuracy": 0.75,
+            "hallucinated_keys": [
+              "limit",
+              "radius"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "find-nearby_4",
+          "user_message": "Find hotels within 2km of 90210",
+          "description": "Zip code location, hotel type, km to meters conversion",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "90210",
+            "place_types": [
+              "hotel"
+            ],
+            "radius": 2000
+          },
+          "collected": {
+            "location_mode": "address",
+            "near": "90210",
+            "place_types": "[\"hotel\"]",
+            "radius": 2000,
+            "limit": 15
+          },
+          "raw_response": "location_mode: address\nnear: 90210\nplace_types: [\"hotel\"]\nradius: 2000\nlimit: 15",
+          "elapsed": 17.629,
+          "score": {
+            "per_field": {
+              "location_mode": true,
+              "near": true,
+              "place_types": false,
+              "radius": true
+            },
+            "correct": 3,
+            "total": 4,
+            "accuracy": 0.75,
+            "hallucinated_keys": [
+              "limit"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "find-nearby_5",
+          "user_message": "I'm hungry, what's around me? I'm at the Eiffel Tower",
+          "description": "Casual real-world request \u2014 landmark, food implied as restaurant",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "Eiffel Tower",
+            "place_types": [
+              "restaurant"
+            ]
+          },
+          "collected": {
+            "location_mode": "address",
+            "near": "Eiffel Tower",
+            "place_types": "[\"restaurant\"]",
+            "radius": 1500,
+            "limit": 15
+          },
+          "raw_response": "location_mode: address\nnear: Eiffel Tower\nplace_types: [\"restaurant\"]\nradius: 1500\nlimit: 15",
+          "elapsed": 16.991,
+          "score": {
+            "per_field": {
+              "location_mode": true,
+              "near": true,
+              "place_types": false
+            },
+            "correct": 2,
+            "total": 3,
+            "accuracy": 0.6667,
+            "hallucinated_keys": [
+              "limit",
+              "radius"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 14,
+      "total": 20,
+      "accuracy": 0.7,
+      "elapsed": 71.787
+    },
+    {
+      "name": "webhook-subscriptions",
+      "yaml_path": "/Users/snailmac/.hermes/skills/devops/webhook-subscriptions/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "webhook-subscriptions_1",
+          "user_message": "List all my webhook subscriptions",
+          "description": "Simple list operation",
+          "expected_fields": {
+            "operation": "list"
+          },
+          "collected": {
+            "operation": "list"
+          },
+          "raw_response": "operation: list",
+          "elapsed": 8.729,
+          "score": {
+            "per_field": {
+              "operation": true
+            },
+            "correct": 1,
+            "total": 1,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "webhook-subscriptions_2",
+          "user_message": "Create a webhook subscription named 'github-issues' that triggers on 'issues' events and uses the prompt 'New issue #{issue.number}: {issue.title}', deliver to my Telegram chat 123456789",
+          "description": "Full subscription creation with events, prompt template, and Telegram delivery",
+          "expected_fields": {
+            "operation": "subscribe",
+            "name": "github-issues",
+            "prompt": "New issue #{issue.number}: {issue.title}",
+            "events": "issues",
+            "deliver": "telegram",
+            "deliver_chat_id": "123456789"
+          },
+          "collected": {
+            "operation": "subscribe",
+            "name": "github-issues",
+            "prompt": "New issue #{issue.number}: {issue.title}",
+            "events": "issues",
+            "deliver": "telegram",
+            "deliver_chat_id": "123456789"
+          },
+          "raw_response": "operation: subscribe\nname: github-issues\nprompt: New issue #{issue.number}: {issue.title}\nevents: issues\ndeliver: telegram\ndeliver_chat_id: 123456789\nsecret:",
+          "elapsed": 12.994,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "name": true,
+              "prompt": true,
+              "events": true,
+              "deliver": true,
+              "deliver_chat_id": true
+            },
+            "correct": 6,
+            "total": 6,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "webhook-subscriptions_3",
+          "user_message": "Remove the webhook subscription called stripe-payments",
+          "description": "Remove subscription by name",
+          "expected_fields": {
+            "operation": "remove",
+            "name": "stripe-payments"
+          },
+          "collected": {
+            "operation": "remove",
+            "name": "stripe-payments"
+          },
+          "raw_response": "operation: remove\nname: stripe-payments",
+          "elapsed": 10.078,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "name": true
+            },
+            "correct": 2,
+            "total": 2,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "webhook-subscriptions_4",
+          "user_message": "Test the ci-builds webhook with payload {\"action\": \"completed\", \"status\": \"failure\"}",
+          "description": "Test webhook with JSON payload",
+          "expected_fields": {
+            "operation": "test",
+            "name": "ci-builds",
+            "test_payload": "{\"action\": \"completed\", \"status\": \"failure\"}"
+          },
+          "collected": {
+            "operation": "test",
+            "name": "ci-builds",
+            "test_payload": "{\"action\": \"completed\", \"status\": \"failure\"}"
+          },
+          "raw_response": "operation: test\nname: ci-builds\ntest_payload: {\"action\": \"completed\", \"status\": \"failure\"}",
+          "elapsed": 12.913,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "name": true,
+              "test_payload": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "webhook-subscriptions_5",
+          "user_message": "Set up a webhook called 'alerts' that fires on all events, sends the prompt 'Alert received: {message}', and posts a GitHub comment back",
+          "description": "Subscribe with GitHub comment delivery and no event filter",
+          "expected_fields": {
+            "operation": "subscribe",
+            "name": "alerts",
+            "prompt": "Alert received: {message}",
+            "deliver": "github_comment"
+          },
+          "collected": {
+            "operation": "subscribe",
+            "name": "alerts",
+            "prompt": "Alert received: {message}",
+            "events": "all",
+            "description": "posts a GitHub comment back",
+            "deliver": "github_comment"
+          },
+          "raw_response": "operation: subscribe\nname: alerts\nprompt: Alert received: {message}\nevents: all\ndescription: posts a GitHub comment back\nskills: \ndeliver: github_comment\nsecret:",
+          "elapsed": 13.221,
+          "score": {
+            "per_field": {
+              "operation": true,
+              "name": true,
+              "prompt": true,
+              "deliver": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "description",
+              "events"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 16,
+      "total": 16,
+      "accuracy": 1.0,
+      "elapsed": 57.935
+    },
+    {
+      "name": "google-workspace",
+      "yaml_path": "/Users/snailmac/.hermes/skills/productivity/google-workspace/SKILL.yaml",
+      "yaml_error": null,
+      "tests": [
+        {
+          "id": "google-workspace_1",
+          "user_message": "Show me my unread emails from today",
+          "description": "Gmail search \u2014 unread + today query combination",
+          "expected_fields": {
+            "service": "gmail",
+            "gmail_action": "search",
+            "gmail_query": "is:unread newer_than:1d"
+          },
+          "collected": {
+            "service": "gmail",
+            "gmail_action": "search",
+            "gmail_query": "is:unread newer_than:1d",
+            "gmail_max": 10
+          },
+          "raw_response": "service: gmail\ngmail_action: search\ngmail_query: is:unread newer_than:1d\ngmail_max: 10",
+          "elapsed": 18.357,
+          "score": {
+            "per_field": {
+              "service": true,
+              "gmail_action": true,
+              "gmail_query": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "gmail_max"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "google-workspace_2",
+          "user_message": "Schedule a team meeting called 'Q2 Planning' on April 10 from 10am to 11am CST, invite alice@company.com and bob@company.com, at the Zoom link location",
+          "description": "Calendar event creation with attendees and time range",
+          "expected_fields": {
+            "service": "calendar",
+            "calendar_action": "create",
+            "calendar_summary": "Q2 Planning",
+            "calendar_start": "2026-04-10T10:00:00-06:00",
+            "calendar_end": "2026-04-10T11:00:00-06:00",
+            "calendar_attendees": "alice@company.com,bob@company.com"
+          },
+          "collected": {
+            "service": "calendar",
+            "calendar_action": "create",
+            "calendar_summary": "Q2 Planning",
+            "calendar_start": "2026-04-10T10:00:00-06:00",
+            "calendar_end": "2026-04-10T11:00:00-06:00",
+            "calendar_location": "Zoom link location",
+            "calendar_attendees": "alice@company.com,bob@company.com"
+          },
+          "raw_response": "service: calendar\ncalendar_action: create\ncalendar_summary: Q2 Planning\ncalendar_start: 2026-04-10T10:00:00-06:00\ncalendar_end: 2026-04-10T11:00:00-06:00\ncalendar_location: Zoom link location\ncalendar_attendees: alice@company.com,bob@company.com",
+          "elapsed": 31.135,
+          "score": {
+            "per_field": {
+              "service": true,
+              "calendar_action": true,
+              "calendar_summary": true,
+              "calendar_start": true,
+              "calendar_end": true,
+              "calendar_attendees": true
+            },
+            "correct": 6,
+            "total": 6,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "calendar_location"
+            ]
+          },
+          "error": null
+        },
+        {
+          "id": "google-workspace_3",
+          "user_message": "Search Google Drive for 'quarterly budget 2026'",
+          "description": "Drive file search with keyword query",
+          "expected_fields": {
+            "service": "drive",
+            "drive_query": "quarterly budget 2026",
+            "drive_raw_query": false
+          },
+          "collected": {
+            "service": "drive",
+            "drive_query": "quarterly budget 2026",
+            "drive_raw_query": false
+          },
+          "raw_response": "service: drive\ndrive_query: quarterly budget 2026\ndrive_raw_query: false",
+          "elapsed": 11.772,
+          "score": {
+            "per_field": {
+              "service": true,
+              "drive_query": true,
+              "drive_raw_query": true
+            },
+            "correct": 3,
+            "total": 3,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "google-workspace_4",
+          "user_message": "Read rows A1:D20 from my Google Sheet with ID 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+          "description": "Sheets read with specific range",
+          "expected_fields": {
+            "service": "sheets",
+            "sheets_action": "get",
+            "sheets_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+            "sheets_range": "Sheet1!A1:D20"
+          },
+          "collected": {
+            "service": "sheets",
+            "sheets_action": "get",
+            "sheets_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+            "sheets_range": "A1:D20"
+          },
+          "raw_response": "service: sheets\nsheets_action: get\nsheets_id: 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms\nsheets_range: A1:D20",
+          "elapsed": 12.549,
+          "score": {
+            "per_field": {
+              "service": true,
+              "sheets_action": true,
+              "sheets_id": true,
+              "sheets_range": true
+            },
+            "correct": 4,
+            "total": 4,
+            "accuracy": 1.0,
+            "hallucinated_keys": []
+          },
+          "error": null
+        },
+        {
+          "id": "google-workspace_5",
+          "user_message": "Send an email to team@mycompany.com with subject 'Heads up \u2014 server maintenance tonight' saying 'Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.'",
+          "description": "Send email \u2014 tests html=false default and plain text body",
+          "expected_fields": {
+            "service": "gmail",
+            "gmail_action": "send",
+            "gmail_to": "team@mycompany.com",
+            "gmail_subject": "Heads up \u2014 server maintenance tonight",
+            "gmail_html": false
+          },
+          "collected": {
+            "service": "gmail",
+            "gmail_action": "send",
+            "gmail_to": "team@mycompany.com",
+            "gmail_subject": "Heads up \u2014 server maintenance tonight",
+            "gmail_body": "Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.",
+            "gmail_html": false
+          },
+          "raw_response": "service: gmail\ngmail_action: send\ngmail_to: team@mycompany.com\ngmail_subject: Heads up \u2014 server maintenance tonight\ngmail_body: Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.\ngmail_html: false",
+          "elapsed": 12.124,
+          "score": {
+            "per_field": {
+              "service": true,
+              "gmail_action": true,
+              "gmail_to": true,
+              "gmail_subject": true,
+              "gmail_html": true
+            },
+            "correct": 5,
+            "total": 5,
+            "accuracy": 1.0,
+            "hallucinated_keys": [
+              "gmail_body"
+            ]
+          },
+          "error": null
+        }
+      ],
+      "correct": 21,
+      "total": 21,
+      "accuracy": 1.0,
+      "elapsed": 85.937
+    }
+  ],
+  "summary": {
+    "model": "nemotron-cascade-2",
+    "mode": "batched",
+    "total_correct": 242,
+    "total_fields": 255,
+    "overall_accuracy": 0.949,
+    "total_elapsed": 759.35,
+    "comparison": {
+      "step_by_step_avg": 0.9,
+      "monolithic_avg": 0.12,
+      "batched_avg": 0.949,
+      "vs_monolithic_delta": 0.829,
+      "vs_step_by_step_delta": 0.049
+    }
+  }
+}
