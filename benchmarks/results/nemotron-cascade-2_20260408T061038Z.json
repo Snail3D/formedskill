@@ -1,0 +1,3526 @@
+{
+  "meta": {
+    "model": "nemotron-cascade-2",
+    "endpoint": "http://localhost:11434",
+    "timestamp": "20260408T061038Z",
+    "mode": "monolithic-only",
+    "test_cases_path": "benchmarks/test_cases.json"
+  },
+  "skills": [
+    {
+      "name": "snailprint",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/media/snailprint/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/formedskill/formedskill/skills/snailprint.yaml",
+      "tests": [
+        {
+          "id": "snailprint_1",
+          "user_message": "Print me a dragon figurine in black PLA, 80mm tall",
+          "description": "Basic text-to-print with color and size",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "dragon figurine",
+            "filament": "PLA",
+            "color": "black",
+            "scale_mm": 80
+          },
+          "monolithic": {
+            "collected": {
+              "mode": "generate",
+              "prompt": "a dragon figurine",
+              "filament": "PLA",
+              "color": "black",
+              "scale_mm": 80
+            },
+            "raw_response": "```bash\ncurl -X POST http://localhost:7780/api/print/start -H \"Content-Type: application/json\" \\\n  -d '{\"mode\":\"generate\",\"prompt\":\"a dragon figurine\",\"filament\":\"PLA\",\"color\":\"black\",\"scale_mm\":80}'\n```",
+            "elapsed": 8.42,
+            "prompt_tokens": 2471,
+            "completion_tokens": 358,
+            "error": null,
+            "score": {
+              "per_field": {
+                "mode": true,
+                "prompt": true,
+                "filament": true,
+                "color": true,
+                "scale_mm": true
+              },
+              "correct": 5,
+              "total": 5,
+              "accuracy": 1.0,
+              "hallucinated_keys": []
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailprint_2",
+          "user_message": "Search MakerWorld for a cable management box and print it in white PETG on P3Pio, 120mm",
+          "description": "MakerWorld search with filament override, color, size, and specific printer",
+          "expected_fields": {
+            "mode": "makerworld",
+            "query": "cable management box",
+            "filament": "PETG",
+            "color": "white",
+            "scale_mm": 120,
+            "printer": "22E8AJ612200029"
+          },
+          "monolithic": {
+            "collected": {
+              "mode": "makerworld",
+              "query": "cable management box",
+              "filament": "PETG",
+              "color": "white",
+              "scale_mm": 120,
+              "printer": "22E8AJ612200029"
+            },
+            "raw_response": "```bash\ncurl -X POST http://localhost:7780/api/print/start -H \"Content-Type: application/json\" \\\n  -d '{\"mode\":\"makerworld\",\"query\":\"cable management box\",\"filament\":\"PETG\",\"color\":\"white\",\"scale_mm\":120,\"printer\":\"22E8AJ612200029\"}'\n```",
+            "elapsed": 10.924,
+            "prompt_tokens": 2482,
+            "completion_tokens": 578,
+            "error": null,
+            "score": {
+              "per_field": {
+                "mode": true,
+                "query": true,
+                "filament": true,
+                "color": true,
+                "scale_mm": true,
+                "printer": true
+              },
+              "correct": 6,
+              "total": 6,
+              "accuracy": 1.0,
+              "hallucinated_keys": []
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailprint_3",
+          "user_message": "Print a small phone stand for me",
+          "description": "Minimal request \u2014 tests correct defaults (PLA, 50mm, hunyuan, auto_print)",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "phone stand",
+            "filament": "PLA",
+            "scale_mm": 50,
+            "engine": "hunyuan",
+            "auto_print": true
+          },
+          "monolithic": {
+            "collected": {
+              "mode": "makerworld",
+              "query": "phone stand",
+              "filament": "PLA",
+              "scale_mm": 50
+            },
+            "raw_response": "```bash\ncurl -X POST http://localhost:7780/api/print/start \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"mode\":\"makerworld\",\n    \"query\":\"phone stand\",\n    \"filament\":\"PLA\",\n    \"scale_mm\":50\n  }'\n```",
+            "elapsed": 4.265,
+            "prompt_tokens": 2463,
+            "completion_tokens": 323,
+            "error": null,
+            "score": {
+              "per_field": {
+                "mode": false,
+                "prompt": false,
+                "filament": true,
+                "scale_mm": true,
+                "engine": false,
+                "auto_print": false
+              },
+              "correct": 2,
+              "total": 6,
+              "accuracy": 0.3333,
+              "hallucinated_keys": [
+                "query"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailprint_4",
+          "user_message": "Just slice this file for me, don't print it: /home/eric/models/bracket.stl",
+          "description": "File mode with auto_print disabled (slice-only edge case)",
+          "expected_fields": {
+            "mode": "file",
+            "file": "/home/eric/models/bracket.stl",
+            "auto_print": false
+          },
+          "monolithic": {
+            "collected": {
+              "stl": "/home/eric/models/bracket.stl",
+              "filament": "PLA"
+            },
+            "raw_response": "```bash\ncurl -X POST http://localhost:7780/api/print/slice -H \"Content-Type: application/json\" \\\n  -d '{\"stl\":\"/home/eric/models/bracket.stl\",\"filament\":\"PLA\"}'\n```",
+            "elapsed": 5.605,
+            "prompt_tokens": 2477,
+            "completion_tokens": 457,
+            "error": null,
+            "score": {
+              "per_field": {
+                "mode": false,
+                "file": false,
+                "auto_print": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "filament",
+                "stl"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailprint_5",
+          "user_message": "Make a quick preview of a castle tower, flexible material, kinda big",
+          "description": "Conversational request with implicit filament (flexible=TPU), quick=spar3d, big size",
+          "expected_fields": {
+            "mode": "generate",
+            "prompt": "castle tower",
+            "filament": "TPU",
+            "engine": "spar3d",
+            "scale_mm": 200
+          },
+          "monolithic": {
+            "collected": {
+              "mode": "generate",
+              "prompt": "castle tower",
+              "filament": "TPU",
+              "color": "white",
+              "scale_mm": 150,
+              "engine": "hunyuan"
+            },
+            "raw_response": "```bash\ncurl -X POST http://localhost:7780/api/print/start \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n        \"mode\":\"generate\",\n        \"prompt\":\"castle tower\",\n        \"filament\":\"TPU\",\n        \"color\":\"white\",\n        \"scale_mm\":150,\n        \"engine\":\"hunyuan\"\n      }'\n```",
+            "elapsed": 11.662,
+            "prompt_tokens": 2470,
+            "completion_tokens": 406,
+            "error": null,
+            "score": {
+              "per_field": {
+                "mode": true,
+                "prompt": true,
+                "filament": true,
+                "engine": false,
+                "scale_mm": false
+              },
+              "correct": 3,
+              "total": 5,
+              "accuracy": 0.6,
+              "hallucinated_keys": [
+                "color"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 16,
+        "total": 25,
+        "accuracy": 0.64,
+        "elapsed": 40.876000000000005
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "snailstudio",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/media/snailstudio/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/formedskill/formedskill/skills/snailstudio.yaml",
+      "tests": [
+        {
+          "id": "snailstudio_1",
+          "user_message": "Make a video about the Mariana Trench",
+          "description": "Basic video creation \u2014 tests all defaults (cinematic style, 6 segments, eric voice)",
+          "expected_fields": {
+            "topic": "Mariana Trench",
+            "style": "cinematic",
+            "segments": 6,
+            "voice": "clone:eric"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "http://localhost:7777/api/story/create",
+              "headers": {
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "topic": "Mariana Trench",
+                "segments": 6,
+                "style": "documentary",
+                "music_style": "deep ocean ambient, suspenseful, cinematic",
+                "voice": "clone:eric",
+                "source": "wikipedia"
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"http://localhost:7777/api/story/create\",\n  \"headers\": {\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"topic\": \"Mariana Trench\",\n    \"segments\": 6,\n    \"style\": \"documentary\",\n    \"music_style\": \"deep ocean ambient, suspenseful, cinematic\",\n    \"voice\": \"clone:eric\",\n    \"source\": \"wikipedia\"\n  }\n}",
+            "elapsed": 11.047,
+            "prompt_tokens": 3090,
+            "completion_tokens": 556,
+            "error": null,
+            "score": {
+              "per_field": {
+                "topic": false,
+                "style": false,
+                "segments": false,
+                "voice": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailstudio_2",
+          "user_message": "Create a 10-segment documentary video about the Roman Empire with epic orchestral music",
+          "description": "Multiple explicit params: documentary style, long segment count, specific music",
+          "expected_fields": {
+            "topic": "Roman Empire",
+            "style": "documentary",
+            "segments": 10,
+            "music_style": "epic orchestral"
+          },
+          "monolithic": {
+            "collected": {
+              "api_call": {
+                "method": "POST",
+                "url": "http://localhost:7777/api/story/create",
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "topic": "Roman Empire",
+                  "segments": 10,
+                  "style": "documentary",
+                  "music_style": "epic orchestral music",
+                  "voice": "clone:eric"
+                }
+              }
+            },
+            "raw_response": "{\n  \"api_call\": {\n    \"method\": \"POST\",\n    \"url\": \"http://localhost:7777/api/story/create\",\n    \"headers\": {\n      \"Content-Type\": \"application/json\"\n    },\n    \"body\": {\n      \"topic\": \"Roman Empire\",\n      \"segments\": 10,\n      \"style\": \"documentary\",\n      \"music_style\": \"epic orchestral music\",\n      \"voice\": \"clone:eric\"\n    }\n  }\n}",
+            "elapsed": 6.258,
+            "prompt_tokens": 3100,
+            "completion_tokens": 470,
+            "error": null,
+            "score": {
+              "per_field": {
+                "topic": false,
+                "style": false,
+                "segments": false,
+                "music_style": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "api_call"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailstudio_3",
+          "user_message": "Short educational video on black holes",
+          "description": "Short=3 segments inferred from 'short', educational style",
+          "expected_fields": {
+            "topic": "Black Holes",
+            "style": "educational",
+            "segments": 3
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "http://localhost:7777/api/story/create",
+              "headers": {
+                "Content-Type": "application/json"
+              },
+              "payload": {
+                "topic": "Black holes",
+                "segments": 4,
+                "style": "educational",
+                "music_style": "light ambient educational music",
+                "voice": "clone:eric"
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"http://localhost:7777/api/story/create\",\n  \"headers\": {\n    \"Content-Type\": \"application/json\"\n  },\n  \"payload\": {\n    \"topic\": \"Black holes\",\n    \"segments\": 4,\n    \"style\": \"educational\",\n    \"music_style\": \"light ambient educational music\",\n    \"voice\": \"clone:eric\"\n  }\n}",
+            "elapsed": 5.916,
+            "prompt_tokens": 3088,
+            "completion_tokens": 497,
+            "error": null,
+            "score": {
+              "per_field": {
+                "topic": false,
+                "style": false,
+                "segments": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "headers",
+                "method",
+                "payload",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailstudio_4",
+          "user_message": "Make an artistic video about bioluminescent deep sea creatures, 4K resolution, use Emma's voice",
+          "description": "Edge case: 4K resolution dimensions, non-default voice (Emma)",
+          "expected_fields": {
+            "topic": "bioluminescent deep sea creatures",
+            "style": "artistic",
+            "voice": "bf_emma",
+            "width": 3840,
+            "height": 2160
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "http://localhost:7777/api/story/create",
+              "headers": {
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "topic": "bioluminescent deep sea creatures",
+                "segments": 5,
+                "style": "artistic",
+                "music_style": "ethereal ambient, deep sea bioluminescence",
+                "voice": "clone:bf_emma",
+                "source": "wikipedia"
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"http://localhost:7777/api/story/create\",\n  \"headers\": {\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"topic\": \"bioluminescent deep sea creatures\",\n    \"segments\": 5,\n    \"style\": \"artistic\",\n    \"music_style\": \"ethereal ambient, deep sea bioluminescence\",\n    \"voice\": \"clone:bf_emma\",\n    \"source\": \"wikipedia\"\n  }\n}",
+            "elapsed": 29.979,
+            "prompt_tokens": 3104,
+            "completion_tokens": 1974,
+            "error": null,
+            "score": {
+              "per_field": {
+                "topic": false,
+                "style": false,
+                "voice": false,
+                "width": false,
+                "height": false
+              },
+              "correct": 0,
+              "total": 5,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "snailstudio_5",
+          "user_message": "Hey can you make me a cool video about the Amazon rainforest? Something dramatic with jungle sounds music",
+          "description": "Conversational/real-world request with casual language and implicit cinematic style",
+          "expected_fields": {
+            "topic": "Amazon rainforest",
+            "style": "cinematic",
+            "music_style": "jungle sounds"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "http://localhost:7777/api/story/create",
+              "headers": {
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "topic": "Amazon rainforest",
+                "segments": 6,
+                "style": "cinematic",
+                "music_style": "dramatic jungle ambient sounds, intense orchestral, deep bass",
+                "voice": "clone:eric"
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"http://localhost:7777/api/story/create\",\n  \"headers\": {\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"topic\": \"Amazon rainforest\",\n    \"segments\": 6,\n    \"style\": \"cinematic\",\n    \"music_style\": \"dramatic jungle ambient sounds, intense orchestral, deep bass\",\n    \"voice\": \"clone:eric\"\n  }\n}",
+            "elapsed": 6.23,
+            "prompt_tokens": 3102,
+            "completion_tokens": 569,
+            "error": null,
+            "score": {
+              "per_field": {
+                "topic": false,
+                "style": false,
+                "music_style": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 19,
+        "accuracy": 0.0,
+        "elapsed": 59.43000000000001
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "apple-notes",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/apple/apple-notes/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/apple/apple-notes/SKILL.yaml",
+      "tests": [
+        {
+          "id": "apple-notes_1",
+          "user_message": "Create a new note called 'Shopping List'",
+          "description": "Basic note creation with explicit title",
+          "expected_fields": {
+            "operation": "create",
+            "title": "Shopping List"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "memo notes -a \"Shopping List\""
+            },
+            "raw_response": "{\n  \"command\": \"memo notes -a \\\"Shopping List\\\"\"\n}",
+            "elapsed": 8.378,
+            "prompt_tokens": 660,
+            "completion_tokens": 346,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "title": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-notes_2",
+          "user_message": "Search my notes for 'kubernetes deployment'",
+          "description": "Keyword search in notes",
+          "expected_fields": {
+            "operation": "search",
+            "query": "kubernetes deployment"
+          },
+          "monolithic": {
+            "collected": {
+              "name": "apple-notes",
+              "arguments": {
+                "command": "memo notes -s \"kubernetes deployment\""
+              }
+            },
+            "raw_response": "{\n  \"name\": \"apple-notes\",\n  \"arguments\": {\n    \"command\": \"memo notes -s \\\"kubernetes deployment\\\"\"\n  }\n}",
+            "elapsed": 9.919,
+            "prompt_tokens": 660,
+            "completion_tokens": 506,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "query": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "arguments",
+                "name"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-notes_3",
+          "user_message": "List all my notes in the Work folder",
+          "description": "List with folder filter",
+          "expected_fields": {
+            "operation": "list",
+            "folder": "Work"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "memo notes -f \"Work\""
+            },
+            "raw_response": "{\n  \"command\": \"memo notes -f \\\"Work\\\"\"\n}",
+            "elapsed": 4.469,
+            "prompt_tokens": 660,
+            "completion_tokens": 367,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "folder": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-notes_4",
+          "user_message": "Export my notes to markdown",
+          "description": "Export edge case",
+          "expected_fields": {
+            "operation": "export"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "apple-notes",
+              "args": [
+                "notes",
+                "-ex"
+              ]
+            },
+            "raw_response": "{\n  \"tool\": \"apple-notes\",\n  \"args\": [\"notes\", \"-ex\"]\n}",
+            "elapsed": 8.31,
+            "prompt_tokens": 657,
+            "completion_tokens": 750,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false
+              },
+              "correct": 0,
+              "total": 1,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-notes_5",
+          "user_message": "Can you show me all my notes?",
+          "description": "Conversational list request \u2014 no folder filter, tests blank folder default",
+          "expected_fields": {
+            "operation": "list"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "memo notes"
+            },
+            "raw_response": "{\n  \"command\": \"memo notes\"\n}",
+            "elapsed": 5.579,
+            "prompt_tokens": 659,
+            "completion_tokens": 530,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false
+              },
+              "correct": 0,
+              "total": 1,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 8,
+        "accuracy": 0.0,
+        "elapsed": 36.655
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "apple-reminders",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/apple/apple-reminders/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/apple/apple-reminders/SKILL.yaml",
+      "tests": [
+        {
+          "id": "apple-reminders_1",
+          "user_message": "Remind me to call the dentist tomorrow at 9am",
+          "description": "Basic add reminder with due date and time",
+          "expected_fields": {
+            "operation": "add",
+            "title": "Call the dentist",
+            "due": "2026-04-08 09:00"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "remindctl add",
+              "args": {
+                "title": "Call the dentist",
+                "due": "2025-11-04 09:00"
+              }
+            },
+            "raw_response": "{\n  \"command\": \"remindctl add\",\n  \"args\": {\n    \"title\": \"Call the dentist\",\n    \"due\": \"2025-11-04 09:00\"\n  }\n}",
+            "elapsed": 12.536,
+            "prompt_tokens": 827,
+            "completion_tokens": 736,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "title": false,
+                "due": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-reminders_2",
+          "user_message": "Add 'Buy milk and eggs' to my Shopping list",
+          "description": "Add to specific list with no due date",
+          "expected_fields": {
+            "operation": "add",
+            "title": "Buy milk and eggs",
+            "list_name": "Shopping"
+          },
+          "monolithic": {
+            "collected": {
+              "name": "apple-reminders",
+              "arguments": {
+                "title": "Buy milk and eggs",
+                "list": "Shopping"
+              }
+            },
+            "raw_response": "{\n  \"name\": \"apple-reminders\",\n  \"arguments\": {\n    \"title\": \"Buy milk and eggs\",\n    \"list\": \"Shopping\"\n  }\n}",
+            "elapsed": 26.762,
+            "prompt_tokens": 826,
+            "completion_tokens": 701,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "title": false,
+                "list_name": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "arguments",
+                "name"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-reminders_3",
+          "user_message": "What reminders do I have today?",
+          "description": "List today's reminders \u2014 simple query",
+          "expected_fields": {
+            "operation": "list_today"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "remindctl",
+              "args": [
+                "today",
+                "--json"
+              ]
+            },
+            "raw_response": "{\n  \"command\": \"remindctl\",\n  \"args\": [\"today\", \"--json\"]\n}",
+            "elapsed": 7.97,
+            "prompt_tokens": 822,
+            "completion_tokens": 414,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false
+              },
+              "correct": 0,
+              "total": 1,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-reminders_4",
+          "user_message": "Show me my overdue reminders",
+          "description": "List overdue \u2014 edge case operation",
+          "expected_fields": {
+            "operation": "list_overdue"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "apple-reminders",
+              "action": "remindctl",
+              "args": [
+                "overdue"
+              ]
+            },
+            "raw_response": "{\n  \"tool\": \"apple-reminders\",\n  \"action\": \"remindctl\",\n  \"args\": [\"overdue\"]\n}",
+            "elapsed": 5.142,
+            "prompt_tokens": 822,
+            "completion_tokens": 238,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false
+              },
+              "correct": 0,
+              "total": 1,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "args",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "apple-reminders_5",
+          "user_message": "Create a new list called Vacation Planning",
+          "description": "Create list \u2014 uncommon operation",
+          "expected_fields": {
+            "operation": "create_list",
+            "new_list_name": "Vacation Planning"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "remindctl",
+              "args": [
+                "list",
+                "Vacation Planning",
+                "--create"
+              ]
+            },
+            "raw_response": "{\n  \"command\": \"remindctl\",\n  \"args\": [\n    \"list\",\n    \"Vacation Planning\",\n    \"--create\"\n  ]\n}",
+            "elapsed": 8.521,
+            "prompt_tokens": 823,
+            "completion_tokens": 434,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "new_list_name": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 10,
+        "accuracy": 0.0,
+        "elapsed": 60.931000000000004
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "imessage",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/apple/imessage/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/apple/imessage/SKILL.yaml",
+      "tests": [
+        {
+          "id": "imessage_1",
+          "user_message": "Send a message to +14155551234 saying 'On my way, be there in 10!'",
+          "description": "Basic send with phone number \u2014 tests default service=auto",
+          "expected_fields": {
+            "operation": "send",
+            "recipient": "+14155551234",
+            "message_text": "On my way, be there in 10!",
+            "service": "auto"
+          },
+          "monolithic": {
+            "collected": {
+              "to": "+14155551234",
+              "text": "On my way, be there in 10!",
+              "service": "auto"
+            },
+            "raw_response": "{\n  \"to\": \"+14155551234\",\n  \"text\": \"On my way, be there in 10!\",\n  \"service\": \"auto\"\n}",
+            "elapsed": 12.617,
+            "prompt_tokens": 850,
+            "completion_tokens": 672,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "recipient": false,
+                "message_text": false,
+                "service": true
+              },
+              "correct": 1,
+              "total": 4,
+              "accuracy": 0.25,
+              "hallucinated_keys": [
+                "text",
+                "to"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "imessage_2",
+          "user_message": "Text john@icloud.com via iMessage: 'Hey, did you get my email?'",
+          "description": "Send with Apple ID and explicit iMessage service",
+          "expected_fields": {
+            "operation": "send",
+            "recipient": "john@icloud.com",
+            "message_text": "Hey, did you get my email?",
+            "service": "imessage"
+          },
+          "monolithic": {
+            "collected": {
+              "name": "imessage",
+              "arguments": {
+                "to": "john@icloud.com",
+                "text": "Hey, did you get my email?",
+                "service": "imessage"
+              }
+            },
+            "raw_response": "{\n  \"name\": \"imessage\",\n  \"arguments\": {\n    \"to\": \"john@icloud.com\",\n    \"text\": \"Hey, did you get my email?\",\n    \"service\": \"imessage\"\n  }\n}",
+            "elapsed": 6.647,
+            "prompt_tokens": 840,
+            "completion_tokens": 386,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "recipient": false,
+                "message_text": false,
+                "service": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "arguments",
+                "name"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "imessage_3",
+          "user_message": "Show me my recent chats",
+          "description": "List chats with default limit=10",
+          "expected_fields": {
+            "operation": "list_chats",
+            "limit": 10
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "imessage",
+              "parameters": {
+                "action": "chats",
+                "limit": 10,
+                "json": true
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"imessage\",\n  \"parameters\": {\n    \"action\": \"chats\",\n    \"limit\": 10,\n    \"json\": true\n  }\n}",
+            "elapsed": 6.352,
+            "prompt_tokens": 826,
+            "completion_tokens": 595,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "limit": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "parameters",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "imessage_4",
+          "user_message": "Show me the last 50 messages from chat 7, including attachments",
+          "description": "History with non-default limit and attachments enabled",
+          "expected_fields": {
+            "operation": "history",
+            "chat_id": 7,
+            "history_limit": 50,
+            "include_attachments": true
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "imessage",
+              "parameters": {
+                "subcommand": "history",
+                "chat_id": 7,
+                "limit": 50,
+                "include_attachments": true,
+                "output_format": "json"
+              }
+            },
+            "raw_response": "```json\n{\n  \"tool\": \"imessage\",\n  \"parameters\": {\n    \"subcommand\": \"history\",\n    \"chat_id\": 7,\n    \"limit\": 50,\n    \"include_attachments\": true,\n    \"output_format\": \"json\"\n  }\n}\n```",
+            "elapsed": 7.616,
+            "prompt_tokens": 836,
+            "completion_tokens": 719,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "chat_id": false,
+                "history_limit": false,
+                "include_attachments": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "parameters",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "imessage_5",
+          "user_message": "Can you watch chat 3 for new incoming messages?",
+          "description": "Watch mode \u2014 uncommon operation, conversational phrasing",
+          "expected_fields": {
+            "operation": "watch",
+            "chat_id": 3
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "imessage",
+              "action": "watch",
+              "parameters": {
+                "chat_id": 3,
+                "attachments": true
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"imessage\",\n  \"action\": \"watch\",\n  \"parameters\": {\n    \"chat_id\": 3,\n    \"attachments\": true\n  }\n}",
+            "elapsed": 2.931,
+            "prompt_tokens": 831,
+            "completion_tokens": 266,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "chat_id": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "parameters",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 1,
+        "total": 16,
+        "accuracy": 0.0625,
+        "elapsed": 36.163
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "himalaya",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/email/himalaya/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/email/himalaya/SKILL.yaml",
+      "tests": [
+        {
+          "id": "himalaya_1",
+          "user_message": "Show me my inbox",
+          "description": "Basic inbox listing \u2014 tests INBOX default and page=1 default",
+          "expected_fields": {
+            "operation": "list_emails",
+            "folder": "INBOX",
+            "page": 1
+          },
+          "monolithic": {
+            "collected": {
+              "command": "himalaya",
+              "args": [
+                "envelope",
+                "list",
+                "--output",
+                "json"
+              ]
+            },
+            "raw_response": "{\n  \"command\": \"himalaya\",\n  \"args\": [\n    \"envelope\",\n    \"list\",\n    \"--output\",\n    \"json\"\n  ]\n}",
+            "elapsed": 4.485,
+            "prompt_tokens": 1656,
+            "completion_tokens": 360,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "folder": false,
+                "page": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "himalaya_2",
+          "user_message": "Send an email to alice@example.com with subject 'Meeting Tomorrow' and body 'Hi Alice, can we meet at 2pm?'",
+          "description": "Compose and send with all required fields",
+          "expected_fields": {
+            "operation": "send",
+            "to": "alice@example.com",
+            "subject": "Meeting Tomorrow",
+            "body": "Hi Alice, can we meet at 2pm?"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "himalaya",
+              "args": [
+                "message",
+                "write",
+                "-H",
+                "To:alice@example.com",
+                "-H",
+                "Subject:Meeting Tomorrow",
+                "Hi Alice, can we meet at 2pm?"
+              ]
+            },
+            "raw_response": "{\n  \"command\": \"himalaya\",\n  \"args\": [\n    \"message\",\n    \"write\",\n    \"-H\",\n    \"To:alice@example.com\",\n    \"-H\",\n    \"Subject:Meeting Tomorrow\",\n    \"Hi Alice, can we meet at 2pm?\"\n  ]\n}",
+            "elapsed": 5.925,
+            "prompt_tokens": 1678,
+            "completion_tokens": 513,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "to": false,
+                "subject": false,
+                "body": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "himalaya_3",
+          "user_message": "Search for emails from boss@company.com about Q4 report",
+          "description": "Search with from and subject operators",
+          "expected_fields": {
+            "operation": "search",
+            "search_query": "from boss@company.com subject Q4 report"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "himalaya",
+              "args": [
+                "envelope",
+                "list",
+                "from",
+                "boss@company.com",
+                "subject",
+                "Q4 report"
+              ],
+              "options": {
+                "output": "json"
+              }
+            },
+            "raw_response": "{\n  \"command\": \"himalaya\",\n  \"args\": [\n    \"envelope\",\n    \"list\",\n    \"from\",\n    \"boss@company.com\",\n    \"subject\",\n    \"Q4 report\"\n  ],\n  \"options\": {\n    \"output\": \"json\"\n  }\n}",
+            "elapsed": 4.253,
+            "prompt_tokens": 1663,
+            "completion_tokens": 357,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "search_query": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command",
+                "options"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "himalaya_4",
+          "user_message": "Forward email 42 to backup@gmail.com with the note 'FYI, see below'",
+          "description": "Forward operation with all required fields",
+          "expected_fields": {
+            "operation": "forward",
+            "message_id": "42",
+            "forward_to": "backup@gmail.com",
+            "body": "FYI, see below"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "himalaya",
+              "args": [
+                "template",
+                "forward",
+                "42",
+                "--to",
+                "backup@gmail.com",
+                "--note",
+                "FYI, see below"
+              ]
+            },
+            "raw_response": "{\n  \"command\": \"himalaya\",\n  \"args\": [\n    \"template\",\n    \"forward\",\n    \"42\",\n    \"--to\",\n    \"backup@gmail.com\",\n    \"--note\",\n    \"FYI, see below\"\n  ]\n}",
+            "elapsed": 9.418,
+            "prompt_tokens": 1670,
+            "completion_tokens": 806,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "message_id": false,
+                "forward_to": false,
+                "body": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "himalaya_5",
+          "user_message": "Can you download the attachments from email 99 and save them to my desktop?",
+          "description": "Download attachments to non-default directory",
+          "expected_fields": {
+            "operation": "download_attachment",
+            "message_id": "99",
+            "download_dir": "~/Desktop"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "himalaya",
+              "args": [
+                "attachment",
+                "download",
+                "99",
+                "--dir",
+                "~/Desktop"
+              ]
+            },
+            "raw_response": "{\n  \"tool\": \"himalaya\",\n  \"args\": [\n    \"attachment\",\n    \"download\",\n    \"99\",\n    \"--dir\",\n    \"~/Desktop\"\n  ]\n}",
+            "elapsed": 11.61,
+            "prompt_tokens": 1667,
+            "completion_tokens": 373,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "message_id": false,
+                "download_dir": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 16,
+        "accuracy": 0.0,
+        "elapsed": 35.691
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "gif-search",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/media/gif-search/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/media/gif-search/SKILL.yaml",
+      "tests": [
+        {
+          "id": "gif-search_1",
+          "user_message": "Find me a thumbs up GIF",
+          "description": "Basic GIF search \u2014 tests defaults (search_urls, limit=5, tinygif)",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "thumbs up",
+            "limit": 5,
+            "format": "tinygif"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "gif-search",
+              "parameters": {
+                "q": "thumbs up",
+                "limit": 5,
+                "media_filter": "gif"
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"gif-search\",\n  \"parameters\": {\n    \"q\": \"thumbs up\",\n    \"limit\": 5,\n    \"media_filter\": \"gif\"\n  }\n}",
+            "elapsed": 12.235,
+            "prompt_tokens": 936,
+            "completion_tokens": 579,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "query": false,
+                "limit": false,
+                "format": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "parameters",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "gif-search_2",
+          "user_message": "Search for 10 celebration GIFs in full quality",
+          "description": "Multiple explicit params: count and full quality format",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "celebration",
+            "limit": 10,
+            "format": "gif"
+          },
+          "monolithic": {
+            "collected": {
+              "q": "celebration",
+              "limit": 10,
+              "media_filter": "gif",
+              "contentfilter": "off",
+              "locale": "en_US"
+            },
+            "raw_response": "{\n  \"q\": \"celebration\",\n  \"limit\": 10,\n  \"media_filter\": \"gif\",\n  \"contentfilter\": \"off\",\n  \"locale\": \"en_US\"\n}",
+            "elapsed": 5.014,
+            "prompt_tokens": 941,
+            "completion_tokens": 462,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "query": false,
+                "limit": true,
+                "format": false
+              },
+              "correct": 1,
+              "total": 4,
+              "accuracy": 0.25,
+              "hallucinated_keys": [
+                "contentfilter",
+                "locale",
+                "media_filter",
+                "q"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "gif-search_3",
+          "user_message": "Download a mind blown GIF and save it to ~/Downloads/mindblown.gif",
+          "description": "Download mode with explicit save path",
+          "expected_fields": {
+            "operation": "download",
+            "query": "mind blown",
+            "save_path": "~/Downloads/mindblown.gif"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "curl -s \"https://tenor.googleapis.com/v2/search?q=mind+blown&limit=1&key=${TENOR_API_KEY}\" | jq -r '.results[0].media_formats.gif.url' | xargs -I {} curl -sL {} -o \"$HOME/Downloads/mindblown.gif\""
+            },
+            "raw_response": "{\n  \"command\": \"curl -s \\\"https://tenor.googleapis.com/v2/search?q=mind+blown&limit=1&key=${TENOR_API_KEY}\\\" | jq -r '.results[0].media_formats.gif.url' | xargs -I {} curl -sL {} -o \\\"$HOME/Downloads/mindblown.gif\\\"\"\n}",
+            "elapsed": 7.401,
+            "prompt_tokens": 946,
+            "completion_tokens": 636,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "query": false,
+                "save_path": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "gif-search_4",
+          "user_message": "Get the full metadata for 3 cat surprised GIFs, family safe",
+          "description": "Metadata mode with safe filter \u2014 edge case operation",
+          "expected_fields": {
+            "operation": "metadata",
+            "query": "cat surprised",
+            "limit": 3,
+            "content_filter": "high"
+          },
+          "monolithic": {
+            "collected": {
+              "endpoint": "https://tenor.googleapis.com/v2/search",
+              "method": "GET",
+              "query": {
+                "q": "cat surprised",
+                "limit": 3,
+                "key": "${TENOR_API_KEY}",
+                "contentfilter": "off",
+                "locale": "en_US",
+                "media_filter": "gif"
+              }
+            },
+            "raw_response": "{\n  \"endpoint\": \"https://tenor.googleapis.com/v2/search\",\n  \"method\": \"GET\",\n  \"query\": {\n    \"q\": \"cat surprised\",\n    \"limit\": 3,\n    \"key\": \"${TENOR_API_KEY}\",\n    \"contentfilter\": \"off\",\n    \"locale\": \"en_US\",\n    \"media_filter\": \"gif\"\n  }\n}",
+            "elapsed": 19.289,
+            "prompt_tokens": 944,
+            "completion_tokens": 877,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "query": false,
+                "limit": false,
+                "content_filter": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "endpoint",
+                "method"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "gif-search_5",
+          "user_message": "Send me a funny reaction gif for when something goes wrong",
+          "description": "Conversational/real-world request \u2014 natural language, default filter",
+          "expected_fields": {
+            "operation": "search_urls",
+            "query": "something went wrong",
+            "content_filter": "medium"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "gif-search",
+              "arguments": {
+                "q": "funny reaction when something goes wrong",
+                "limit": 1,
+                "media_filter": "gif"
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"gif-search\",\n  \"arguments\": {\n    \"q\": \"funny reaction when something goes wrong\",\n    \"limit\": 1,\n    \"media_filter\": \"gif\"\n  }\n}",
+            "elapsed": 10.829,
+            "prompt_tokens": 940,
+            "completion_tokens": 428,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "query": false,
+                "content_filter": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "arguments",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 1,
+        "total": 18,
+        "accuracy": 0.0556,
+        "elapsed": 54.768
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "github-issues",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/github/github-issues/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/github/github-issues/SKILL.yaml",
+      "tests": [
+        {
+          "id": "github-issues_1",
+          "user_message": "Create a bug report in Snail3D/SnailOrchestrator: title 'Pipeline crashes on empty queue', body 'Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash.'",
+          "description": "Create issue with repo, title, body, and implied bug label",
+          "expected_fields": {
+            "operation": "create",
+            "repo": "Snail3D/SnailOrchestrator",
+            "title": "Pipeline crashes on empty queue",
+            "labels": "bug"
+          },
+          "monolithic": {
+            "collected": {
+              "skill": "github-issues",
+              "operation": "create_issue",
+              "repository": "Snail3D/SnailOrchestrator",
+              "title": "Pipeline crashes on empty queue",
+              "body": "Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash."
+            },
+            "raw_response": "{\n  \"skill\": \"github-issues\",\n  \"operation\": \"create_issue\",\n  \"repository\": \"Snail3D/SnailOrchestrator\",\n  \"title\": \"Pipeline crashes on empty queue\",\n  \"body\": \"Steps: run orchestrator with no tasks queued. Expected: graceful idle. Actual: KeyError crash.\"\n}",
+            "elapsed": 10.361,
+            "prompt_tokens": 3062,
+            "completion_tokens": 632,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": true,
+                "repo": false,
+                "title": true,
+                "labels": false
+              },
+              "correct": 2,
+              "total": 4,
+              "accuracy": 0.5,
+              "hallucinated_keys": [
+                "body",
+                "repository",
+                "skill"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-issues_2",
+          "user_message": "List all open issues labeled 'enhancement' in the current repo",
+          "description": "List with state and label filters",
+          "expected_fields": {
+            "operation": "list",
+            "state": "open",
+            "label": "enhancement"
+          },
+          "monolithic": {
+            "collected": {},
+            "raw_response": "**Using the `gh` CLI (recommended \u2013 one\u2011liner):**\n\n```bash\ngh issue list --label \"enhancement\" --state open --json number,title,assignee,createdAt,updatedAt,state,labels\n```\n\n**Equivalent raw GitHub REST API call (cURL) \u2013 JSON parameters:**\n\n```json\n{\n  \"method\": \"GET\",\n  \"url\": \"https://api.github.com/repos/{{owner}}/{{repo}}/issues\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"query\": {\n    \"state\": \"open\",\n    \"labels\": \"enhancement\",\n    \"per_page\": 100\n  }\n}\n```\n\n*Replace `{{owner}}` and `{{repo}}` with the owner/repo of the current repository (the `gh` command automatically resolves these for you).*\n\nBoth commands will return a list of all **open** issues that have the **`enhancement`** label in the current repository.",
+            "elapsed": 11.287,
+            "prompt_tokens": 3027,
+            "completion_tokens": 748,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "state": false,
+                "label": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": []
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-issues_3",
+          "user_message": "View issue #47",
+          "description": "Simple issue view by number",
+          "expected_fields": {
+            "operation": "view",
+            "issue_number": 47
+          },
+          "monolithic": {
+            "collected": {},
+            "raw_response": "**Exact request to view issue\u202f#47**\n\n```json\n{\n  \"action\": \"github_issue_view\",\n  \"method\": \"GET\",\n  \"url\": \"https://api.github.com/repos/{{owner}}/{{repo}}/issues/47\",\n  \"headers\": {\n    \"Authorization\": \"token {{GITHUB_TOKEN}}\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"curl_command\": \"curl -s -H \\\"Authorization: token $GITHUB_TOKEN\\\" \\\"https://api.github.com/repos/$OWNER/$REPO/issues/47\\\"\"\n}\n```\n\n*Replace `{{owner}}`, `{{repo}}`, and `{{GITHUB_TOKEN}}` with the appropriate values (or ensure the environment variables `$OWNER`, `$REPO`, and `$GITHUB_TOKEN` are set).*\n\n**Equivalent `gh` CLI command**\n\n```bash\ngh issue view 47\n```\n\nBoth of the above will return the full JSON representation of issue\u202f#47, including its title, body, labels, assignees, state, etc.",
+            "elapsed": 23.284,
+            "prompt_tokens": 3018,
+            "completion_tokens": 750,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "issue_number": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": []
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-issues_4",
+          "user_message": "Close issue #12 in Snail3D/snailprint as won't fix",
+          "description": "Close with wontfix reason \u2014 tests close_reason inference",
+          "expected_fields": {
+            "operation": "close",
+            "issue_number": 12,
+            "repo": "Snail3D/snailprint",
+            "close_reason": "not planned"
+          },
+          "monolithic": {
+            "collected": {},
+            "raw_response": "**API call to close issue\u202f#12 in `Snail3D/snailprint` with the \u201cwontfix\u201d reason (which also adds the `wontfix` label):**\n\n```json\n{\n  \"method\": \"PATCH\",\n  \"url\": \"https://api.github.com/repos/Snail3D/snailprint/issues/12\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"body\": {\n    \"state\": \"closed\",\n    \"state_reason\": \"wontfix\"\n  }\n}\n```\n\n*Explanation*  \n- `state`\u202f=\u202f`closed` tells GitHub to close the issue.  \n- `state_reason`\u202f=\u202f`wontfix` records the reason and automatically applies the `wontfix` label (GitHub adds it for you).  \n\nIf you prefer to be explicit and add the label yourself (in case the reason does not auto\u2011add it), you can run a second call:\n\n```json\n{\n  \"method\": \"POST\",\n  \"url\": \"https://api.github.com/repos/Snail3D/snailprint/issues/12/labels\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"body\": {\n    \"labels\": [\"wontfix\"]\n  }\n}\n```\n\nBoth calls can be executed with `curl` (or any HTTP client) using the `$GITHUB_TOKEN` environment variable for authentication.",
+            "elapsed": 13.742,
+            "prompt_tokens": 3031,
+            "completion_tokens": 1200,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "issue_number": false,
+                "repo": false,
+                "close_reason": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": []
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-issues_5",
+          "user_message": "Hey can you add a comment to issue 33 saying 'I reproduced this on macOS 15, will investigate'",
+          "description": "Add comment \u2014 conversational phrasing",
+          "expected_fields": {
+            "operation": "comment",
+            "issue_number": 33,
+            "comment_body": "I reproduced this on macOS 15, will investigate"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "https://api.github.com/repos/OWNER/REPO/issues/33/comments",
+              "headers": {
+                "Authorization": "token $GITHUB_TOKEN",
+                "Accept": "application/vnd.github+json"
+              },
+              "json": {
+                "body": "I reproduced this on macOS 15, will investigate"
+              }
+            },
+            "raw_response": "**API call (curl) to add a comment to issue\u202f#33**\n\n```json\n{\n  \"method\": \"POST\",\n  \"url\": \"https://api.github.com/repos/OWNER/REPO/issues/33/comments\",\n  \"headers\": {\n    \"Authorization\": \"token $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github+json\"\n  },\n  \"json\": {\n    \"body\": \"I reproduced this on macOS 15, will investigate\"\n  }\n}\n```\n\n*Replace `OWNER` and `REPO` with the appropriate GitHub user/organization and repository name. The `$GITHUB_TOKEN` environment variable should contain a valid personal access token with the `repo` scope (or use `gh` authentication if you prefer the `gh` CLI).*",
+            "elapsed": 4.582,
+            "prompt_tokens": 3038,
+            "completion_tokens": 417,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "issue_number": false,
+                "comment_body": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "headers",
+                "json",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 2,
+        "total": 16,
+        "accuracy": 0.125,
+        "elapsed": 63.25600000000001
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "github-pr-workflow",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/github/github-pr-workflow/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/github/github-pr-workflow/SKILL.yaml",
+      "tests": [
+        {
+          "id": "github-pr-workflow_1",
+          "user_message": "Create a new branch called feat/add-webhook-retry from main",
+          "description": "Create branch with explicit name and default base branch",
+          "expected_fields": {
+            "operation": "create_branch",
+            "branch_name": "feat/add-webhook-retry",
+            "base_branch": "main"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "git fetch origin && git checkout main && git pull origin main && git checkout -b feat/add-webhook-retry"
+            },
+            "raw_response": "{\n  \"command\": \"git fetch origin && git checkout main && git pull origin main && git checkout -b feat/add-webhook-retry\"\n}",
+            "elapsed": 4.977,
+            "prompt_tokens": 3108,
+            "completion_tokens": 347,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "branch_name": false,
+                "base_branch": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-pr-workflow_2",
+          "user_message": "Open a PR titled 'fix: handle null pointer in parser', request review from octocat and monalisa",
+          "description": "Create PR with multiple reviewers and conventional title",
+          "expected_fields": {
+            "operation": "create_pr",
+            "title": "fix: handle null pointer in parser",
+            "reviewers": "octocat,monalisa",
+            "draft": false
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "gh",
+              "command": "gh pr create --title \"fix: handle null pointer in parser\" --reviewer octocat,monalisa --body \"Fixes a null pointer bug in the parser.\\n\\nCloses #<issue-number>\""
+            },
+            "raw_response": "{\n  \"tool\": \"gh\",\n  \"command\": \"gh pr create --title \\\"fix: handle null pointer in parser\\\" --reviewer octocat,monalisa --body \\\"Fixes a null pointer bug in the parser.\\\\n\\\\nCloses #<issue-number>\\\"\"\n}",
+            "elapsed": 5.863,
+            "prompt_tokens": 3117,
+            "completion_tokens": 525,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "title": false,
+                "reviewers": false,
+                "draft": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-pr-workflow_3",
+          "user_message": "Check the CI status on PR 88 and watch until it finishes",
+          "description": "CI checks with watch=true",
+          "expected_fields": {
+            "operation": "checks",
+            "pr_number": 88,
+            "watch": true
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "github-pr-workflow",
+              "action": "monitor_ci",
+              "pr_number": 88,
+              "auth_method": "gh",
+              "command": "gh pr checks 88 --watch"
+            },
+            "raw_response": "{\n  \"tool\": \"github-pr-workflow\",\n  \"action\": \"monitor_ci\",\n  \"pr_number\": 88,\n  \"auth_method\": \"gh\",\n  \"command\": \"gh pr checks 88 --watch\"\n}",
+            "elapsed": 39.337,
+            "prompt_tokens": 3109,
+            "completion_tokens": 1458,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "pr_number": true,
+                "watch": false
+              },
+              "correct": 1,
+              "total": 3,
+              "accuracy": 0.3333,
+              "hallucinated_keys": [
+                "action",
+                "auth_method",
+                "command",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-pr-workflow_4",
+          "user_message": "Merge PR 55 using squash and delete the branch",
+          "description": "Merge with squash and branch deletion",
+          "expected_fields": {
+            "operation": "merge",
+            "pr_number": 55,
+            "merge_method": "squash",
+            "delete_branch": true
+          },
+          "monolithic": {
+            "collected": {},
+            "raw_response": "**Merge PR\u202f#55 with a squash merge and then delete the feature branch**\n\nBelow are the exact API calls you would issue (as JSON payloads) using `curl`.  \nReplace `OWNER`, `REPO`, and `$GITHUB_TOKEN` with your actual values.  \nIf you prefer the `gh` CLI, the equivalent command is also shown after the JSON.\n\n---\n\n### 1\ufe0f\u20e3 Squash\u2011merge the PR\n\n```json\n{\n  \"method\": \"PUT\",\n  \"url\": \"https://api.github.com/repos/OWNER/REPO/pulls/55/merge\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"body\": {\n    \"merge_method\": \"squash\",\n    \"commit_title\": \"feat: add JWT\u2011based user authentication (#55)\",\n    \"commit_message\": \"Squash commit for PR #55 \u2013 includes login/register endpoints, JWT generation, and unit tests.\"\n  }\n}\n```\n\n**cURL command (ready to copy\u2011paste):**\n\n```bash\ncurl -s -X PUT \\\n  -H \"Authorization: Bearer $GITHUB_TOKEN\" \\\n  -H \"Accept: application/vnd.github.v3+json\" \\\n  https://api.github.com/repos/OWNER/REPO/pulls/55/merge \\\n  -d '{\n    \"merge_method\": \"squash\",\n    \"commit_title\": \"feat: add JWT-based user authentication (#55)\",\n    \"commit_message\": \"Squash commit for PR #55 \u2013 includes login/register endpoints, JWT generation, and unit tests.\"\n  }'\n```\n\n> **Result** \u2013 GitHub returns the merged PR JSON. The `head` SHA of the PR is now the squashed commit.\n\n---\n\n### 2\ufe0f\u20e3 Delete the feature branch (the branch that was the PR\u2019s `head`)\n\nThe branch name is the PR\u2019s `head` (e.g., `feat/add-user-authentication`).  \nYou can discover it first with a quick API call, but assuming you already know it:\n\n```json\n{\n  \"method\": \"DELETE\",\n  \"url\": \"https://api.github.com/repos/OWNER/REPO/branches/feat/add-user-authentication\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  }\n}\n```\n\n**cURL command:**\n\n```bash\ncurl -s -X DELETE \\\n  -H \"Authorization: Bearer $GITHUB_TOKEN\" \\\n  -H \"Accept: application/vnd.github.v3+json\" \\\n  https://api.github.com/repos/OWNER/REPO/branches/feat/add-user-authentication\n```\n\n> **Result** \u2013 GitHub returns `204 No Content` on success, confirming the branch is gone.\n\n---\n\n### \ud83d\udce6 One\u2011liner (merge\u202f+\u202fdelete) using `gh` (if you have the CLI)\n\n```bash\n# Merge with squash, delete the branch, and exit\ngh pr merge 55 --squash --delete-branch\n```\n\nBoth approaches achieve the same outcome: PR\u202f#55 is squashed into a single commit on `main` and the temporary feature branch is removed from the remote repository.",
+            "elapsed": 34.39,
+            "prompt_tokens": 3107,
+            "completion_tokens": 1218,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "pr_number": false,
+                "merge_method": false,
+                "delete_branch": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": []
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-pr-workflow_5",
+          "user_message": "Open a draft PR for my current branch, still WIP, targeting develop",
+          "description": "Draft PR targeting non-main base branch",
+          "expected_fields": {
+            "operation": "create_pr",
+            "draft": true,
+            "base_branch": "develop"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "https://api.github.com/repos/{{owner}}/{{repo}}/pulls",
+              "headers": {
+                "Authorization": "token {{GITHUB_TOKEN}}",
+                "Accept": "application/vnd.github.v3+json"
+              },
+              "payload": {
+                "title": "WIP: $(git rev-parse --abbrev-ref HEAD)",
+                "body": "## Summary\n- Work in progress, not ready for review.\n\nCloses #<issue-if-any>",
+                "head": "$(git rev-parse --abbrev-ref HEAD)",
+                "base": "develop",
+                "draft": true
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"https://api.github.com/repos/{{owner}}/{{repo}}/pulls\",\n  \"headers\": {\n    \"Authorization\": \"token {{GITHUB_TOKEN}}\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"payload\": {\n    \"title\": \"WIP: $(git rev-parse --abbrev-ref HEAD)\",\n    \"body\": \"## Summary\\n- Work in progress, not ready for review.\\n\\nCloses #<issue-if-any>\",\n    \"head\": \"$(git rev-parse --abbrev-ref HEAD)\",\n    \"base\": \"develop\",\n    \"draft\": true\n  }\n}",
+            "elapsed": 14.209,
+            "prompt_tokens": 3110,
+            "completion_tokens": 1328,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "draft": false,
+                "base_branch": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "headers",
+                "method",
+                "payload",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 1,
+        "total": 17,
+        "accuracy": 0.0588,
+        "elapsed": 98.77600000000001
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "github-repo-management",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/github/github-repo-management/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/github/github-repo-management/SKILL.yaml",
+      "tests": [
+        {
+          "id": "github-repo-management_1",
+          "user_message": "Clone Snail3D/snailprint",
+          "description": "Basic clone \u2014 tests shallow=false default",
+          "expected_fields": {
+            "operation": "clone",
+            "repo": "Snail3D/snailprint",
+            "shallow": false
+          },
+          "monolithic": {
+            "collected": {
+              "action": "clone_repository",
+              "repository": "Snail3D/snailprint",
+              "method": "git",
+              "command": "git clone https://github.com/Snail3D/snailprint.git",
+              "alternative": {
+                "method": "gh",
+                "command": "gh repo clone Snail3D/snailprint"
+              }
+            },
+            "raw_response": "{\n  \"action\": \"clone_repository\",\n  \"repository\": \"Snail3D/snailprint\",\n  \"method\": \"git\",\n  \"command\": \"git clone https://github.com/Snail3D/snailprint.git\",\n  \"alternative\": {\n    \"method\": \"gh\",\n    \"command\": \"gh repo clone Snail3D/snailprint\"\n  }\n}",
+            "elapsed": 6.721,
+            "prompt_tokens": 4318,
+            "completion_tokens": 463,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "repo": false,
+                "shallow": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "alternative",
+                "command",
+                "method",
+                "repository"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-repo-management_2",
+          "user_message": "Create a new private repo called hermes-plugins with MIT license and description 'Plugin extensions for Hermes'",
+          "description": "Create repo with visibility, license, and description",
+          "expected_fields": {
+            "operation": "create",
+            "repo_name": "hermes-plugins",
+            "visibility": "private",
+            "license": "mit",
+            "description": "Plugin extensions for Hermes"
+          },
+          "monolithic": {
+            "collected": {
+              "action": "create_repo",
+              "method": "POST",
+              "url": "https://api.github.com/user/repos",
+              "headers": {
+                "Authorization": "Bearer <GITHUB_TOKEN>",
+                "Accept": "application/vnd.github+json"
+              },
+              "body": {
+                "name": "hermes-plugins",
+                "private": true,
+                "description": "Plugin extensions for Hermes",
+                "license_template": "mit"
+              }
+            },
+            "raw_response": "{\n  \"action\": \"create_repo\",\n  \"method\": \"POST\",\n  \"url\": \"https://api.github.com/user/repos\",\n  \"headers\": {\n    \"Authorization\": \"Bearer <GITHUB_TOKEN>\",\n    \"Accept\": \"application/vnd.github+json\"\n  },\n  \"body\": {\n    \"name\": \"hermes-plugins\",\n    \"private\": true,\n    \"description\": \"Plugin extensions for Hermes\",\n    \"license_template\": \"mit\"\n  }\n}",
+            "elapsed": 5.751,
+            "prompt_tokens": 4329,
+            "completion_tokens": 471,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "repo_name": false,
+                "visibility": false,
+                "license": false,
+                "description": false
+              },
+              "correct": 0,
+              "total": 5,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-repo-management_3",
+          "user_message": "Create a release v2.0.0 titled 'Version 2 - Major Rewrite' with auto-generated notes",
+          "description": "Release creation with auto-generated notes",
+          "expected_fields": {
+            "operation": "release_create",
+            "tag_name": "v2.0.0",
+            "release_title": "Version 2 - Major Rewrite",
+            "generate_notes": true
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "github-repo-management",
+              "action": "create_release",
+              "method": "POST",
+              "url": "https://api.github.com/repos/{owner}/{repo}/releases",
+              "headers": {
+                "Authorization": "token $GITHUB_TOKEN",
+                "Accept": "application/vnd.github.v3+json"
+              },
+              "body": {
+                "tag_name": "v2.0.0",
+                "name": "Version 2 - Major Rewrite",
+                "body": "",
+                "draft": false,
+                "prerelease": false,
+                "generate_release_notes": true
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"github-repo-management\",\n  \"action\": \"create_release\",\n  \"method\": \"POST\",\n  \"url\": \"https://api.github.com/repos/{owner}/{repo}/releases\",\n  \"headers\": {\n    \"Authorization\": \"token $GITHUB_TOKEN\",\n    \"Accept\": \"application/vnd.github.v3+json\"\n  },\n  \"body\": {\n    \"tag_name\": \"v2.0.0\",\n    \"name\": \"Version 2 - Major Rewrite\",\n    \"body\": \"\",\n    \"draft\": false,\n    \"prerelease\": false,\n    \"generate_release_notes\": true\n  }\n}",
+            "elapsed": 7.634,
+            "prompt_tokens": 4331,
+            "completion_tokens": 645,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "tag_name": false,
+                "release_title": false,
+                "generate_notes": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "body",
+                "headers",
+                "method",
+                "tool",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-repo-management_4",
+          "user_message": "Set a secret called OPENAI_API_KEY with value sk-abc123xyz in the current repo",
+          "description": "Secret management \u2014 sensitive data handling",
+          "expected_fields": {
+            "operation": "secret_set",
+            "secret_name": "OPENAI_API_KEY",
+            "secret_value": "sk-abc123xyz"
+          },
+          "monolithic": {
+            "collected": {
+              "skill": "github-repo-management",
+              "action": "set_secret",
+              "parameters": {
+                "secret_name": "OPENAI_API_KEY",
+                "secret_value": "sk-abc123xyz"
+              }
+            },
+            "raw_response": "{\n  \"skill\": \"github-repo-management\",\n  \"action\": \"set_secret\",\n  \"parameters\": {\n    \"secret_name\": \"OPENAI_API_KEY\",\n    \"secret_value\": \"sk-abc123xyz\"\n  }\n}",
+            "elapsed": 35.865,
+            "prompt_tokens": 4332,
+            "completion_tokens": 847,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "secret_name": false,
+                "secret_value": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "parameters",
+                "skill"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "github-repo-management_5",
+          "user_message": "Trigger the deploy.yml workflow on the staging branch with environment set to staging",
+          "description": "Workflow dispatch with branch and inputs",
+          "expected_fields": {
+            "operation": "workflow_trigger",
+            "workflow_file": "deploy.yml",
+            "workflow_ref": "staging",
+            "workflow_inputs": "-f environment=staging"
+          },
+          "monolithic": {
+            "collected": {
+              "action": "trigger_workflow",
+              "method": "POST",
+              "url": "https://api.github.com/repos/{{owner}}/{{repo}}/actions/workflows/{{workflow_id}}/dispatches",
+              "headers": {
+                "Authorization": "Bearer {{GITHUB_TOKEN}}",
+                "Accept": "application/vnd.github.mercy-preview+json"
+              },
+              "body": {
+                "ref": "staging",
+                "inputs": {
+                  "environment": "staging"
+                }
+              }
+            },
+            "raw_response": "{\n  \"action\": \"trigger_workflow\",\n  \"method\": \"POST\",\n  \"url\": \"https://api.github.com/repos/{{owner}}/{{repo}}/actions/workflows/{{workflow_id}}/dispatches\",\n  \"headers\": {\n    \"Authorization\": \"Bearer {{GITHUB_TOKEN}}\",\n    \"Accept\": \"application/vnd.github.mercy-preview+json\"\n  },\n  \"body\": {\n    \"ref\": \"staging\",\n    \"inputs\": {\n      \"environment\": \"staging\"\n    }\n  }\n}",
+            "elapsed": 17.081,
+            "prompt_tokens": 4323,
+            "completion_tokens": 986,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "workflow_file": false,
+                "workflow_ref": false,
+                "workflow_inputs": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 19,
+        "accuracy": 0.0,
+        "elapsed": 73.052
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "linear",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/productivity/linear/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/productivity/linear/SKILL.yaml",
+      "tests": [
+        {
+          "id": "linear_1",
+          "user_message": "Show me all my assigned issues in Linear",
+          "description": "List my issues \u2014 simple common operation",
+          "expected_fields": {
+            "operation": "my_issues"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "https://api.linear.app/graphql",
+              "headers": {
+                "Authorization": "$LINEAR_API_KEY",
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "query": "{ viewer { assignedIssues(first: 25) { nodes { identifier title state { name type } priority url } } } }"
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"https://api.linear.app/graphql\",\n  \"headers\": {\n    \"Authorization\": \"$LINEAR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"query\": \"{ viewer { assignedIssues(first: 25) { nodes { identifier title state { name type } priority url } } } }\"\n  }\n}",
+            "elapsed": 6.955,
+            "prompt_tokens": 3453,
+            "completion_tokens": 424,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false
+              },
+              "correct": 0,
+              "total": 1,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "linear_2",
+          "user_message": "Create a new issue in team abc-123-def titled 'Add rate limiting to API' with high priority and description 'Implement token bucket rate limiting on all public endpoints'",
+          "description": "Create issue with team ID, priority, and description",
+          "expected_fields": {
+            "operation": "create_issue",
+            "team_id": "abc-123-def",
+            "title": "Add rate limiting to API",
+            "priority": 2,
+            "description": "Implement token bucket rate limiting on all public endpoints"
+          },
+          "monolithic": {
+            "collected": {
+              "query": "mutation($input: IssueCreateInput!) { issueCreate(input: $input) { success issue { id identifier title url } } }",
+              "variables": {
+                "input": {
+                  "teamId": "abc-123-def",
+                  "title": "Add rate limiting to API",
+                  "description": "Implement token bucket rate limiting on all public endpoints",
+                  "priority": 2
+                }
+              }
+            },
+            "raw_response": "**cURL command to create the issue**\n\n```bash\ncurl -s -X POST https://api.linear.app/graphql \\\n  -H \"Authorization: $LINEAR_API_KEY\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"query\": \"mutation($input: IssueCreateInput!) { issueCreate(input: $input) { success issue { id identifier title url } } }\",\n    \"variables\": {\n      \"input\": {\n        \"teamId\": \"abc-123-def\",\n        \"title\": \"Add rate limiting to API\",\n        \"description\": \"Implement token bucket rate limiting on all public endpoints\",\n        \"priority\": 2\n      }\n    }\n  }'\n```",
+            "elapsed": 6.947,
+            "prompt_tokens": 3481,
+            "completion_tokens": 625,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "team_id": false,
+                "title": false,
+                "priority": false,
+                "description": false
+              },
+              "correct": 0,
+              "total": 5,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "query",
+                "variables"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "linear_3",
+          "user_message": "View issue ENG-42",
+          "description": "View specific issue by identifier",
+          "expected_fields": {
+            "operation": "view_issue",
+            "issue_id": "ENG-42"
+          },
+          "monolithic": {
+            "collected": {
+              "query": "query($id: String!){ issue(id: $id) { id identifier title description priority state { id name type } assignee { id name } team { key } project { name } labels { nodes { name } } comments { nodes { body user { name } createdAt } } url } } }",
+              "variables": {
+                "id": "ENG-42"
+              }
+            },
+            "raw_response": "```json\n{\n  \"query\": \"query($id: String!){ issue(id: $id) { id identifier title description priority state { id name type } assignee { id name } team { key } project { name } labels { nodes { name } } comments { nodes { body user { name } createdAt } } url } } }\",\n  \"variables\": {\n    \"id\": \"ENG-42\"\n  }\n}\n```",
+            "elapsed": 10.027,
+            "prompt_tokens": 3451,
+            "completion_tokens": 921,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "issue_id": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "query",
+                "variables"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "linear_4",
+          "user_message": "Add a comment to ENG-17 saying 'Fixed in PR #234, waiting for deploy'",
+          "description": "Add comment to specific issue",
+          "expected_fields": {
+            "operation": "add_comment",
+            "issue_id": "ENG-17",
+            "comment_body": "Fixed in PR #234, waiting for deploy"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "https://api.linear.app/graphql",
+              "headers": {
+                "Authorization": "$LINEAR_API_KEY",
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "query": "mutation($input: CommentCreateInput!) { commentCreate(input: $input) { success comment { id body } } }",
+                "variables": {
+                  "input": {
+                    "issueId": "ENG-17",
+                    "body": "Fixed in PR #234, waiting for deploy"
+                  }
+                }
+              }
+            },
+            "raw_response": "**cURL command (JSON payload) to add the comment**\n\n```json\n{\n  \"method\": \"POST\",\n  \"url\": \"https://api.linear.app/graphql\",\n  \"headers\": {\n    \"Authorization\": \"$LINEAR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"query\": \"mutation($input: CommentCreateInput!) { commentCreate(input: $input) { success comment { id body } } }\",\n    \"variables\": {\n      \"input\": {\n        \"issueId\": \"ENG-17\",\n        \"body\": \"Fixed in PR #234, waiting for deploy\"\n      }\n    }\n  }\n}\n```\n\n**Explanation**\n\n- `issueId` uses the Linear identifier `ENG-17` (the issue you want to comment on).  \n- `body` contains the exact comment text: **\u201cFixed in PR #234, waiting for deploy\u201d**.  \n- The mutation `commentCreate` creates the comment and returns the new comment\u2019s `id` and `body`.  \n\nRun the above JSON as a `curl` request (or via any HTTP client) to add the comment to issue **ENG\u201117**.",
+            "elapsed": 7.994,
+            "prompt_tokens": 3466,
+            "completion_tokens": 726,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "issue_id": false,
+                "comment_body": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "linear_5",
+          "user_message": "Mark ENG-55 as urgent",
+          "description": "Set priority \u2014 tests urgent=1 alias mapping",
+          "expected_fields": {
+            "operation": "set_priority",
+            "issue_id": "ENG-55",
+            "priority": 1
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "url": "https://api.linear.app/graphql",
+              "headers": {
+                "Authorization": "$LINEAR_API_KEY",
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "query": "mutation { issueUpdate(id: \"ENG-55\", input: { priority: 1 }) { success issue { identifier priority } } }"
+              }
+            },
+            "raw_response": "{\n  \"method\": \"POST\",\n  \"url\": \"https://api.linear.app/graphql\",\n  \"headers\": {\n    \"Authorization\": \"$LINEAR_API_KEY\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"query\": \"mutation { issueUpdate(id: \\\"ENG-55\\\", input: { priority: 1 }) { success issue { identifier priority } } }\"\n  }\n}",
+            "elapsed": 8.794,
+            "prompt_tokens": 3452,
+            "completion_tokens": 801,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "issue_id": false,
+                "priority": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 14,
+        "accuracy": 0.0,
+        "elapsed": 40.717
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "notion",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/productivity/notion/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/productivity/notion/SKILL.yaml",
+      "tests": [
+        {
+          "id": "notion_1",
+          "user_message": "Search Notion for 'project roadmap'",
+          "description": "Basic Notion search",
+          "expected_fields": {
+            "operation": "search",
+            "search_query": "project roadmap"
+          },
+          "monolithic": {
+            "collected": {
+              "url": "https://api.notion.com/v1/search",
+              "method": "POST",
+              "headers": {
+                "Authorization": "Bearer $NOTION_API_KEY",
+                "Notion-Version": "2025-09-03",
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "query": "project roadmap"
+              }
+            },
+            "raw_response": "{\n  \"url\": \"https://api.notion.com/v1/search\",\n  \"method\": \"POST\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $NOTION_API_KEY\",\n    \"Notion-Version\": \"2025-09-03\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"query\": \"project roadmap\"\n  }\n}",
+            "elapsed": 5.465,
+            "prompt_tokens": 1790,
+            "completion_tokens": 449,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "search_query": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "notion_2",
+          "user_message": "Add a new page called 'Sprint 14 Review' to database abc123def456",
+          "description": "Create page in database with title",
+          "expected_fields": {
+            "operation": "create_page",
+            "database_id": "abc123def456",
+            "page_title": "Sprint 14 Review"
+          },
+          "monolithic": {
+            "collected": {
+              "curl_command": "curl -s -X POST \"https://api.notion.com/v1/pages\" -H \"Authorization: Bearer $NOTION_API_KEY\" -H \"Notion-Version: 2025-09-03\" -H \"Content-Type: application/json\" -d '{\"parent\": {\"database_id\": \"abc123def456\"}, \"properties\": {\"Name\": {\"title\": [{\"text\": {\"content\": \"Sprint 14 Review\"}}]}}}'",
+              "request": {
+                "method": "POST",
+                "url": "https://api.notion.com/v1/pages",
+                "headers": {
+                  "Authorization": "Bearer $NOTION_API_KEY",
+                  "Notion-Version": "2025-09-03",
+                  "Content-Type": "application/json"
+                },
+                "body": {
+                  "parent": {
+                    "database_id": "abc123def456"
+                  },
+                  "properties": {
+                    "Name": {
+                      "title": [
+                        {
+                          "text": {
+                            "content": "Sprint 14 Review"
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            },
+            "raw_response": "{\n  \"curl_command\": \"curl -s -X POST \\\"https://api.notion.com/v1/pages\\\" -H \\\"Authorization: Bearer $NOTION_API_KEY\\\" -H \\\"Notion-Version: 2025-09-03\\\" -H \\\"Content-Type: application/json\\\" -d '{\\\"parent\\\": {\\\"database_id\\\": \\\"abc123def456\\\"}, \\\"properties\\\": {\\\"Name\\\": {\\\"title\\\": [{\\\"text\\\": {\\\"content\\\": \\\"Sprint 14 Review\\\"}}]}}}'\",\n  \"request\": {\n    \"method\": \"POST\",\n    \"url\": \"https://api.notion.com/v1/pages\",\n    \"headers\": {\n      \"Authorization\": \"Bearer $NOTION_API_KEY\",\n      \"Notion-Version\": \"2025-09-03\",\n      \"Content-Type\": \"application/json\"\n    },\n    \"body\": {\n      \"parent\": {\n        \"database_id\": \"abc123def456\"\n      },\n      \"properties\": {\n        \"Name\": {\n          \"title\": [\n            {\n              \"text\": {\n                \"content\": \"Sprint 14 Review\"\n              }\n            }\n          ]\n        }\n      }\n    }\n  }\n}",
+            "elapsed": 26.914,
+            "prompt_tokens": 1805,
+            "completion_tokens": 842,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "database_id": false,
+                "page_title": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "curl_command",
+                "request"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "notion_3",
+          "user_message": "Query the database 789xyz and filter by Status = Done, sorted by Date descending",
+          "description": "Database query with filter and sort",
+          "expected_fields": {
+            "operation": "query_database",
+            "data_source_id": "789xyz",
+            "filter_property": "Status",
+            "filter_value": "Done",
+            "sort_property": "Date",
+            "sort_direction": "descending"
+          },
+          "monolithic": {
+            "collected": {
+              "url": "https://api.notion.com/v1/data_sources/789xyz/query",
+              "method": "POST",
+              "headers": {
+                "Authorization": "Bearer $NOTION_API_KEY",
+                "Notion-Version": "2025-09-03",
+                "Content-Type": "application/json"
+              },
+              "body": {
+                "filter": {
+                  "property": "Status",
+                  "select": {
+                    "equals": "Done"
+                  }
+                },
+                "sorts": [
+                  {
+                    "property": "Date",
+                    "direction": "descending"
+                  }
+                ]
+              }
+            },
+            "raw_response": "{\n  \"url\": \"https://api.notion.com/v1/data_sources/789xyz/query\",\n  \"method\": \"POST\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $NOTION_API_KEY\",\n    \"Notion-Version\": \"2025-09-03\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"body\": {\n    \"filter\": {\n      \"property\": \"Status\",\n      \"select\": {\n        \"equals\": \"Done\"\n      }\n    },\n    \"sorts\": [\n      {\n        \"property\": \"Date\",\n        \"direction\": \"descending\"\n      }\n    ]\n  }\n}",
+            "elapsed": 26.161,
+            "prompt_tokens": 1801,
+            "completion_tokens": 737,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "data_source_id": false,
+                "filter_property": false,
+                "filter_value": false,
+                "sort_property": false,
+                "sort_direction": false
+              },
+              "correct": 0,
+              "total": 6,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "notion_4",
+          "user_message": "Update the Status property of page def-456-ghi to 'In Progress' (it's a select field)",
+          "description": "Update page property with type specified",
+          "expected_fields": {
+            "operation": "update_page",
+            "page_id": "def-456-ghi",
+            "update_property_name": "Status",
+            "update_property_value": "In Progress",
+            "update_property_type": "select"
+          },
+          "monolithic": {
+            "collected": {
+              "properties": {
+                "Status": {
+                  "select": {
+                    "name": "In Progress"
+                  }
+                }
+              }
+            },
+            "raw_response": "**cURL command**\n\n```bash\ncurl -s -X PATCH \"https://api.notion.com/v1/pages/def-456-ghi\" \\\n  -H \"Authorization: Bearer $NOTION_API_KEY\" \\\n  -H \"Notion-Version: 2025-09-03\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"properties\": {\n      \"Status\": {\n        \"select\": {\n          \"name\": \"In Progress\"\n        }\n      }\n    }\n  }'\n```",
+            "elapsed": 13.975,
+            "prompt_tokens": 1806,
+            "completion_tokens": 554,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "page_id": false,
+                "update_property_name": false,
+                "update_property_value": false,
+                "update_property_type": false
+              },
+              "correct": 0,
+              "total": 5,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "properties"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "notion_5",
+          "user_message": "Append a bullet point to my notes page abc-999 that says 'Follow up with the design team on Monday'",
+          "description": "Add bullet content block to page",
+          "expected_fields": {
+            "operation": "add_content",
+            "page_id": "abc-999",
+            "block_content": "Follow up with the design team on Monday",
+            "block_type": "bulleted_list_item"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "PATCH",
+              "url": "https://api.notion.com/v1/blocks/abc-999/children",
+              "headers": {
+                "Authorization": "Bearer $NOTION_API_KEY",
+                "Notion-Version": "2025-09-03",
+                "Content-Type": "application/json"
+              },
+              "data": {
+                "children": [
+                  {
+                    "object": "block",
+                    "type": "bullet_list",
+                    "bullet_list": {
+                      "children": [
+                        {
+                          "object": "block",
+                          "type": "paragraph",
+                          "paragraph": {
+                            "rich_text": [
+                              {
+                                "text": {
+                                  "content": "Follow up with the design team on Monday"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "raw_response": "{\n  \"method\": \"PATCH\",\n  \"url\": \"https://api.notion.com/v1/blocks/abc-999/children\",\n  \"headers\": {\n    \"Authorization\": \"Bearer $NOTION_API_KEY\",\n    \"Notion-Version\": \"2025-09-03\",\n    \"Content-Type\": \"application/json\"\n  },\n  \"data\": {\n    \"children\": [\n      {\n        \"object\": \"block\",\n        \"type\": \"bullet_list\",\n        \"bullet_list\": {\n          \"children\": [\n            {\n              \"object\": \"block\",\n              \"type\": \"paragraph\",\n              \"paragraph\": {\n                \"rich_text\": [\n                  {\n                    \"text\": {\n                      \"content\": \"Follow up with the design team on Monday\"\n                    }\n                  }\n                ]\n              }\n            }\n          ]\n        }\n      }\n    ]\n  }\n}",
+            "elapsed": 15.358,
+            "prompt_tokens": 1806,
+            "completion_tokens": 739,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "page_id": false,
+                "block_content": false,
+                "block_type": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "data",
+                "headers",
+                "method",
+                "url"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 0,
+        "total": 20,
+        "accuracy": 0.0,
+        "elapsed": 87.873
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "find-nearby",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/leisure/find-nearby/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/leisure/find-nearby/SKILL.yaml",
+      "tests": [
+        {
+          "id": "find-nearby_1",
+          "user_message": "Find restaurants near downtown Austin",
+          "description": "Basic restaurant search by city \u2014 tests defaults (radius=1500, limit=15)",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "downtown Austin",
+            "place_types": [
+              "restaurant"
+            ],
+            "radius": 1500
+          },
+          "monolithic": {
+            "collected": {
+              "near": "downtown austin",
+              "type": "restaurant",
+              "radius": 1500,
+              "limit": 15,
+              "json": true
+            },
+            "raw_response": "{\n  \"near\": \"downtown austin\",\n  \"type\": \"restaurant\",\n  \"radius\": 1500,\n  \"limit\": 15,\n  \"json\": true\n}",
+            "elapsed": 49.56,
+            "prompt_tokens": 962,
+            "completion_tokens": 335,
+            "error": null,
+            "score": {
+              "per_field": {
+                "location_mode": false,
+                "near": true,
+                "place_types": false,
+                "radius": true
+              },
+              "correct": 2,
+              "total": 4,
+              "accuracy": 0.5,
+              "hallucinated_keys": [
+                "json",
+                "limit",
+                "type"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "find-nearby_2",
+          "user_message": "Find coffee shops and pharmacies within 500 meters of Times Square, New York, top 5",
+          "description": "Multiple place types, custom radius and limit",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "Times Square, New York",
+            "place_types": [
+              "cafe",
+              "pharmacy"
+            ],
+            "radius": 500,
+            "limit": 5
+          },
+          "monolithic": {
+            "collected": {
+              "skill": "find-nearby",
+              "input": {
+                "near": "Times Square, New York",
+                "type": [
+                  "cafe",
+                  "pharmacy"
+                ],
+                "radius": 500,
+                "limit": 5,
+                "json": true
+              }
+            },
+            "raw_response": "{\n  \"skill\": \"find-nearby\",\n  \"input\": {\n    \"near\": \"Times Square, New York\",\n    \"type\": [\"cafe\", \"pharmacy\"],\n    \"radius\": 500,\n    \"limit\": 5,\n    \"json\": true\n  }\n}",
+            "elapsed": 19.381,
+            "prompt_tokens": 979,
+            "completion_tokens": 642,
+            "error": null,
+            "score": {
+              "per_field": {
+                "location_mode": false,
+                "near": false,
+                "place_types": false,
+                "radius": false,
+                "limit": false
+              },
+              "correct": 0,
+              "total": 5,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "input",
+                "skill"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "find-nearby_3",
+          "user_message": "Find gas stations near coordinates 30.2672, -97.7431",
+          "description": "Coordinates mode with fuel alias",
+          "expected_fields": {
+            "location_mode": "coordinates",
+            "lat": 30.2672,
+            "lon": -97.7431,
+            "place_types": [
+              "fuel"
+            ]
+          },
+          "monolithic": {
+            "collected": {
+              "lat": 30.2672,
+              "lon": -97.7431,
+              "type": "fuel",
+              "radius": 1500,
+              "limit": 15,
+              "json": true
+            },
+            "raw_response": "{\n  \"lat\": 30.2672,\n  \"lon\": -97.7431,\n  \"type\": \"fuel\",\n  \"radius\": 1500,\n  \"limit\": 15,\n  \"json\": true\n}",
+            "elapsed": 19.759,
+            "prompt_tokens": 979,
+            "completion_tokens": 371,
+            "error": null,
+            "score": {
+              "per_field": {
+                "location_mode": false,
+                "lat": true,
+                "lon": true,
+                "place_types": false
+              },
+              "correct": 2,
+              "total": 4,
+              "accuracy": 0.5,
+              "hallucinated_keys": [
+                "json",
+                "limit",
+                "radius",
+                "type"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "find-nearby_4",
+          "user_message": "Find hotels within 2km of 90210",
+          "description": "Zip code location, hotel type, km to meters conversion",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "90210",
+            "place_types": [
+              "hotel"
+            ],
+            "radius": 2000
+          },
+          "monolithic": {
+            "collected": {
+              "near": "90210",
+              "type": "hotel",
+              "radius": 2000,
+              "limit": 15,
+              "json": true
+            },
+            "raw_response": "```json\n{\n  \"near\": \"90210\",\n  \"type\": \"hotel\",\n  \"radius\": 2000,\n  \"limit\": 15,\n  \"json\": true\n}\n```",
+            "elapsed": 18.693,
+            "prompt_tokens": 970,
+            "completion_tokens": 325,
+            "error": null,
+            "score": {
+              "per_field": {
+                "location_mode": false,
+                "near": true,
+                "place_types": false,
+                "radius": true
+              },
+              "correct": 2,
+              "total": 4,
+              "accuracy": 0.5,
+              "hallucinated_keys": [
+                "json",
+                "limit",
+                "type"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "find-nearby_5",
+          "user_message": "I'm hungry, what's around me? I'm at the Eiffel Tower",
+          "description": "Casual real-world request \u2014 landmark, food implied as restaurant",
+          "expected_fields": {
+            "location_mode": "address",
+            "near": "Eiffel Tower",
+            "place_types": [
+              "restaurant"
+            ]
+          },
+          "monolithic": {
+            "collected": {
+              "near": "Eiffel Tower, Paris",
+              "type": "restaurant",
+              "radius": 1500,
+              "limit": 10,
+              "json": true
+            },
+            "raw_response": "{\n  \"near\": \"Eiffel Tower, Paris\",\n  \"type\": \"restaurant\",\n  \"radius\": 1500,\n  \"limit\": 10,\n  \"json\": true\n}",
+            "elapsed": 20.111,
+            "prompt_tokens": 974,
+            "completion_tokens": 345,
+            "error": null,
+            "score": {
+              "per_field": {
+                "location_mode": false,
+                "near": true,
+                "place_types": false
+              },
+              "correct": 1,
+              "total": 3,
+              "accuracy": 0.3333,
+              "hallucinated_keys": [
+                "json",
+                "limit",
+                "radius",
+                "type"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 7,
+        "total": 20,
+        "accuracy": 0.35,
+        "elapsed": 127.504
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "webhook-subscriptions",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/devops/webhook-subscriptions/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/devops/webhook-subscriptions/SKILL.yaml",
+      "tests": [
+        {
+          "id": "webhook-subscriptions_1",
+          "user_message": "List all my webhook subscriptions",
+          "description": "Simple list operation",
+          "expected_fields": {
+            "operation": "list"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "hermes webhook list",
+              "args": {}
+            },
+            "raw_response": "{\n  \"command\": \"hermes webhook list\",\n  \"args\": {}\n}",
+            "elapsed": 18.739,
+            "prompt_tokens": 1631,
+            "completion_tokens": 216,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false
+              },
+              "correct": 0,
+              "total": 1,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "webhook-subscriptions_2",
+          "user_message": "Create a webhook subscription named 'github-issues' that triggers on 'issues' events and uses the prompt 'New issue #{issue.number}: {issue.title}', deliver to my Telegram chat 123456789",
+          "description": "Full subscription creation with events, prompt template, and Telegram delivery",
+          "expected_fields": {
+            "operation": "subscribe",
+            "name": "github-issues",
+            "prompt": "New issue #{issue.number}: {issue.title}",
+            "events": "issues",
+            "deliver": "telegram",
+            "deliver_chat_id": "123456789"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "hermes webhook subscribe github-issues",
+              "parameters": {
+                "name": "github-issues",
+                "prompt": "New issue #{issue.number}: {issue.title}",
+                "events": "issues",
+                "deliver": "telegram",
+                "deliver_chat_id": "123456789"
+              }
+            },
+            "raw_response": "{\n  \"command\": \"hermes webhook subscribe github-issues\",\n  \"parameters\": {\n    \"name\": \"github-issues\",\n    \"prompt\": \"New issue #{issue.number}: {issue.title}\",\n    \"events\": \"issues\",\n    \"deliver\": \"telegram\",\n    \"deliver_chat_id\": \"123456789\"\n  }\n}",
+            "elapsed": 23.615,
+            "prompt_tokens": 1673,
+            "completion_tokens": 587,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "name": false,
+                "prompt": false,
+                "events": false,
+                "deliver": false,
+                "deliver_chat_id": false
+              },
+              "correct": 0,
+              "total": 6,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "command",
+                "parameters"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "webhook-subscriptions_3",
+          "user_message": "Remove the webhook subscription called stripe-payments",
+          "description": "Remove subscription by name",
+          "expected_fields": {
+            "operation": "remove",
+            "name": "stripe-payments"
+          },
+          "monolithic": {
+            "collected": {
+              "command": "hermes webhook remove",
+              "args": {
+                "name": "stripe-payments"
+              }
+            },
+            "raw_response": "{\n  \"command\": \"hermes webhook remove\",\n  \"args\": {\n    \"name\": \"stripe-payments\"\n  }\n}",
+            "elapsed": 34.965,
+            "prompt_tokens": 1635,
+            "completion_tokens": 287,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "name": false
+              },
+              "correct": 0,
+              "total": 2,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "args",
+                "command"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "webhook-subscriptions_4",
+          "user_message": "Test the ci-builds webhook with payload {\"action\": \"completed\", \"status\": \"failure\"}",
+          "description": "Test webhook with JSON payload",
+          "expected_fields": {
+            "operation": "test",
+            "name": "ci-builds",
+            "test_payload": "{\"action\": \"completed\", \"status\": \"failure\"}"
+          },
+          "monolithic": {
+            "collected": {
+              "method": "POST",
+              "endpoint": "/webhook/ci-builds",
+              "headers": {
+                "Content-Type": "application/json",
+                "X-Hub-Signature-256": "sha256=YOUR_HMAC_SECRET_HERE"
+              },
+              "body": {
+                "action": "completed",
+                "status": "failure"
+              }
+            },
+            "raw_response": "```json\n{\n  \"method\": \"POST\",\n  \"endpoint\": \"/webhook/ci-builds\",\n  \"headers\": {\n    \"Content-Type\": \"application/json\",\n    \"X-Hub-Signature-256\": \"sha256=YOUR_HMAC_SECRET_HERE\"\n  },\n  \"body\": {\n    \"action\": \"completed\",\n    \"status\": \"failure\"\n  }\n}\n```",
+            "elapsed": 45.995,
+            "prompt_tokens": 1646,
+            "completion_tokens": 769,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "name": false,
+                "test_payload": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "body",
+                "endpoint",
+                "headers",
+                "method"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "webhook-subscriptions_5",
+          "user_message": "Set up a webhook called 'alerts' that fires on all events, sends the prompt 'Alert received: {message}', and posts a GitHub comment back",
+          "description": "Subscribe with GitHub comment delivery and no event filter",
+          "expected_fields": {
+            "operation": "subscribe",
+            "name": "alerts",
+            "prompt": "Alert received: {message}",
+            "deliver": "github_comment"
+          },
+          "monolithic": {
+            "collected": {
+              "name": "alerts",
+              "prompt": "Alert received: {message}",
+              "events": "all",
+              "deliver": "github_comment"
+            },
+            "raw_response": "{\n  \"name\": \"alerts\",\n  \"prompt\": \"Alert received: {message}\",\n  \"events\": \"all\",\n  \"deliver\": \"github_comment\"\n}",
+            "elapsed": 35.095,
+            "prompt_tokens": 1658,
+            "completion_tokens": 821,
+            "error": null,
+            "score": {
+              "per_field": {
+                "operation": false,
+                "name": true,
+                "prompt": true,
+                "deliver": true
+              },
+              "correct": 3,
+              "total": 4,
+              "accuracy": 0.75,
+              "hallucinated_keys": [
+                "events"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 3,
+        "total": 16,
+        "accuracy": 0.1875,
+        "elapsed": 158.409
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    },
+    {
+      "name": "google-workspace",
+      "skill_md_path": "/Users/snailmac/.hermes/skills/productivity/google-workspace/SKILL.md",
+      "skill_yaml_path": "/Users/snailmac/.hermes/skills/productivity/google-workspace/SKILL.yaml",
+      "tests": [
+        {
+          "id": "google-workspace_1",
+          "user_message": "Show me my unread emails from today",
+          "description": "Gmail search \u2014 unread + today query combination",
+          "expected_fields": {
+            "service": "gmail",
+            "gmail_action": "search",
+            "gmail_query": "is:unread newer_than:1d"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "google-workspace",
+              "script": "google_api.py",
+              "action": "gmail",
+              "method": "search",
+              "parameters": {
+                "query": "is:unread newer_than:1d",
+                "max": 10
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"google-workspace\",\n  \"script\": \"google_api.py\",\n  \"action\": \"gmail\",\n  \"method\": \"search\",\n  \"parameters\": {\n    \"query\": \"is:unread newer_than:1d\",\n    \"max\": 10\n  }\n}",
+            "elapsed": 30.45,
+            "prompt_tokens": 2558,
+            "completion_tokens": 928,
+            "error": null,
+            "score": {
+              "per_field": {
+                "service": false,
+                "gmail_action": false,
+                "gmail_query": false
+              },
+              "correct": 0,
+              "total": 3,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "method",
+                "parameters",
+                "script",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "google-workspace_2",
+          "user_message": "Schedule a team meeting called 'Q2 Planning' on April 10 from 10am to 11am CST, invite alice@company.com and bob@company.com, at the Zoom link location",
+          "description": "Calendar event creation with attendees and time range",
+          "expected_fields": {
+            "service": "calendar",
+            "calendar_action": "create",
+            "calendar_summary": "Q2 Planning",
+            "calendar_start": "2026-04-10T10:00:00-06:00",
+            "calendar_end": "2026-04-10T11:00:00-06:00",
+            "calendar_attendees": "alice@company.com,bob@company.com"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "google-workspace",
+              "method": "calendar.create",
+              "payload": {
+                "summary": "Q2 Planning",
+                "start": {
+                  "dateTime": "2025-04-10T10:00:00-06:00",
+                  "timeZone": "America/Chicago"
+                },
+                "end": {
+                  "dateTime": "2025-04-10T11:00:00-06:00",
+                  "timeZone": "America/Chicago"
+                },
+                "location": "Zoom link",
+                "attendees": [
+                  {
+                    "email": "alice@company.com"
+                  },
+                  {
+                    "email": "bob@company.com"
+                  }
+                ]
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"google-workspace\",\n  \"method\": \"calendar.create\",\n  \"payload\": {\n    \"summary\": \"Q2 Planning\",\n    \"start\": {\n      \"dateTime\": \"2025-04-10T10:00:00-06:00\",\n      \"timeZone\": \"America/Chicago\"\n    },\n    \"end\": {\n      \"dateTime\": \"2025-04-10T11:00:00-06:00\",\n      \"timeZone\": \"America/Chicago\"\n    },\n    \"location\": \"Zoom link\",\n    \"attendees\": [\n      { \"email\": \"alice@company.com\" },\n      { \"email\": \"bob@company.com\" }\n    ]\n  }\n}",
+            "elapsed": 20.133,
+            "prompt_tokens": 2594,
+            "completion_tokens": 1492,
+            "error": null,
+            "score": {
+              "per_field": {
+                "service": false,
+                "calendar_action": false,
+                "calendar_summary": false,
+                "calendar_start": false,
+                "calendar_end": false,
+                "calendar_attendees": false
+              },
+              "correct": 0,
+              "total": 6,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "method",
+                "payload",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "google-workspace_3",
+          "user_message": "Search Google Drive for 'quarterly budget 2026'",
+          "description": "Drive file search with keyword query",
+          "expected_fields": {
+            "service": "drive",
+            "drive_query": "quarterly budget 2026",
+            "drive_raw_query": false
+          },
+          "monolithic": {
+            "collected": {
+              "service": "drive",
+              "action": "search",
+              "query": "quarterly budget 2026",
+              "max_results": 10
+            },
+            "raw_response": "{\n  \"service\": \"drive\",\n  \"action\": \"search\",\n  \"query\": \"quarterly budget 2026\",\n  \"max_results\": 10\n}",
+            "elapsed": 19.591,
+            "prompt_tokens": 2563,
+            "completion_tokens": 382,
+            "error": null,
+            "score": {
+              "per_field": {
+                "service": true,
+                "drive_query": false,
+                "drive_raw_query": false
+              },
+              "correct": 1,
+              "total": 3,
+              "accuracy": 0.3333,
+              "hallucinated_keys": [
+                "action",
+                "max_results",
+                "query"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "google-workspace_4",
+          "user_message": "Read rows A1:D20 from my Google Sheet with ID 1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+          "description": "Sheets read with specific range",
+          "expected_fields": {
+            "service": "sheets",
+            "sheets_action": "get",
+            "sheets_id": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+            "sheets_range": "Sheet1!A1:D20"
+          },
+          "monolithic": {
+            "collected": {
+              "tool": "google-workspace",
+              "skill": "sheets",
+              "method": "get",
+              "arguments": {
+                "spreadsheetId": "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms",
+                "range": "Sheet1!A1:D20"
+              }
+            },
+            "raw_response": "{\n  \"tool\": \"google-workspace\",\n  \"skill\": \"sheets\",\n  \"method\": \"get\",\n  \"arguments\": {\n    \"spreadsheetId\": \"1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgVE2upms\",\n    \"range\": \"Sheet1!A1:D20\"\n  }\n}",
+            "elapsed": 50.551,
+            "prompt_tokens": 2598,
+            "completion_tokens": 728,
+            "error": null,
+            "score": {
+              "per_field": {
+                "service": false,
+                "sheets_action": false,
+                "sheets_id": false,
+                "sheets_range": false
+              },
+              "correct": 0,
+              "total": 4,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "arguments",
+                "method",
+                "skill",
+                "tool"
+              ]
+            }
+          },
+          "formedskill": null
+        },
+        {
+          "id": "google-workspace_5",
+          "user_message": "Send an email to team@mycompany.com with subject 'Heads up \u2014 server maintenance tonight' saying 'Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.'",
+          "description": "Send email \u2014 tests html=false default and plain text body",
+          "expected_fields": {
+            "service": "gmail",
+            "gmail_action": "send",
+            "gmail_to": "team@mycompany.com",
+            "gmail_subject": "Heads up \u2014 server maintenance tonight",
+            "gmail_html": false
+          },
+          "monolithic": {
+            "collected": {
+              "action": "gmail_send",
+              "to": "team@mycompany.com",
+              "subject": "Heads up \u2014 server maintenance tonight",
+              "body": "Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.",
+              "html": false
+            },
+            "raw_response": "{\n  \"action\": \"gmail_send\",\n  \"to\": \"team@mycompany.com\",\n  \"subject\": \"Heads up \u2014 server maintenance tonight\",\n  \"body\": \"Hi all, we have scheduled maintenance from 11pm-1am. Please save your work.\",\n  \"html\": false\n}",
+            "elapsed": 38.931,
+            "prompt_tokens": 2592,
+            "completion_tokens": 552,
+            "error": null,
+            "score": {
+              "per_field": {
+                "service": false,
+                "gmail_action": false,
+                "gmail_to": false,
+                "gmail_subject": false,
+                "gmail_html": false
+              },
+              "correct": 0,
+              "total": 5,
+              "accuracy": 0.0,
+              "hallucinated_keys": [
+                "action",
+                "body",
+                "html",
+                "subject",
+                "to"
+              ]
+            }
+          },
+          "formedskill": null
+        }
+      ],
+      "monolithic": {
+        "correct": 1,
+        "total": 21,
+        "accuracy": 0.0476,
+        "elapsed": 159.656
+      },
+      "formedskill": {
+        "correct": 0,
+        "total": 0,
+        "accuracy": 0.0,
+        "elapsed": 0.0
+      }
+    }
+  ],
+  "summary": {
+    "monolithic_accuracy": 0.1255,
+    "formedskill_accuracy": null,
+    "monolithic_correct": 32,
+    "monolithic_total": 255,
+    "formedskill_correct": 0,
+    "formedskill_total": 0,
+    "improvement_pct": null
+  }
+}
