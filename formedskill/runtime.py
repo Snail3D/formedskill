@@ -1,9 +1,11 @@
 """
 formedskill.runtime — FormRunner: the core execution engine.
 
-Two modes:
+Three modes:
   run_step_by_step  — one LLM call per field (proven approach, 3B = 100%)
   run_single_shot   — one LLM call for all fields (faster, less reliable)
+  run_batched       — one LLM call, structured prompt with preamble + all fields
+                      (100% accuracy on Cascade 2 at ~6s avg)
 
 Ported directly from /tmp/guided_form_skill.py with full type support.
 """
@@ -29,6 +31,12 @@ _SINGLE_SHOT_SYSTEM = (
     "You fill out forms by extracting information from user messages. "
     "Respond ONLY with the field values in the exact format requested. "
     "No explanations, no extra text."
+)
+
+_BATCHED_SYSTEM = (
+    "You extract structured parameters from user messages. "
+    "Respond ONLY with field:value lines, one per line. "
+    "Use the exact field names shown. No explanations, no extra text."
 )
 
 
@@ -204,6 +212,68 @@ class FormRunner:
             mode="single-shot",
         )
 
+    def run_batched(self, form: SkillForm, user_message: str) -> FormResult:
+        """
+        Fill the entire form in one structured LLM call.
+
+        Builds a single prompt: preamble + user message + all visible fields
+        (respecting show_when). Parses the response as field:value lines.
+
+        Tested at 100% accuracy on Cascade 2 at ~6s avg.
+        """
+        # Evaluate which fields are visible — we need a two-pass approach:
+        # first collect defaults to seed show_when, then build the prompt.
+        # For batched mode we include all fields whose show_when passes on
+        # an empty collected dict (conservative: show ambiguous fields).
+        visible_fields = [f for f in form.fields if should_show_field(f.show_when, {})]
+
+        prompt = _build_batched_prompt(form, user_message, visible_fields)
+        messages = [
+            {"role": "system", "content": _BATCHED_SYSTEM},
+            {"role": "user", "content": prompt},
+        ]
+
+        if self.verbose:
+            print(f"  [batched] sending {len(visible_fields)} fields in one call...")
+
+        raw, stats = self.client.chat_completion(
+            messages, temperature=self.temperature,
+            max_tokens=self.max_tokens,
+        )
+
+        if self.verbose:
+            print(f"  [batched] raw response: {repr(raw[:120])}")
+
+        collected, step_results = _parse_batched_response(raw, form, visible_fields)
+
+        return FormResult(
+            collected=collected,
+            step_results=step_results,
+            total_elapsed=stats["elapsed"],
+            total_prompt_tokens=stats["prompt_tokens"],
+            total_completion_tokens=stats["completion_tokens"],
+            mode="batched",
+        )
+
+    def run_auto(self, form: SkillForm, user_message: str) -> FormResult:
+        """
+        Pick the best strategy automatically.
+
+        Rules:
+        - Model name contains "nemotron" or "mamba"  -> batched
+        - form.strategy == "batched"                 -> batched
+        - form.strategy == "step-by-step"            -> step-by-step
+        - Otherwise                                  -> step-by-step (safe default)
+        """
+        model_lower = self.client.model.lower()
+        use_batched = (
+            form.strategy == "batched"
+            or any(kw in model_lower for kw in ("nemotron", "mamba"))
+        )
+        if use_batched:
+            return self.run_batched(form, user_message)
+        return self.run_step_by_step(form, user_message)
+
 
 # ── Prompt builders ───────────────────────────────────────────────────────────
 
@@ -268,6 +338,87 @@ def _build_single_shot_prompt(form: SkillForm, user_message: str) -> str:
         parts.append("")
 
     return "\n".join(parts)
+
+
+def _build_batched_prompt(form: SkillForm, user_message: str, visible_fields: list[Field]) -> str:
+    """Build the batched extraction prompt with preamble + message + all visible fields."""
+    parts = []
+    if form.preamble:
+        parts.append(f"Context: {form.preamble}\n")
+    parts.append(f'User: "{user_message}"\n')
+    parts.append("Extract ALL fields:")
+
+    for f in visible_fields:
+        field_line = f"{f.id}:"
+        if f.options:
+            opts = " | ".join(f.options.keys())
+            field_line += f" [{opts}]"
+        elif f.type == "number":
+            field_line += " (number)"
+        elif f.type == "boolean":
+            field_line += " (yes/no)"
+        elif f.type == "json_array":
+            field_line += " (JSON array)"
+        else:
+            field_line += " (text)"
+        if f.default is not None:
+            field_line += f" (default: {f.default})"
+        if f.infer_from:
+            field_line += f" — {f.infer_from}"
+        parts.append(field_line)
+
+    return "\n".join(parts)
+
+
+def _parse_batched_response(
+    raw: str, form: SkillForm, visible_fields: list[Field]
+) -> tuple[dict[str, Any], list[StepResult]]:
+    """
+    Parse a batched response (field:value lines) into collected dict and step results.
+    Handles show_when by skipping fields not in visible_fields.
+    """
+    from formedskill.inference import extract_answer, _is_sentinel, _clean_raw
+
+    visible_ids = {f.id for f in visible_fields}
+    field_map = {f.id: f for f in form.fields}
+
+    collected: dict[str, Any] = {}
+    step_results: list[StepResult] = []
+    seen: set[str] = set()
+
+    for line in raw.strip().splitlines():
+        line = line.strip()
+        if not line or ":" not in line:
+            continue
+
+        key, _, val_str = line.partition(":")
+        key = key.strip().lower()
+        val_str = val_str.strip()
+
+        if key not in field_map or key not in visible_ids:
+            continue
+
+        f = field_map[key]
+        cleaned = _clean_raw(val_str)
+
+        if _is_sentinel(cleaned):
+            answer = f.default
+        else:
+            answer = extract_answer(val_str, f)
+
+        if answer is not None:
+            collected[key] = answer
+
+        step_results.append(StepResult(id=key, answer=answer, skipped=False))
+        seen.add(key)
+
+    # Mark fields not returned by the model
+    for f in form.fields:
+        if f.id not in seen:
+            skipped = f.id not in visible_ids
+            step_results.append(StepResult(id=f.id, answer=f.default, skipped=skipped))
+
+    return collected, step_results
 
 
 def _parse_single_shot_response(

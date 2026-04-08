@@ -7,6 +7,8 @@ skill:
   tags: [3d-print, bambu, makerworld, generate, slicer]
   platforms: [macos, linux]
 
+strategy: auto
+
 preamble: >
   SnailPrint controls two Bambu P2S 3D printers (P2D2 and P3Pio). It can
   generate 3D models from text descriptions, convert photos to 3D figurines,

@@ -365,6 +365,9 @@ class SkillMeta:
         )
 
 
+VALID_STRATEGIES = {"auto", "step-by-step", "batched"}
+
+
 @dataclass
 class SkillForm:
     meta: SkillMeta
@@ -373,6 +376,7 @@ class SkillForm:
     preamble: str = ""  # Short context paragraph injected before each extraction step
     confirmation: Optional[Confirmation] = None
     source_path: Optional[Path] = None
+    strategy: str = "auto"  # "auto", "step-by-step", or "batched"
 
     @classmethod
     def from_dict(cls, data: dict, source_path: Optional[Path] = None) -> "SkillForm":
@@ -397,6 +401,12 @@ class SkillForm:
 
         preamble = str(data.get("preamble", "")).strip()
 
+        strategy = str(data.get("strategy", "auto"))
+        if strategy not in VALID_STRATEGIES:
+            raise ValueError(
+                f"Invalid strategy '{strategy}'. Valid values: {sorted(VALID_STRATEGIES)}"
+            )
+
         return cls(
             meta=meta,
             action=action,
@@ -404,6 +414,7 @@ class SkillForm:
             preamble=preamble,
             confirmation=confirmation,
             source_path=source_path,
+            strategy=strategy,
         )
 
     @property

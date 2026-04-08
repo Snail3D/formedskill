@@ -48,21 +48,29 @@ def cmd_run(args: argparse.Namespace) -> int:
         verbose=args.verbose,
     )
 
+    # Resolve effective strategy: CLI flag overrides form-level strategy
+    effective_strategy = args.strategy if args.strategy != "auto" else form.strategy
+
     # Header
     print(file=sys.stderr)
     print(f"  {bold_cyan('⚡ FormedSkill Run')}", file=sys.stderr)
     kv("Skill:", f"{bold(form.name)} v{form.meta.version}")
     kv("Model:", args.model)
-    kv("Mode:", args.mode)
+    kv("Strategy:", effective_strategy)
     print(file=sys.stderr)
 
     t_start = time.monotonic()
 
     try:
-        if args.mode == "single-shot":
+        if args.strategy == "single-shot":
             result = runner.run_single_shot(form, args.message)
-        else:
+        elif args.strategy == "batched" or effective_strategy == "batched":
+            result = runner.run_batched(form, args.message)
+        elif args.strategy == "step-by-step" or effective_strategy == "step-by-step":
             result = runner.run_step_by_step(form, args.message)
+        else:
+            # auto — delegate to run_auto which picks based on model + form.strategy
+            result = runner.run_auto(form, args.message)
     except RuntimeError as e:
         err(f"LLM error: {e}")
         return 1
@@ -552,8 +560,8 @@ def build_parser() -> argparse.ArgumentParser:
                        help="Model name (default: llama3)")
     run_p.add_argument("--endpoint", "-e", default="http://localhost:11434",
                        help="OpenAI-compatible endpoint (default: http://localhost:11434)")
-    run_p.add_argument("--mode", choices=["step-by-step", "single-shot"],
-                       default="step-by-step", help="Execution mode (default: step-by-step)")
+    run_p.add_argument("--strategy", choices=["auto", "step-by-step", "batched", "single-shot"],
+                       default="auto", help="Execution strategy (default: auto)")
     run_p.add_argument("--dry-run", action="store_true",
                        help="Show what would be sent without executing the action")
     run_p.add_argument("--no-confirm", action="store_true",
