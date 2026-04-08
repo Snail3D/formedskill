@@ -226,4 +226,4 @@ See [Section 5 of the design doc](.omc/plans/guided-form-skill-framework.md) for
 
 MIT — see [LICENSE](LICENSE)
 
-Built by [Eric Woodard / Snail3D](https://github.com/Snail3D)
+Built by [Snail3D](https://github.com/Snail3D)

@@ -9,7 +9,7 @@ description = "Break complex LLM tool calls into step-by-step form filling. 3B m
 readme = "README.md"
 license = { text = "MIT" }
 authors = [
-    { name = "Eric Woodard", email = "eric@snail3d.com" }
+    { name = "Snail3D" }
 ]
 keywords = ["llm", "forms", "tool-calling", "hermes", "agents"]
 classifiers = [
